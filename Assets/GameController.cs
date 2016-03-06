@@ -170,11 +170,18 @@ public class GameController : MonoBehaviour {
 					game.SetTile(cx+l,cy,Tile.Floor);
 			}
 		}
-		
-		game.Creatures.Add(game.Catalog.Player(1,2));
-		game.Creatures.Add(game.Catalog.Player(6,4));
-		game.Creatures.Add(game.Catalog.Player(3,8));
-		game.Creatures.Add(game.Catalog.Player(4,3));
+
+		for (var i = 0; i < 8; i++) {
+			var x = -1;
+			var y = -1;
+	
+			while (game.GetTile(x,y).BlocksMovement) {
+				x = UnityEngine.Random.Range(0, game.Width);
+				y = UnityEngine.Random.Range(0, game.Height);
+			}
+
+			game.Creatures.Add(game.Catalog.Player(x,y));
+		}
 		game.Player = game.Creatures[0];
 
 		FloorTileMesh.ShowLevel(new FloorView(game));
@@ -205,7 +212,7 @@ public class GameController : MonoBehaviour {
 		var wait = Input.GetKey(KeyCode.Period) || Input.GetKey(KeyCode.Keypad5);
 
 		if (mx != 0 || my != 0 || wait) {
-			game.Player.MoveBy(mx, my);
+			game.Player.MoveBy(game, mx, my);
 		}
 	}
 }
@@ -237,13 +244,16 @@ public class Creature {
 	public Point Position;
 	public string SpriteName;
 
-	public void MoveBy(int mx, int my) {
+	public void MoveBy(Game game, int mx, int my) {
+		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement)
+			return;
+		
 		Position += new Point(mx, my);
 	}
 }
 
 public class Tile {
-	public static Tile OutOfBounds = new Tile { Index = 8 };
+	public static Tile OutOfBounds = new Tile { Index = 8, BlocksMovement = true };
 
 	public static Tile Floor = new Tile { Index = 0 };
 	public static Tile Wall = new Tile { Index = 1, BlocksMovement = true };
