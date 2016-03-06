@@ -6,21 +6,169 @@ using System.Linq;
 public class GameController : MonoBehaviour {
 	public Instantiator Instantiator;
 	public TileMesh FloorTileMesh;
+	public TileMesh WallTileMesh;
 
-	FloorView floorView;
 	Game game;
 	List<CreatureView> Views = new List<CreatureView>();
 
 	void Start() {
-		game = new Game(24, 24) {
+		game = new Game(20, 20) {
 			Catalog = new Catalog(),
 		};
 
-		var rx = 5;
-		var ry = 5;
-		for (var x = 0; x < 5; x++)
-		for (var y = 0; y < 5; y++) {
+		var roomWidth = UnityEngine.Random.Range(3,5);
+		var roomHeight = UnityEngine.Random.Range(3,5);
+		var rx = (game.Width - roomWidth) / 2;
+		var ry = (game.Height - roomHeight) / 2;
+		for (var x = 0; x < roomWidth; x++)
+		for (var y = 0; y < roomHeight; y++) {
 			game.SetTile(rx + x, ry + y, Tile.Floor);
+		}
+
+		for (var i = 0; i < 30; i++) {
+			roomWidth = UnityEngine.Random.Range(5,7);
+			roomHeight = UnityEngine.Random.Range(5,7);
+
+			var candidates = new List<Point>();
+			for (var x = 0; x < game.Width; x++) {
+				for (var y = 0; y < game.Height; y++) {
+					var ok = false;
+					for (var xo = 1; xo < roomWidth-1; xo++) {
+						if (game.GetTile(x + xo, y - 1) == Tile.Floor)
+							ok = true;
+					}
+					for (var xo = 1; xo < roomWidth-1; xo++) {
+						if (game.GetTile(x + xo, y + roomWidth) == Tile.Floor)
+							ok = true;
+					}
+					for (var yo = 1; yo < roomHeight-1; yo++) {
+						if (game.GetTile(x - 1, y + yo) == Tile.Floor)
+							ok = true;
+					}
+					for (var yo = 1; yo < roomHeight-1; yo++) {
+						if (game.GetTile(x + roomWidth, y + yo) == Tile.Floor)
+							ok = true;
+					}
+
+					if (!ok)
+						continue;
+					
+					for (var xo = 0; xo < roomWidth; xo++) {
+						for (var yo = 0; yo < roomHeight; yo++) {
+							if (game.GetTile(x + xo, y + yo) != Tile.Wall)
+								ok = false;
+						}
+					}
+					if (ok)
+						candidates.Add(new Point(x, y));
+				}
+			}
+			if (candidates.Any()) {
+				var candidate = candidates[UnityEngine.Random.Range(0, candidates.Count)];
+				var nDoorCandidates = new List<Point>();
+				var sDoorCandidates = new List<Point>();
+				var wDoorCandidates = new List<Point>();
+				var eDoorCandidates = new List<Point>();
+
+				for (var xo = 0; xo < roomWidth; xo++) {
+					for (var yo = 0; yo < roomHeight; yo++) {
+						if (xo == 0 && yo == 0 || xo == 0 && yo == roomHeight - 1 
+								|| xo == roomWidth - 1 && yo == 0 || xo == roomWidth - 1 && yo == roomHeight - 1)
+							continue;
+						
+						if (xo == 0 || yo == 0 || xo == roomWidth - 1 || yo == roomHeight - 1) {
+							game.SetTile(candidate.X + xo, candidate.Y + yo, Tile.Wall);
+
+							if (yo == 0 && game.GetTile(candidate.X + xo, candidate.Y + yo - 1) == Tile.Floor)
+								sDoorCandidates.Add(new Point(candidate.X + xo, candidate.Y + yo));
+							if (yo == roomHeight-1 && game.GetTile(candidate.X + xo, candidate.Y + yo + 1) == Tile.Floor)
+								sDoorCandidates.Add(new Point(candidate.X + xo, candidate.Y + yo));
+							if (xo == 0 && game.GetTile(candidate.X + xo - 1, candidate.Y + yo) == Tile.Floor)
+								wDoorCandidates.Add(new Point(candidate.X + xo, candidate.Y + yo));
+							if (xo == roomWidth-1 && game.GetTile(candidate.X + xo + 1, candidate.Y + yo) == Tile.Floor)
+								eDoorCandidates.Add(new Point(candidate.X + xo, candidate.Y + yo));
+						} else {
+							game.SetTile(candidate.X + xo, candidate.Y + yo, Tile.Floor);
+						}
+					}
+				}
+
+				if (nDoorCandidates.Any()) {
+					var doorCandidate = nDoorCandidates[UnityEngine.Random.Range(0, nDoorCandidates.Count)];
+					game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					if (UnityEngine.Random.value < 0.25f) {
+						doorCandidate = nDoorCandidates[UnityEngine.Random.Range(0, nDoorCandidates.Count)];
+						game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					}
+				}
+
+				if (sDoorCandidates.Any()) {
+					var doorCandidate = sDoorCandidates[UnityEngine.Random.Range(0, sDoorCandidates.Count)];
+					game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					if (UnityEngine.Random.value < 0.25f) {
+						doorCandidate = sDoorCandidates[UnityEngine.Random.Range(0, sDoorCandidates.Count)];
+						game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					}
+				}
+
+				if (wDoorCandidates.Any()) {
+					var doorCandidate = wDoorCandidates[UnityEngine.Random.Range(0, wDoorCandidates.Count)];
+					game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					if (UnityEngine.Random.value < 0.25f) {
+						doorCandidate = wDoorCandidates[UnityEngine.Random.Range(0, wDoorCandidates.Count)];
+						game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					}
+				}
+
+				if (eDoorCandidates.Any()) {
+					var doorCandidate = eDoorCandidates[UnityEngine.Random.Range(0, eDoorCandidates.Count)];
+					game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					if (UnityEngine.Random.value < 0.25f) {
+						doorCandidate = eDoorCandidates[UnityEngine.Random.Range(0, eDoorCandidates.Count)];
+						game.SetTile(doorCandidate.X, doorCandidate.Y, Tile.Floor);
+					}
+				}
+			}
+		}
+
+		for (var i = 0; i < 20; i++) {
+			var cx = UnityEngine.Random.Range(0, game.Width);
+			var cy = UnityEngine.Random.Range(0, game.Height);
+
+			if (game.GetTile(cx,cy) != Tile.Floor)
+				continue;
+
+			while (game.GetTile(cx,cy) == Tile.Floor)
+				cy++;
+
+			var length = 0;
+			while (game.GetTile(cx,cy+length) == Tile.Wall)
+				length++;
+
+			if (game.GetTile(cx,cy+length) == Tile.Floor && length > 1 && length < 8) {
+				for (var l = 0; l < length; l++)
+					game.SetTile(cx,cy+l,Tile.Floor);
+			}
+		}
+
+		for (var i = 0; i < 20; i++) {
+			var cx = UnityEngine.Random.Range(0, game.Width);
+			var cy = UnityEngine.Random.Range(0, game.Height);
+
+			if (game.GetTile(cx,cy) != Tile.Floor)
+				continue;
+
+			while (game.GetTile(cx,cy) == Tile.Floor)
+				cx++;
+
+			var length = 0;
+			while (game.GetTile(cx+length,cy) == Tile.Wall)
+				length++;
+
+			if (game.GetTile(cx+length,cy) == Tile.Floor && length > 1 && length < 8) {
+				for (var l = 0; l < length; l++)
+					game.SetTile(cx+l,cy,Tile.Floor);
+			}
 		}
 		
 		game.Creatures.Add(game.Catalog.Player(1,2));
@@ -29,9 +177,8 @@ public class GameController : MonoBehaviour {
 		game.Creatures.Add(game.Catalog.Player(4,3));
 		game.Player = game.Creatures[0];
 
-
-		floorView = new FloorView(game);
-		FloorTileMesh.ShowLevel(floorView);
+		FloorTileMesh.ShowLevel(new FloorView(game));
+		WallTileMesh.ShowLevel(new WallView(game));
 
 		foreach (var c in game.Creatures)
 			Views.Add(Instantiator.Add(c));
@@ -136,17 +283,85 @@ public class Game {
 	}
 }
 
-public class FloorView : MonoBehaviour, ITileMeshSource {
+public class FloorView : ITileMeshSource {
+	public int Width { get { return game.Width; } }
+	public int Height { get { return game.Height; } }
+	public bool HasChangedSinceLastRender { get; set; }
+
+	int rowWidth = 21;
+	int columnWidth = 1;
+	int center = 85;
+
+	int at(int xdiff, int ydiff) {
+		return center + ydiff * rowWidth + xdiff * columnWidth;
+	}
+
+	public int GetTileIndex(int x, int y) {
+		if (game.GetTile(x, y) == Tile.Floor) {
+			var n = game.GetTile(x, y+1) == Tile.Floor;
+			var s = game.GetTile(x, y-1) == Tile.Floor;
+			var w = game.GetTile(x-1, y) == Tile.Floor;
+			var e = game.GetTile(x+1, y) == Tile.Floor;
+
+			if (n && s && w && e)
+				return at( 0,  0);
+
+			if (!n && s && w && e)
+				return at( 0, -1);
+			if (n && !s && w && e)
+				return at( 0,  1);
+			if (n && s && !w && e)
+				return at(-1,  0);
+			if (n && s && w && !e)
+				return at( 1,  0);
+
+			if (!n && s && w && !e)
+				return at( 1, -1);
+			if (n && !s && w && !e)
+				return at( 1,  1);
+			if (!n && s && !w && e)
+				return at(-1, -1);
+			if (n && !s && !w && e)
+				return at(-1,  1);
+			
+			if (n && s && !w && !e)
+				return at( 2,  0);
+			if (n && !s && !w && !e)
+				return at( 2,  1);
+			if (!n && s && !w && !e)
+				return at( 2, -1);
+
+			if (!n && !s && w && e)
+				return at( 4,  0);
+			if (!n && !s && !w && e)
+				return at( 3,  0);
+			if (!n && !s && w && !e)
+				return at( 5,  0);
+			
+			return at( 4, -1);
+		} else {
+			return 9;
+		}
+	}
+
+	Game game;
+	public FloorView(Game game) {
+		this.game = game;
+		HasChangedSinceLastRender = true;
+	}
+}
+
+public class WallView : ITileMeshSource {
 	public int Width { get { return game.Width; } }
 	public int Height { get { return game.Height; } }
 	public bool HasChangedSinceLastRender { get; set; }
 
 	public int GetTileIndex(int x, int y) {
-		return game.GetTile(x, y) == Tile.Floor ? 85 : 9;
+		return game.GetTile(x, y) == Tile.Wall ? 9 : 8;
 	}
 
 	Game game;
-	public FloorView(Game game) {
+	public WallView(Game game) {
 		this.game = game;
 		HasChangedSinceLastRender = true;
 	}
