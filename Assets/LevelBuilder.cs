@@ -31,7 +31,7 @@ public class LevelBuilder {
 			}
 
 			if (game.Creatures.Any())
-				game.Creatures.Add(game.Catalog.Skeleton(x,y));
+				game.Creatures.Add(game.Catalog.Enemy(x,y));
 			else
 				game.Creatures.Add(game.Catalog.Player(x,y));
 		}

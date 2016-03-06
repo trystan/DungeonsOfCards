@@ -27,7 +27,7 @@ public class GameController : MonoBehaviour {
 			CreatureViews.Add(Instantiator.Add(c));
 
 		foreach (var c in game.Player.DrawStack)
-			CardViews.Add(Instantiator.Add(c, game.Player));
+			CardViews.Add(Instantiator.Add(game, c, game.Player));
 		
 		Camera.main.GetComponent<CameraController>().Follow(CreatureViews[0].gameObject);
 
@@ -35,6 +35,16 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Update() {
+		game.Effects.ForEach(e => e.Delay -= Time.deltaTime);
+		foreach (var e in game.Effects.Where(e => e.Delay < 0).ToList()) {
+			e.Callback(game);
+			game.Effects.Remove(e);
+		}
+
+		foreach (var popup in game.Popups)
+			Instantiator.Add(popup);
+		game.Popups.Clear();
+
 		if (CreatureViews.Any(v => v.IsMoving))
 			return;
 		
@@ -72,6 +82,32 @@ public class Catalog {
 			new Card() { Name = "Regenerate 1", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Heal1 },
 			new Card() { Name = "Draw 3", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw3 },
 			new Card() { Name = "Draw 3", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw3 },
+		};
+	}
+
+	public List<Card> AttackPack() {
+		return new List<Card>() {
+			new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+			new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack, CombatBonus = 2 },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack, CombatBonus = 2 },
+			new Card() { Name = "Attack +3", CardType = CardType.Attack, CombatBonus = 3 },
+			new Card() { Name = "Attack +3", CardType = CardType.Attack, CombatBonus = 3 },
+			new Card() { Name = "Ready attack", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Attack },
+			new Card() { Name = "Ready attack", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Attack },
+		};
+	}
+
+	public List<Card> DefensePack() {
+		return new List<Card>() {
+			new Card() { Name = "Defense +1", CardType = CardType.Defense, CombatBonus = 1 },
+			new Card() { Name = "Defense +1", CardType = CardType.Defense, CombatBonus = 1 },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense, CombatBonus = 2 },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense, CombatBonus = 2 },
+			new Card() { Name = "Defense +3", CardType = CardType.Defense, CombatBonus = 3 },
+			new Card() { Name = "Defense +3", CardType = CardType.Defense, CombatBonus = 3 },
+			new Card() { Name = "Ready defense", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Defense },
+			new Card() { Name = "Ready defense", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Defense },
 		};
 	}
 
@@ -124,7 +160,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(GenericPack(), AdventurerPack()),
+			DrawStack = Packs(AttackPack(), AdventurerPack()),
 		};
 	}
 
@@ -142,6 +178,73 @@ public class Catalog {
 			MaximumHandCards = 3,
 			DrawStack = Packs(GenericPack(), SkeletonPack()),
 		};
+	}
+
+	public Creature Lizard(int x, int y) {
+		return new Creature() {
+			Position = new Point(x, y),
+			Ai = new CreatureAi(),
+			SpriteName = "DawnLike/Characters/Player0:lizard",
+			AttackValue = 2,
+			MaximumAttackCards = 1,
+			DefenseValue = 2,
+			MaximumDefenseCards = 1,
+			MaximumHealth = 8,
+			CurrentHealth = 8,
+			MaximumHandCards = 4,
+			DrawStack = Packs(GenericPack(), AdventurerPack()),
+		};
+	}
+
+	public Creature AttackLizard(int x, int y) {
+		return new Creature() {
+			Position = new Point(x, y),
+			Ai = new CreatureAi(),
+			SpriteName = "DawnLike/Characters/Player0:spear lizard",
+			AttackValue = 2,
+			MaximumAttackCards = 1,
+			DefenseValue = 2,
+			MaximumDefenseCards = 1,
+			MaximumHealth = 8,
+			CurrentHealth = 8,
+			MaximumHandCards = 4,
+			DrawStack = Packs(GenericPack(), AttackPack()),
+		};
+	}
+
+	public Creature DefenseLizard(int x, int y) {
+		return new Creature() {
+			Position = new Point(x, y),
+			Ai = new CreatureAi(),
+			SpriteName = "DawnLike/Characters/Player0:shield lizard",
+			AttackValue = 2,
+			MaximumAttackCards = 1,
+			DefenseValue = 2,
+			MaximumDefenseCards = 1,
+			MaximumHealth = 8,
+			CurrentHealth = 8,
+			MaximumHandCards = 4,
+			DrawStack = Packs(GenericPack(), DefensePack()),
+		};
+	}
+
+	public Creature Enemy(int x, int y) {
+		return Util.Shuffle<Func<int,int,Creature>>(new List<Func<int,int,Creature>>() {
+			Skeleton, Lizard, AttackLizard, DefenseLizard
+		})[0](x, y);
+	}
+}
+
+public class TextPopup {
+	public float TTL = 1f;
+	public string Text;
+	public Vector3 WorldPosition;
+	public Vector3 Offset = new Vector3(0,0.5f,0);
+
+	public TextPopup(string text, Point worldPosition, Vector3 offset) {
+		Text = text;
+		WorldPosition = new Vector3(worldPosition.X, worldPosition.Y, 0);
+		Offset = offset;
 	}
 }
 
@@ -204,7 +307,7 @@ public enum CardType {
 }
 
 public enum CardSpecialEffect {
-	None, Discard1FromHand, Heal1, Draw3, SpawnSkeleton
+	None, Discard1FromHand, Heal1, Draw3, Draw5Attack, Draw5Defense, SpawnSkeleton
 }
 
 public class Card {
@@ -257,7 +360,7 @@ public class Creature {
 		EndTurn(game);
 	}
 
-	public void UseCard(Card card) {
+	public void UseCard(Game game, Card card) {
 		HandStack.Remove(card);
 
 		switch (card.OnUse) {
@@ -266,33 +369,88 @@ public class Creature {
 				CurrentHealth++;
 			break;
 		case CardSpecialEffect.Draw3:
-			Draw1Card();
-			Draw1Card();
-			Draw1Card();
-			break;
+			game.Effects.Add(new DelayedEffect() {
+				Delay = 0.1f,
+				Callback = g => this.Draw1Card(),
+			});
+			game.Effects.Add(new DelayedEffect() {
+				Delay = 0.2f,
+				Callback = g => this.Draw1Card(),
+			});
+			game.Effects.Add(new DelayedEffect() {
+				Delay = 0.3f,
+				Callback = g => this.Draw1Card(),
+			});
+			game.Effects.Add(new DelayedEffect() {
+				Delay = 0.4f,
+				Callback = g => DiscardStack.Add(card),
+			});
+			game.Popups.Add(new TextPopup(card.Name, Position, new Vector3(0,4,0)));
+			return;
+		case CardSpecialEffect.Draw5Attack:
+			Action<Game> drawAttack = g => {
+				var c = this.GetTopDrawCard();
+				if (c.CardType == CardType.Attack)
+					this.KeepCard(c);
+				else
+					this.DiscardStack.Add(c);
+			};
+			game.Effects.Add(new DelayedEffect() { Delay = 0.1f, Callback = drawAttack });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.2f, Callback = drawAttack });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.3f, Callback = drawAttack });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.4f, Callback = drawAttack });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.5f, Callback = drawAttack });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.6f, Callback = g => DiscardStack.Add(card) });
+			game.Popups.Add(new TextPopup(card.Name, Position, new Vector3(0,4,0)));
+			return;
+		case CardSpecialEffect.Draw5Defense:
+			Action<Game> drawDefense = g => {
+				var c = this.GetTopDrawCard();
+				if (c.CardType == CardType.Defense)
+					this.KeepCard(c);
+				else
+					this.DiscardStack.Add(c);
+			};
+			game.Effects.Add(new DelayedEffect() { Delay = 0.1f, Callback = drawDefense });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.2f, Callback = drawDefense });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.3f, Callback = drawDefense });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.4f, Callback = drawDefense });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.5f, Callback = drawDefense });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.6f, Callback = g => DiscardStack.Add(card) });
+			game.Popups.Add(new TextPopup(card.Name, Position, new Vector3(0,4,0)));
+			return;
 		default:
 			throw new NotImplementedException(card.Name + " " + card.OnDraw);
 		}
 
+		game.Popups.Add(new TextPopup(card.Name, Position, new Vector3(0,4,0)));
 		DiscardStack.Add(card);
 	}
 
-	void Draw1Card() {
-		if (!DrawStack.Any()) {
-			if (!DiscardStack.Any()) {
-				DiscardStack.AddRange(AttackStack);
-				AttackStack.Clear();
-				DiscardStack.AddRange(DefenseStack);
-				DefenseStack.Clear();
-				DiscardStack.AddRange(HandStack);
-				HandStack.Clear();
-			}
-			DrawStack.AddRange(Util.Shuffle(DiscardStack));
-			DiscardStack.Clear();
+	void ReshuffleIntoDrawStack() {
+		if (!DiscardStack.Any()) {
+			DiscardStack.AddRange(AttackStack);
+			AttackStack.Clear();
+			DiscardStack.AddRange(DefenseStack);
+			DefenseStack.Clear();
+			DiscardStack.AddRange(HandStack);
+			HandStack.Clear();
 		}
+		DrawStack.AddRange(Util.Shuffle(DiscardStack));
+		DiscardStack.Clear();
+	}
 
+	Card GetTopDrawCard() {
+		if (!DrawStack.Any())
+			ReshuffleIntoDrawStack();
+		
 		var pulledCard = DrawStack.Last();
 		DrawStack.Remove(pulledCard);
+		return pulledCard;
+	}
+
+	void Draw1Card() {
+		var pulledCard = GetTopDrawCard();
 
 		switch (pulledCard.OnDraw) {
 		case CardSpecialEffect.None:
@@ -314,6 +472,10 @@ public class Creature {
 			throw new NotImplementedException(pulledCard.Name + " " + pulledCard.OnDraw);
 		}
 
+		KeepCard(pulledCard);
+	}
+
+	void KeepCard(Card pulledCard) {
 		if (pulledCard.CardType == CardType.Attack) {
 			AttackStack.Add(pulledCard);
 			while (AttackStack.Count > MaximumAttackCards) {
@@ -380,16 +542,28 @@ public class Combat {
 
 		for (var i = 0; i < maxCards; i++) {
 			var defenderCard = Defender.DefenseStack.Count > i ? Defender.DefenseStack[i] : null;
-			var attackCard = Attacker.AttackStack.Count > i ? Attacker.AttackStack[i] : null;
+			var attackerCard = Attacker.AttackStack.Count > i ? Attacker.AttackStack[i] : null;
 			var blockAttack = false;
 
 			if (defenderCard != null) {
 				defenderDefense += defenderCard.CombatBonus;
 				blockAttack = defenderCard.DoesBlockOtherCard;
+
+				var popup = new TextPopup(defenderCard.Name, Defender.Position, new Vector3(0,14 * i,0));
+				Game.Effects.Add(new DelayedEffect() {
+					Delay = i * 0.1f,
+					Callback = g => g.Popups.Add(popup),
+				});
 			}
 
-			if (attackCard != null && !blockAttack) {
-				attackerAttack += attackCard.CombatBonus;
+			if (attackerCard != null && !blockAttack) {
+				attackerAttack += attackerCard.CombatBonus;
+
+				var popup = new TextPopup(attackerCard.Name, Attacker.Position, new Vector3(0,14 * i + 7,0));
+				Game.Effects.Add(new DelayedEffect() {
+					Delay = i * 0.1f + 0.05f,
+					Callback = g => g.Popups.Add(popup),
+				});
 			}
 		}
 
@@ -442,8 +616,15 @@ public class Tile {
 	public bool BlocksMovement;
 }
 
+public class DelayedEffect {
+	public float Delay;
+	public Action<Game> Callback;
+}
+
 public class Game {
 	public List<Creature> Creatures = new List<Creature>();
+	public List<DelayedEffect> Effects = new List<DelayedEffect>();
+	public List<TextPopup> Popups = new List<TextPopup>();
 	public Catalog Catalog;
 	public Creature Player;
 

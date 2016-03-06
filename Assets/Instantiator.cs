@@ -8,6 +8,7 @@ public class Instantiator : MonoBehaviour {
 
 	public GameObject CreatureViewPrefab;
 	public GameObject CardViewPrefab;
+	public GameObject TextViewPrefab;
 
 	public CreatureView Add(Creature creature) {
 		var view = Instantiate(CreatureViewPrefab);
@@ -19,14 +20,25 @@ public class Instantiator : MonoBehaviour {
 		GameObject.Destroy(view.gameObject);
 	}
 
-	public CardView Add(Card card, Creature holder) {
+	public CardView Add(Game game, Card card, Creature holder) {
 		var view = Instantiate(CardViewPrefab);
-		view.GetComponent<CardView>().Initialize(card, holder, this);
+		view.GetComponent<CardView>().Initialize(game, card, holder, this);
 		view.transform.SetParent(Canvas.transform);
 		return view.GetComponent<CardView>();
 	}
 
 	public void Remove(CardView view) {
+		GameObject.Destroy(view.gameObject);
+	}
+
+	public TextPopupView Add(TextPopup popup) {
+		var view = Instantiate(TextViewPrefab);
+		view.GetComponent<TextPopupView>().Initialize(popup, this);
+		view.transform.SetParent(Canvas.transform);
+		return view.GetComponent<TextPopupView>();
+	}
+
+	public void Remove(TextPopupView view) {
 		GameObject.Destroy(view.gameObject);
 	}
 }

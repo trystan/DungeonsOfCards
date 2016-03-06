@@ -55,6 +55,7 @@
      <Compile Include="Assets\Instantiator.cs" />
      <Compile Include="Assets\LevelBuilder.cs" />
      <Compile Include="Assets\StackView.cs" />
+     <Compile Include="Assets\TextPopupView.cs" />
      <Compile Include="Assets\TileMesh.cs" />
      <Compile Include="Assets\WallView.cs" />
      <None Include="Assets\Resources\DawnLike\README.txt" />

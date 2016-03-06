@@ -9,8 +9,10 @@ public class CardView : MonoBehaviour {
 	public RectTransform AttackPile;
 	public RectTransform DefensePile;
 	public RectTransform DiscardPile;
+	public RectTransform CurrentlyInUsePile;
 
 	Instantiator Instantiator;
+	Game Game;
 	Card Card;
 	Creature Player;
 
@@ -31,6 +33,7 @@ public class CardView : MonoBehaviour {
 		AttackPile = GameObject.Find("AttackPile").GetComponent<RectTransform>();
 		DefensePile = GameObject.Find("DefensePile").GetComponent<RectTransform>();
 		DiscardPile = GameObject.Find("DiscardPile").GetComponent<RectTransform>();
+		CurrentlyInUsePile = GameObject.Find("CurrentlyInUsePile").GetComponent<RectTransform>();
 	}
 
 	void Update() {
@@ -64,9 +67,15 @@ public class CardView : MonoBehaviour {
 			lastPile = Player.DiscardStack;
 			targetTransform = DiscardPile;
 			FaceUp();
+		} else {
+			lastPile = new List<Card>();
+			targetTransform = CurrentlyInUsePile;
 		}
 
-		lastIndex = lastPile.IndexOf(Card);
+		if (targetTransform == CurrentlyInUsePile)
+			lastIndex = -99;
+		else
+			lastIndex = lastPile.IndexOf(Card);
 
 		if (targetTransform == HandPile) {
 			var w = targetTransform.sizeDelta.x + 60;
@@ -87,13 +96,13 @@ public class CardView : MonoBehaviour {
 					cards.Add(view);
 				}
 			}
-			foreach (var c in cards.OrderBy(c => c.Player.DrawStack.IndexOf(c.Card)).Reverse()) {
+			foreach (var c in cards.OrderBy(c => c.Player.DrawStack.IndexOf(c.Card)).Reverse())
 				c.transform.SetAsFirstSibling();
-			}
 		}
 	}
 
-	public void Initialize(Card card, Creature holder, Instantiator instantiator) {
+	public void Initialize(Game game, Card card, Creature holder, Instantiator instantiator) {
+		Game = game;
 		Card = card;
 		Player = holder;
 		Instantiator = instantiator;
@@ -113,7 +122,9 @@ public class CardView : MonoBehaviour {
 	}
 
 	public void Clicked() {
-		if (isFaceUp && Card.OnUse != CardSpecialEffect.None)
-			Player.UseCard(Card);
+		if (Card.OnUse != CardSpecialEffect.None && Player.HandStack.Contains(Card)) {
+			Player.UseCard(Game, Card);
+			Game.TakeTurn();
+		}
 	}
 }
