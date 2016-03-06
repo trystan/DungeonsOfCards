@@ -5,11 +5,13 @@ using System.Linq;
 
 public class GameController : MonoBehaviour {
 	public Instantiator Instantiator;
+	public GuiController guiController;
 	public TileMesh FloorTileMesh;
 	public TileMesh WallTileMesh;
 
 	Game game;
-	List<CreatureView> Views = new List<CreatureView>();
+	List<CreatureView> CreatureViews = new List<CreatureView>();
+	List<CardView> CardViews = new List<CardView>();
 
 	void Start() {
 		game = new Game(20, 20) {
@@ -22,13 +24,18 @@ public class GameController : MonoBehaviour {
 		WallTileMesh.ShowLevel(new WallView(game));
 
 		foreach (var c in game.Creatures)
-			Views.Add(Instantiator.Add(c));
+			CreatureViews.Add(Instantiator.Add(c));
 
-		Camera.main.GetComponent<CameraController>().Follow(Views[0].gameObject);
+		foreach (var c in game.Player.DrawStack)
+			CardViews.Add(Instantiator.Add(c, game.Player));
+		
+		Camera.main.GetComponent<CameraController>().Follow(CreatureViews[0].gameObject);
+
+		guiController.Show(game.Player);
 	}
 
 	void Update() {
-		if (Views.Any(v => v.IsMoving))
+		if (CreatureViews.Any(v => v.IsMoving))
 			return;
 		
 		var mx = 0;
@@ -53,15 +60,40 @@ public class GameController : MonoBehaviour {
 }
 
 public class Catalog {
+	public List<Card> TestCards() {
+		return Util.Shuffle(new List<Card>() {
+			new Card() { Name = "A", CardType = CardType.Attack },
+			new Card() { Name = "A", CardType = CardType.Attack },
+			new Card() { Name = "A", CardType = CardType.Attack },
+			new Card() { Name = "A", CardType = CardType.Attack },
+			new Card() { Name = "D", CardType = CardType.Defense },
+			new Card() { Name = "D", CardType = CardType.Defense },
+			new Card() { Name = "D", CardType = CardType.Defense },
+			new Card() { Name = "D", CardType = CardType.Defense },
+			new Card() { Name = "P", CardType = CardType.Normal },
+			new Card() { Name = "P", CardType = CardType.Normal },
+			new Card() { Name = "P", CardType = CardType.Normal },
+			new Card() { Name = "P", CardType = CardType.Normal },
+			new Card() { Name = "?", CardType = CardType.Normal },
+			new Card() { Name = "?", CardType = CardType.Normal },
+			new Card() { Name = "?", CardType = CardType.Normal },
+			new Card() { Name = "?", CardType = CardType.Normal },
+		});
+	}
+
 	public Creature Player(int x, int y) {
 		return new Creature() {
 			Position = new Point(x, y),
 			Ai = new PlayerAi(),
 			SpriteName = "DawnLike/Characters/Player0:Player0_1",
 			AttackValue = 2,
+			MaximumAttackCards = 2,
 			DefenseValue = 2,
+			MaximumDefenseCards = 2,
 			MaximumHealth = 10,
 			CurrentHealth = 10,
+			MaximumHandCards = 6,
+			DrawStack = TestCards(),
 		};
 	}
 
@@ -71,9 +103,13 @@ public class Catalog {
 			Ai = new CreatureAi(),
 			SpriteName = "DawnLike/Characters/Undead0:skeleton",
 			AttackValue = 1,
+			MaximumAttackCards = 1,
 			DefenseValue = 1,
-			MaximumHealth = 3,
-			CurrentHealth = 3,
+			MaximumDefenseCards = 1,
+			MaximumHealth = 5,
+			CurrentHealth = 5,
+			MaximumHandCards = 3,
+			DrawStack = TestCards(),
 		};
 	}
 }
@@ -132,6 +168,15 @@ public class CreatureAi : AI {
 	}
 }
 
+public enum CardType {
+	Attack, Defense, Normal
+}
+
+public class Card {
+	public string Name;
+	public CardType CardType;
+}
+
 public class Creature {
 	public bool Exists = true;
 	public Point Position;
@@ -139,15 +184,26 @@ public class Creature {
 	public AI Ai;
 
 	public int AttackValue;
+	public int MaximumAttackCards;
 	public int DefenseValue;
+	public int MaximumDefenseCards;
 	public int MaximumHealth;
 	public int CurrentHealth;
+	public int MaximumHandCards;
+
+	public List<Card> DrawStack = new List<Card>();
+	public List<Card> AttackStack = new List<Card>();
+	public List<Card> DefenseStack = new List<Card>();
+	public List<Card> HandStack = new List<Card>();
+	public List<Card> DiscardStack = new List<Card>();
 
 	public void MoveBy(Game game, int mx, int my) {
 		var next = Position + new Point(mx, my);
 
-		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement)
+		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement) {
+			EndTurn();
 			return;
+		}
 		
 		var other = game.GetCreature(next);
 
@@ -155,6 +211,49 @@ public class Creature {
 			Attack(other);
 		else
 			Position += new Point(mx, my);
+
+		EndTurn();
+	}
+
+	void EndTurn() {
+		if (!DrawStack.Any()) {
+			if (!DiscardStack.Any()) {
+				DiscardStack.AddRange(AttackStack);
+				AttackStack.Clear();
+				DiscardStack.AddRange(DefenseStack);
+				DefenseStack.Clear();
+				DiscardStack.AddRange(HandStack);
+				HandStack.Clear();
+			}
+			DrawStack = Util.Shuffle(DiscardStack);
+			DiscardStack.Clear();
+		}
+
+		var pulledCard = DrawStack.Last();
+		DrawStack.Remove(pulledCard);
+
+		if (pulledCard.CardType == CardType.Attack) {
+			AttackStack.Add(pulledCard);
+			while (AttackStack.Count > MaximumAttackCards) {
+				var toDiscard = AttackStack[0];
+				AttackStack.RemoveAt(0);
+				DiscardStack.Add(toDiscard);
+			}
+		} else if (pulledCard.CardType == CardType.Defense) {
+			DefenseStack.Add(pulledCard);
+			while (DefenseStack.Count > MaximumDefenseCards) {
+				var toDiscard = DefenseStack[0];
+				DefenseStack.RemoveAt(0);
+				DiscardStack.Add(toDiscard);
+			}
+		} else {
+			HandStack.Add(pulledCard);
+			while (HandStack.Count > MaximumHandCards) {
+				var toDiscard = HandStack[0];
+				HandStack.RemoveAt(0);
+				DiscardStack.Add(toDiscard);
+			}
+		}
 	}
 
 	public void TakeTurn(Game game) {
@@ -174,6 +273,19 @@ public class Creature {
 
 	public void Die() {
 		Exists = false;
+	}
+}
+
+public static class Util {
+	public static List<T> Shuffle<T>(List<T> things) {
+		var newList = new List<T>();
+		var list = things.Select(x => x).ToList();
+		while (list.Any()) {
+			var i = UnityEngine.Random.Range(0, list.Count);
+			newList.Add(list[i]);
+			list.RemoveAt(i);
+		}
+		return newList;
 	}
 }
 
@@ -224,8 +336,10 @@ public class Game {
 	}
 
 	public void TakeTurn() {
-		foreach (var c in Creatures)
-			c.TakeTurn(this);
+		foreach (var c in Creatures) {
+			if (c.Exists)
+				c.TakeTurn(this);
+		}
 
 		Creatures.RemoveAll(c => !c.Exists);
 	}

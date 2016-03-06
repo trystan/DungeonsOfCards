@@ -46,11 +46,15 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\CameraController.cs" />
+     <Compile Include="Assets\CardView.cs" />
+     <Compile Include="Assets\CreatureSummaryController.cs" />
      <Compile Include="Assets\CreatureView.cs" />
      <Compile Include="Assets\FloorView.cs" />
      <Compile Include="Assets\GameController.cs" />
+     <Compile Include="Assets\GuiController.cs" />
      <Compile Include="Assets\Instantiator.cs" />
      <Compile Include="Assets\LevelBuilder.cs" />
+     <Compile Include="Assets\StackView.cs" />
      <Compile Include="Assets\TileMesh.cs" />
      <Compile Include="Assets\WallView.cs" />
      <None Include="Assets\Resources\DawnLike\README.txt" />
