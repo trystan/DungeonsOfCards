@@ -5,20 +5,33 @@ using System.Linq;
 
 public class GameController : MonoBehaviour {
 	public Instantiator Instantiator;
+	public TileMesh FloorTileMesh;
 
+	FloorView floorView;
 	Game game;
 	List<CreatureView> Views = new List<CreatureView>();
 
 	void Start() {
-		game = new Game() {
+		game = new Game(24, 24) {
 			Catalog = new Catalog(),
 		};
 
+		var rx = 5;
+		var ry = 5;
+		for (var x = 0; x < 5; x++)
+		for (var y = 0; y < 5; y++) {
+			game.SetTile(rx + x, ry + y, Tile.Floor);
+		}
+		
 		game.Creatures.Add(game.Catalog.Player(1,2));
 		game.Creatures.Add(game.Catalog.Player(6,4));
 		game.Creatures.Add(game.Catalog.Player(3,8));
 		game.Creatures.Add(game.Catalog.Player(4,3));
 		game.Player = game.Creatures[0];
+
+
+		floorView = new FloorView(game);
+		FloorTileMesh.ShowLevel(floorView);
 
 		foreach (var c in game.Creatures)
 			Views.Add(Instantiator.Add(c));
@@ -80,8 +93,61 @@ public class Creature {
 	}
 }
 
+public class Tile {
+	public static Tile OutOfBounds = new Tile { Index = 8 };
+
+	public static Tile Floor = new Tile { Index = 0 };
+	public static Tile Wall = new Tile { Index = 1, BlocksMovement = true };
+
+	public int Index;
+	public bool BlocksMovement;
+}
+
 public class Game {
 	public List<Creature> Creatures = new List<Creature>();
 	public Catalog Catalog;
 	public Creature Player;
+
+	public int Width;
+	public int Height;
+	Tile[,] tiles;
+
+	public Game(int width, int height) {
+		Width = width;
+		Height = height;
+		tiles = new Tile[width,height];
+
+		for (var x = 0; x < width; x++)
+		for (var y = 0; y < height; y++) {
+			tiles[x,y] = Tile.Wall;
+		}
+	}
+
+	public Tile GetTile(int x, int y) {
+		if (x >= 0 && y >= 0 && x < Width && y < Height)
+			return tiles[x,y];
+		else
+			return Tile.OutOfBounds;
+	}
+
+	public void SetTile(int x, int y, Tile tile) {
+		if (x >= 0 && y >= 0 && x < Width && y < Height)
+			tiles[x,y] = tile;
+	}
+}
+
+public class FloorView : MonoBehaviour, ITileMeshSource {
+	public int Width { get { return game.Width; } }
+	public int Height { get { return game.Height; } }
+	public bool HasChangedSinceLastRender { get; set; }
+
+	public int GetTileIndex(int x, int y) {
+		return game.GetTile(x, y) == Tile.Floor ? 85 : 9;
+	}
+
+	Game game;
+	public FloorView(Game game) {
+		this.game = game;
+		HasChangedSinceLastRender = true;
+	}
 }
