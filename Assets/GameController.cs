@@ -58,6 +58,10 @@ public class Catalog {
 			Position = new Point(x, y),
 			Ai = new PlayerAi(),
 			SpriteName = "DawnLike/Characters/Player0:Player0_1",
+			AttackValue = 2,
+			DefenseValue = 2,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
 		};
 	}
 
@@ -66,6 +70,10 @@ public class Catalog {
 			Position = new Point(x, y),
 			Ai = new CreatureAi(),
 			SpriteName = "DawnLike/Characters/Undead0:skeleton",
+			AttackValue = 1,
+			DefenseValue = 1,
+			MaximumHealth = 3,
+			CurrentHealth = 3,
 		};
 	}
 }
@@ -81,6 +89,31 @@ public struct Point {
 
 	public static Point operator +(Point a, Point b) {
 		return new Point(a.X + b.X, a.Y + b.Y);
+	}
+
+	public static bool operator ==(Point a, Point b) {
+		return a.Equals(b);
+	}
+
+	public static bool operator !=(Point a, Point b) {
+		return !a.Equals(b);
+	}
+
+	public override bool Equals(object obj) {
+		if (obj == null)
+			return false;
+		if (ReferenceEquals (this, obj))
+			return true;
+		if (obj.GetType () != typeof(Point))
+			return false;
+		Point other = (Point)obj;
+		return X == other.X && Y == other.Y;
+	}
+
+	public override int GetHashCode() {
+		unchecked {
+			return X.GetHashCode() ^ Y.GetHashCode();
+		}
 	}
 }
 
@@ -100,19 +133,47 @@ public class CreatureAi : AI {
 }
 
 public class Creature {
+	public bool Exists = true;
 	public Point Position;
 	public string SpriteName;
 	public AI Ai;
 
+	public int AttackValue;
+	public int DefenseValue;
+	public int MaximumHealth;
+	public int CurrentHealth;
+
 	public void MoveBy(Game game, int mx, int my) {
+		var next = Position + new Point(mx, my);
+
 		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement)
 			return;
 		
-		Position += new Point(mx, my);
+		var other = game.GetCreature(next);
+
+		if (other != null && other != this)
+			Attack(other);
+		else
+			Position += new Point(mx, my);
 	}
 
 	public void TakeTurn(Game game) {
 		Ai.TakeTurn(game, this);
+	}
+
+	public void Attack(Creature other) {
+		var damage = Mathf.Max(1, AttackValue - other.DefenseValue);
+		other.TakeDamage(damage);
+	}
+
+	public void TakeDamage(int amount) {
+		CurrentHealth -= amount;
+		if (CurrentHealth <= 0)
+			Die();
+	}
+
+	public void Die() {
+		Exists = false;
 	}
 }
 
@@ -146,6 +207,10 @@ public class Game {
 		}
 	}
 
+	public Creature GetCreature(Point p) {
+		return Creatures.FirstOrDefault(c => c.Exists && c.Position == p);
+	}
+
 	public Tile GetTile(int x, int y) {
 		if (x >= 0 && y >= 0 && x < Width && y < Height)
 			return tiles[x,y];
@@ -161,5 +226,7 @@ public class Game {
 	public void TakeTurn() {
 		foreach (var c in Creatures)
 			c.TakeTurn(this);
+
+		Creatures.RemoveAll(c => !c.Exists);
 	}
 }

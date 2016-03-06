@@ -4,6 +4,8 @@ using System.Linq;
 
 public class CreatureView : MonoBehaviour {
 	public SpriteRenderer CreatureSprite;
+	public Transform HealthBackground;
+	public Transform HealthBar;
 
 	Instantiator Instantiator;
 	Creature Creature;
@@ -18,16 +20,31 @@ public class CreatureView : MonoBehaviour {
 	}
 	
 	void Update() {
-		if (IsMoving) {
-			transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-			IsMoving = Vector3.Distance(transform.position, targetPosition) > 0.001f;
-			if (!IsMoving)
-				transform.position = targetPosition;
-		} else if (transform.position.x != Creature.Position.X || transform.position.y != Creature.Position.Y) {
-			IsMoving = true;
-			targetPosition = new Vector3(Creature.Position.X, Creature.Position.Y, 0);
-			speed = Vector3.Distance(transform.position, targetPosition) * 5f;
-		}
+		if (Creature.Exists) {
+			if (Creature.CurrentHealth == Creature.MaximumHealth) {
+				HealthBackground.gameObject.SetActive(false);
+				HealthBar.gameObject.SetActive(false);
+			} else {
+				HealthBackground.gameObject.SetActive(true);
+				HealthBar.gameObject.SetActive(true);
+				HealthBackground.localScale = new Vector3(12,1,1);
+				var percent = Creature.CurrentHealth * 1f / Creature.MaximumHealth;
+				HealthBar.localScale = new Vector3(percent * 12,1,1);
+				HealthBar.localPosition = new Vector3((1-percent) * -0.375f, 0.5f, 0);
+			}
+
+			if (IsMoving) {
+				transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
+				IsMoving = Vector3.Distance(transform.position, targetPosition) > 0.001f;
+				if (!IsMoving)
+					transform.position = targetPosition;
+			} else if (transform.position.x != Creature.Position.X || transform.position.y != Creature.Position.Y) {
+				IsMoving = true;
+				targetPosition = new Vector3(Creature.Position.X, Creature.Position.Y, 0);
+				speed = Vector3.Distance(transform.position, targetPosition) * 5f;
+			}
+		} else
+			Instantiator.Remove(this);
 	}
 
 	public void Initialize(Creature creature, Instantiator instantiator) {
