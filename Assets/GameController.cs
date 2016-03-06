@@ -62,22 +62,22 @@ public class GameController : MonoBehaviour {
 public class Catalog {
 	public List<Card> TestCards() {
 		return Util.Shuffle(new List<Card>() {
-			new Card() { Name = "A", CardType = CardType.Attack },
-			new Card() { Name = "A", CardType = CardType.Attack },
-			new Card() { Name = "A", CardType = CardType.Attack },
-			new Card() { Name = "A", CardType = CardType.Attack },
-			new Card() { Name = "D", CardType = CardType.Defense },
-			new Card() { Name = "D", CardType = CardType.Defense },
-			new Card() { Name = "D", CardType = CardType.Defense },
-			new Card() { Name = "D", CardType = CardType.Defense },
-			new Card() { Name = "P", CardType = CardType.Normal },
-			new Card() { Name = "P", CardType = CardType.Normal },
-			new Card() { Name = "P", CardType = CardType.Normal },
-			new Card() { Name = "P", CardType = CardType.Normal },
-			new Card() { Name = "?", CardType = CardType.Normal },
-			new Card() { Name = "?", CardType = CardType.Normal },
-			new Card() { Name = "?", CardType = CardType.Normal },
-			new Card() { Name = "?", CardType = CardType.Normal },
+			new Card() { Name = "Attack +1", CardType = CardType.Attack },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack },
+			new Card() { Name = "Attack +3", CardType = CardType.Attack },
+			new Card() { Name = "Defense +1", CardType = CardType.Defense },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense },
+			new Card() { Name = "Defense +3", CardType = CardType.Defense },
+			new Card() { Name = "Gold", CardType = CardType.Normal },
+			new Card() { Name = "Gold", CardType = CardType.Normal },
+			new Card() { Name = "Gold", CardType = CardType.Normal },
+			new Card() { Name = "Arrow", CardType = CardType.Normal },
+			new Card() { Name = "Arrow", CardType = CardType.Normal },
+			new Card() { Name = "Heal", CardType = CardType.Normal },
+			new Card() { Name = "Poisoned", CardType = CardType.Normal },
+			new Card() { Name = "Poisoned", CardType = CardType.Normal },
 		});
 	}
 
@@ -225,7 +225,7 @@ public class Creature {
 				DiscardStack.AddRange(HandStack);
 				HandStack.Clear();
 			}
-			DrawStack = Util.Shuffle(DiscardStack);
+			DrawStack.AddRange(Util.Shuffle(DiscardStack));
 			DiscardStack.Clear();
 		}
 

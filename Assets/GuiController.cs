@@ -17,9 +17,9 @@ public class GuiController : MonoBehaviour {
 
 	void Update () {
 		DrawLabel.text = "Draw [" + Player.DrawStack.Count + "]";
-		AttackLabel.text = "Attack [" + Player.AttackStack.Count + "]";
-		DefenseLabel.text = "Defense [" + Player.DefenseStack.Count + "]";
-		HandLabel.text = "Hand [" + Player.HandStack.Count + "]";
+		AttackLabel.text = "Attack [" + Player.AttackStack.Count + "/" + Player.MaximumAttackCards + "]";
+		DefenseLabel.text = "Defense [" + Player.DefenseStack.Count + "/" + Player.MaximumDefenseCards + "]";
+		HandLabel.text = "Hand [" + Player.HandStack.Count + "/" + Player.MaximumHandCards + "]";
 		DiscardLabel.text = "Discard [" + Player.DiscardStack.Count + "]";
 	}
 

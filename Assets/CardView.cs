@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
 
 public class CardView : MonoBehaviour {
 	public RectTransform DrawPile;
@@ -14,8 +15,13 @@ public class CardView : MonoBehaviour {
 	Creature Player;
 
 	public Text title;
+	public Image cardImage;
+
+	List<Card> lastPile = new List<Card>();
+	int lastIndex = -99;
 	public bool IsMoving;
 	float speed;
+	RectTransform targetTransform;
 	Vector2 targetPosition;
 
 	void Start() {
@@ -25,9 +31,6 @@ public class CardView : MonoBehaviour {
 		DefensePile = GameObject.Find("DefensePile").GetComponent<RectTransform>();
 		DiscardPile = GameObject.Find("DiscardPile").GetComponent<RectTransform>();
 	}
-
-	List<Card> lastPile = new List<Card>();
-	int lastIndex = -99;
 
 	void Update() {
 		if (IsMoving) {
@@ -40,37 +43,53 @@ public class CardView : MonoBehaviour {
 		if (lastPile.IndexOf(Card) == lastIndex)
 			return;
 
-		var targetTransform = DiscardPile;
-
 		if (Player.DrawStack.Contains(Card)) {
 			lastPile = Player.DrawStack;
 			targetTransform = DrawPile;
+			FaceDown();
 		} else if (Player.HandStack.Contains(Card)) {
 			lastPile = Player.HandStack;
 			targetTransform = HandPile;
+			FaceUp();
 		} else if (Player.AttackStack.Contains(Card)) {
 			lastPile = Player.AttackStack;
 			targetTransform = AttackPile;
+			FaceUp();
 		} else if (Player.DefenseStack.Contains(Card)) {
 			lastPile = Player.DefenseStack;
 			targetTransform = DefensePile;
+			FaceUp();
 		} else if (Player.DiscardStack.Contains(Card)) {
 			lastPile = Player.DiscardStack;
 			targetTransform = DiscardPile;
+			FaceUp();
 		}
 
 		lastIndex = lastPile.IndexOf(Card);
 
-		transform.SetParent(targetTransform);
 		if (targetTransform == HandPile) {
 			var w = targetTransform.sizeDelta.x + 60;
 			var x = -1f * lastIndex / Player.MaximumHandCards * w + w / 2 + 30;
 			targetPosition = targetTransform.position + new Vector3(x, 18, 0);
 		} else
-			targetPosition = targetTransform.position + new Vector3(0, lastIndex * 4 + 18, 0);
-
+			targetPosition = targetTransform.position + new Vector3(0, lastIndex + 18, 0);
+		
+		transform.SetParent(targetTransform);
 		IsMoving = true;
 		speed = Vector2.Distance(transform.position, targetPosition) * 5f;
+
+		if (targetTransform == DrawPile) {
+			var cards = new List<CardView>();
+			foreach (Transform child in DrawPile.transform) {
+				var view = child.GetComponent<CardView>();
+				if (view != null) {
+					cards.Add(view);
+				}
+			}
+			foreach (var c in cards.OrderBy(c => c.Player.DrawStack.IndexOf(c.Card)).Reverse()) {
+				c.transform.SetAsFirstSibling();
+			}
+		}
 	}
 
 	public void Initialize(Card card, Creature holder, Instantiator instantiator) {
@@ -78,5 +97,15 @@ public class CardView : MonoBehaviour {
 		Player = holder;
 		Instantiator = instantiator;
 		title.text = card.Name;
+	}
+
+	void FaceUp() {
+		title.gameObject.SetActive(true);
+		cardImage.color = Color.white;
+	}
+
+	void FaceDown() {
+		title.gameObject.SetActive(false);
+		cardImage.color = Color.gray;
 	}
 }
