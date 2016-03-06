@@ -11,10 +11,6 @@ public class GuiController : MonoBehaviour {
 
 	Creature Player;
 
-	void Start () {
-	
-	}
-
 	void Update () {
 		DrawLabel.text = "Draw [" + Player.DrawStack.Count + "]";
 		AttackLabel.text = "Attack [" + Player.AttackStack.Count + "/" + Player.MaximumAttackCards + "]";

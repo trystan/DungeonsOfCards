@@ -60,25 +60,56 @@ public class GameController : MonoBehaviour {
 }
 
 public class Catalog {
-	public List<Card> TestCards() {
-		return Util.Shuffle(new List<Card>() {
-			new Card() { Name = "Attack +1", CardType = CardType.Attack },
-			new Card() { Name = "Attack +2", CardType = CardType.Attack },
-			new Card() { Name = "Attack +2", CardType = CardType.Attack },
-			new Card() { Name = "Attack +3", CardType = CardType.Attack },
-			new Card() { Name = "Defense +1", CardType = CardType.Defense },
-			new Card() { Name = "Defense +2", CardType = CardType.Defense },
-			new Card() { Name = "Defense +2", CardType = CardType.Defense },
-			new Card() { Name = "Defense +3", CardType = CardType.Defense },
+	public List<Card> AdventurerPack() {
+		return new List<Card>() {
+			new Card() { Name = "Attack +2", CardType = CardType.Attack, CombatBonus = 2 },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack, CombatBonus = 2 },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense, CombatBonus = 2 },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense, CombatBonus = 2 },
 			new Card() { Name = "Gold", CardType = CardType.Normal },
 			new Card() { Name = "Gold", CardType = CardType.Normal },
-			new Card() { Name = "Gold", CardType = CardType.Normal },
-			new Card() { Name = "Arrow", CardType = CardType.Normal },
-			new Card() { Name = "Arrow", CardType = CardType.Normal },
-			new Card() { Name = "Heal", CardType = CardType.Normal },
-			new Card() { Name = "Poisoned", CardType = CardType.Normal },
-			new Card() { Name = "Poisoned", CardType = CardType.Normal },
-		});
+			new Card() { Name = "Regenerate 1", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Heal1 },
+			new Card() { Name = "Regenerate 1", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Heal1 },
+			new Card() { Name = "Draw 3", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw3 },
+			new Card() { Name = "Draw 3", CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw3 },
+		};
+	}
+
+	public List<Card> GenericPack() {
+		return new List<Card>() {
+			new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+			new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack, CombatBonus = 2 },
+			new Card() { Name = "Attack +2", CardType = CardType.Attack, CombatBonus = 2 },
+			new Card() { Name = "Defense +1", CardType = CardType.Defense, CombatBonus = 1 },
+			new Card() { Name = "Defense +1", CardType = CardType.Defense, CombatBonus = 1 },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense, CombatBonus = 2 },
+			new Card() { Name = "Defense +2", CardType = CardType.Defense, CombatBonus = 2 },
+			new Card() { Name = "Idle", CardType = CardType.Normal },
+			new Card() { Name = "Idle", CardType = CardType.Normal },
+		};
+	}
+
+	public List<Card> SkeletonPack() {
+		return new List<Card>() {
+			new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+			new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+			new Card() { Name = "Defense +1", CardType = CardType.Defense, CombatBonus = 1 },
+			new Card() { Name = "Defense +1", CardType = CardType.Defense, CombatBonus = 1 },
+			new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
+			new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
+			new Card() { Name = "Idle", CardType = CardType.Normal },
+			new Card() { Name = "Idle", CardType = CardType.Normal },
+			new Card() { Name = "Fumble", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Discard1FromHand },
+			new Card() { Name = "Fumble", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Discard1FromHand },
+		};
+	}
+
+	public List<Card> Packs(params List<Card>[] packs) {
+		var deck = new List<Card>();
+		foreach (var pack in packs)
+			deck.AddRange(pack);
+		return Util.Shuffle(deck);
 	}
 
 	public Creature Player(int x, int y) {
@@ -93,7 +124,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = TestCards(),
+			DrawStack = Packs(GenericPack(), AdventurerPack()),
 		};
 	}
 
@@ -109,7 +140,7 @@ public class Catalog {
 			MaximumHealth = 5,
 			CurrentHealth = 5,
 			MaximumHandCards = 3,
-			DrawStack = TestCards(),
+			DrawStack = Packs(GenericPack(), SkeletonPack()),
 		};
 	}
 }
@@ -172,9 +203,20 @@ public enum CardType {
 	Attack, Defense, Normal
 }
 
+public enum CardSpecialEffect {
+	None, Discard1FromHand, Heal1, Draw3, SpawnSkeleton
+}
+
 public class Card {
 	public string Name;
 	public CardType CardType;
+
+	public int CombatBonus;
+	public bool DoesBlockOtherCard;
+
+	public CardSpecialEffect OnDraw = CardSpecialEffect.None;
+	public CardSpecialEffect OnDie = CardSpecialEffect.None;
+	public CardSpecialEffect OnUse = CardSpecialEffect.None;
 }
 
 public class Creature {
@@ -201,21 +243,41 @@ public class Creature {
 		var next = Position + new Point(mx, my);
 
 		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement) {
-			EndTurn();
+			EndTurn(game);
 			return;
 		}
 		
 		var other = game.GetCreature(next);
 
 		if (other != null && other != this)
-			Attack(other);
+			Attack(game, other);
 		else
 			Position += new Point(mx, my);
 
-		EndTurn();
+		EndTurn(game);
 	}
 
-	void EndTurn() {
+	public void UseCard(Card card) {
+		HandStack.Remove(card);
+
+		switch (card.OnUse) {
+		case CardSpecialEffect.Heal1:
+			if (CurrentHealth < MaximumHealth)
+				CurrentHealth++;
+			break;
+		case CardSpecialEffect.Draw3:
+			Draw1Card();
+			Draw1Card();
+			Draw1Card();
+			break;
+		default:
+			throw new NotImplementedException(card.Name + " " + card.OnDraw);
+		}
+
+		DiscardStack.Add(card);
+	}
+
+	void Draw1Card() {
 		if (!DrawStack.Any()) {
 			if (!DiscardStack.Any()) {
 				DiscardStack.AddRange(AttackStack);
@@ -231,6 +293,26 @@ public class Creature {
 
 		var pulledCard = DrawStack.Last();
 		DrawStack.Remove(pulledCard);
+
+		switch (pulledCard.OnDraw) {
+		case CardSpecialEffect.None:
+			break;
+		case CardSpecialEffect.Heal1:
+			if (CurrentHealth < MaximumHealth)
+				CurrentHealth++;
+			break;
+		case CardSpecialEffect.Discard1FromHand:
+			if (HandStack.Any()) {
+				var i = UnityEngine.Random.Range(0, HandStack.Count);
+				DiscardStack.Add(HandStack[i]);
+				HandStack.RemoveAt(i);
+			}
+			break;
+		case CardSpecialEffect.SpawnSkeleton:
+			break;
+		default:
+			throw new NotImplementedException(pulledCard.Name + " " + pulledCard.OnDraw);
+		}
 
 		if (pulledCard.CardType == CardType.Attack) {
 			AttackStack.Add(pulledCard);
@@ -256,13 +338,16 @@ public class Creature {
 		}
 	}
 
+	void EndTurn(Game game) {
+		Draw1Card();
+	}
+
 	public void TakeTurn(Game game) {
 		Ai.TakeTurn(game, this);
 	}
 
-	public void Attack(Creature other) {
-		var damage = Mathf.Max(1, AttackValue - other.DefenseValue);
-		other.TakeDamage(damage);
+	public void Attack(Game game, Creature other) {
+		new Combat(game, this, other).Resolve();
 	}
 
 	public void TakeDamage(int amount) {
@@ -273,6 +358,64 @@ public class Creature {
 
 	public void Die() {
 		Exists = false;
+	}
+}
+
+public class Combat {
+	Game Game;
+	Creature Attacker;
+	Creature Defender;
+
+	public Combat(Game game, Creature attacker, Creature defender) {
+		Game = game;
+		Attacker = attacker;
+		Defender = defender;
+	}
+
+	public void Resolve() {
+		var attackerAttack = Attacker.AttackValue;
+		var defenderDefense = Defender.DefenseValue;
+
+		var maxCards = Mathf.Max(Attacker.AttackStack.Count, Defender.DefenseStack.Count);
+
+		for (var i = 0; i < maxCards; i++) {
+			var defenderCard = Defender.DefenseStack.Count > i ? Defender.DefenseStack[i] : null;
+			var attackCard = Attacker.AttackStack.Count > i ? Attacker.AttackStack[i] : null;
+			var blockAttack = false;
+
+			if (defenderCard != null) {
+				defenderDefense += defenderCard.CombatBonus;
+				blockAttack = defenderCard.DoesBlockOtherCard;
+			}
+
+			if (attackCard != null && !blockAttack) {
+				attackerAttack += attackCard.CombatBonus;
+			}
+		}
+
+		Defender.TakeDamage(Mathf.Max(1, attackerAttack - defenderDefense));
+
+		if (!Defender.Exists) {
+			foreach (var card in Defender.DefenseStack) {
+				switch (card.OnDie) {
+				case CardSpecialEffect.None:
+					break;
+				case CardSpecialEffect.Discard1FromHand:
+					break;
+				case CardSpecialEffect.SpawnSkeleton:
+					Game.Creatures.Add(Game.Catalog.Skeleton(Defender.Position.X, Defender.Position.Y));
+					break;
+				default:
+					throw new NotImplementedException(card.Name + " " + card.OnDie);
+				}
+			}
+		}
+
+		Attacker.DiscardStack.AddRange(Attacker.AttackStack);
+		Attacker.AttackStack.Clear();
+
+		Defender.DiscardStack.AddRange(Defender.DefenseStack);
+		Defender.DefenseStack.Clear();
 	}
 }
 
@@ -336,7 +479,7 @@ public class Game {
 	}
 
 	public void TakeTurn() {
-		foreach (var c in Creatures) {
+		foreach (var c in Creatures.ToList()) {
 			if (c.Exists)
 				c.TakeTurn(this);
 		}

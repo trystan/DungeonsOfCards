@@ -17,6 +17,7 @@ public class CardView : MonoBehaviour {
 	public Text title;
 	public Image cardImage;
 
+	bool isFaceUp;
 	List<Card> lastPile = new List<Card>();
 	int lastIndex = -99;
 	public bool IsMoving;
@@ -100,12 +101,19 @@ public class CardView : MonoBehaviour {
 	}
 
 	void FaceUp() {
+		isFaceUp = true;
 		title.gameObject.SetActive(true);
 		cardImage.color = Color.white;
 	}
 
 	void FaceDown() {
+		isFaceUp = false;
 		title.gameObject.SetActive(false);
 		cardImage.color = Color.gray;
+	}
+
+	public void Clicked() {
+		if (isFaceUp && Card.OnUse != CardSpecialEffect.None)
+			Player.UseCard(Card);
 	}
 }
