@@ -152,6 +152,7 @@ public class Catalog {
 		return new Creature() {
 			Position = new Point(x, y),
 			Ai = new PlayerAi(),
+			TeamName = "Player",
 			SpriteName = "DawnLike/Characters/Player0:Player0_1",
 			AttackValue = 2,
 			MaximumAttackCards = 2,
@@ -167,7 +168,8 @@ public class Catalog {
 	public Creature Skeleton(int x, int y) {
 		return new Creature() {
 			Position = new Point(x, y),
-			Ai = new CreatureAi(),
+			Ai = new ComputerAi(),
+			TeamName = "Undead",
 			SpriteName = "DawnLike/Characters/Undead0:skeleton",
 			AttackValue = 1,
 			MaximumAttackCards = 1,
@@ -183,7 +185,8 @@ public class Catalog {
 	public Creature Lizard(int x, int y) {
 		return new Creature() {
 			Position = new Point(x, y),
-			Ai = new CreatureAi(),
+			Ai = new ComputerAi(),
+			TeamName = "Lizards",
 			SpriteName = "DawnLike/Characters/Player0:lizard",
 			AttackValue = 2,
 			MaximumAttackCards = 1,
@@ -199,7 +202,8 @@ public class Catalog {
 	public Creature AttackLizard(int x, int y) {
 		return new Creature() {
 			Position = new Point(x, y),
-			Ai = new CreatureAi(),
+			Ai = new ComputerAi(),
+			TeamName = "Lizards",
 			SpriteName = "DawnLike/Characters/Player0:spear lizard",
 			AttackValue = 2,
 			MaximumAttackCards = 1,
@@ -215,7 +219,8 @@ public class Catalog {
 	public Creature DefenseLizard(int x, int y) {
 		return new Creature() {
 			Position = new Point(x, y),
-			Ai = new CreatureAi(),
+			Ai = new ComputerAi(),
+			TeamName = "Lizards",
 			SpriteName = "DawnLike/Characters/Player0:shield lizard",
 			AttackValue = 2,
 			MaximumAttackCards = 1,
@@ -261,6 +266,10 @@ public struct Point {
 		return new Point(a.X + b.X, a.Y + b.Y);
 	}
 
+	public static Point operator -(Point a, Point b) {
+		return new Point(a.X - b.X, a.Y - b.Y);
+	}
+
 	public static bool operator ==(Point a, Point b) {
 		return a.Equals(b);
 	}
@@ -296,9 +305,69 @@ public class PlayerAi : AI {
 	}
 }
 
-public class CreatureAi : AI {
+public class ComputerAi : AI {
 	public void TakeTurn(Game game, Creature creature) {
-		creature.MoveBy(game, UnityEngine.Random.Range(-1,2), UnityEngine.Random.Range(-1,2));
+		var cardsToPlay = new Dictionary<Card, int>();
+
+		foreach (var c in creature.HandStack) {
+			switch (c.OnUse) {
+			case CardSpecialEffect.Draw3: {
+				var chance = creature.MaximumHandCards - creature.HandStack.Count
+					+ creature.MaximumAttackCards - creature.AttackStack.Count
+					+ creature.MaximumDefenseCards - creature.DefenseStack.Count
+					+ 1;
+				if (chance > 0)
+					cardsToPlay.Add(c, chance * chance);
+				break;
+				}
+			case CardSpecialEffect.Draw5Attack: {
+				var chance = (creature.MaximumAttackCards - creature.AttackStack.Count) * 2;
+				if (chance > 0)
+					cardsToPlay.Add(c, chance * chance);
+				break;
+				}
+			case CardSpecialEffect.Draw5Defense: {
+					var chance = (creature.MaximumDefenseCards - creature.DefenseStack.Count) * 2;
+					if (chance > 0)
+						cardsToPlay.Add(c, chance * chance);
+					break;
+				}
+			case CardSpecialEffect.Heal1: {
+					var chance = (creature.MaximumHealth - creature.CurrentHealth) * 2;
+					if (chance > 0)
+						cardsToPlay.Add(c, chance * chance);
+					break;
+				}
+			}
+		}
+
+		for (var x = -1; x < 2; x++) {
+			for (var y = -1; y < 2; y++) {
+				if (x == 0 && y == 0)
+					cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, 5 * 5);
+				
+				var neighbor = creature.Position + new Point(x,y);
+
+				var other = game.GetCreature(neighbor);
+				if (other != null) {
+					if (other.TeamName != creature.TeamName) {
+						var strength = 5 + creature.AttackValue + creature.AttackStack.Count - other.DefenseValue - other.DefenseStack.Count;
+						cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength * strength);
+					}
+				} else if (!game.GetTile(neighbor.X, neighbor.Y).BlocksMovement) {
+					cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, 5 * 5);
+				}
+			}
+		}
+
+		var chosenCard = Util.WeightedChoice(cardsToPlay);
+		if (chosenCard.Name.StartsWith("AI_MOVE")) {
+			var xy = chosenCard.Name.Split(' ')[1];
+			var x = int.Parse(xy.Split('x')[0]);
+			var y = int.Parse(xy.Split('x')[1]);
+			creature.MoveBy(game, x, y);
+		} else
+			creature.UseCard(game, chosenCard);
 	}
 }
 
@@ -326,6 +395,7 @@ public class Creature {
 	public bool Exists = true;
 	public Point Position;
 	public string SpriteName;
+	public string TeamName;
 	public AI Ai;
 
 	public int AttackValue;
@@ -352,10 +422,13 @@ public class Creature {
 		
 		var other = game.GetCreature(next);
 
-		if (other != null && other != this)
-			Attack(game, other);
-		else
+		if (other != null && other != this) {
+			if (other.TeamName != TeamName)
+				Attack(game, other);
+		} else {
 			Position += new Point(mx, my);
+			Draw1Card();
+		}
 
 		EndTurn(game);
 	}
@@ -501,7 +574,6 @@ public class Creature {
 	}
 
 	void EndTurn(Game game) {
-		Draw1Card();
 	}
 
 	public void TakeTurn(Game game) {
@@ -603,6 +675,16 @@ public static class Util {
 			list.RemoveAt(i);
 		}
 		return newList;
+	}
+
+	public static T WeightedChoice<T>(Dictionary<T, int> choices) {
+		var i = UnityEngine.Random.Range(0, choices.Values.Sum());
+		foreach (var kv in choices) {
+			if (i <= kv.Value)
+				return kv.Key;
+			i -= kv.Value;
+		}
+		return choices.First().Key;
 	}
 }
 

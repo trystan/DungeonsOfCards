@@ -113,16 +113,21 @@ public class CardView : MonoBehaviour {
 		isFaceUp = true;
 		title.gameObject.SetActive(true);
 		cardImage.color = Color.white;
+		GetComponent<Button>().enabled = Card.OnUse != CardSpecialEffect.None;
 	}
 
 	void FaceDown() {
 		isFaceUp = false;
 		title.gameObject.SetActive(false);
 		cardImage.color = Color.gray;
+		GetComponent<Button>().enabled = true;
 	}
 
 	public void Clicked() {
-		if (Card.OnUse != CardSpecialEffect.None && Player.HandStack.Contains(Card)) {
+		if (Player.DrawStack.Contains(Card)) {
+			Player.MoveBy(Game,0,0);
+			Game.TakeTurn();
+		} else if (Card.OnUse != CardSpecialEffect.None && Player.HandStack.Contains(Card)) {
 			Player.UseCard(Game, Card);
 			Game.TakeTurn();
 		}
