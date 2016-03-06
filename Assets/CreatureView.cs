@@ -21,6 +21,8 @@ public class CreatureView : MonoBehaviour {
 		if (IsMoving) {
 			transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
 			IsMoving = Vector3.Distance(transform.position, targetPosition) > 0.001f;
+			if (!IsMoving)
+				transform.position = targetPosition;
 		} else if (transform.position.x != Creature.Position.X || transform.position.y != Creature.Position.Y) {
 			IsMoving = true;
 			targetPosition = new Vector3(Creature.Position.X, Creature.Position.Y, 0);

@@ -180,7 +180,10 @@ public class GameController : MonoBehaviour {
 				y = UnityEngine.Random.Range(0, game.Height);
 			}
 
-			game.Creatures.Add(game.Catalog.Player(x,y));
+			if (game.Creatures.Any())
+				game.Creatures.Add(game.Catalog.Skeleton(x,y));
+			else
+				game.Creatures.Add(game.Catalog.Player(x,y));
 		}
 		game.Player = game.Creatures[0];
 
@@ -213,6 +216,7 @@ public class GameController : MonoBehaviour {
 
 		if (mx != 0 || my != 0 || wait) {
 			game.Player.MoveBy(game, mx, my);
+			game.TakeTurn();
 		}
 	}
 }
@@ -221,7 +225,16 @@ public class Catalog {
 	public Creature Player(int x, int y) {
 		return new Creature() {
 			Position = new Point(x, y),
+			Ai = new PlayerAi(),
 			SpriteName = "DawnLike/Characters/Player0:Player0_1",
+		};
+	}
+
+	public Creature Skeleton(int x, int y) {
+		return new Creature() {
+			Position = new Point(x, y),
+			Ai = new CreatureAi(),
+			SpriteName = "DawnLike/Characters/Undead0:skeleton",
 		};
 	}
 }
@@ -240,15 +253,35 @@ public struct Point {
 	}
 }
 
+public interface AI {
+	void TakeTurn(Game game, Creature creature);
+}
+
+public class PlayerAi : AI {
+	public void TakeTurn(Game game, Creature creature) {
+	}
+}
+
+public class CreatureAi : AI {
+	public void TakeTurn(Game game, Creature creature) {
+		creature.MoveBy(game, UnityEngine.Random.Range(-1,2), UnityEngine.Random.Range(-1,2));
+	}
+}
+
 public class Creature {
 	public Point Position;
 	public string SpriteName;
+	public AI Ai;
 
 	public void MoveBy(Game game, int mx, int my) {
 		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement)
 			return;
 		
 		Position += new Point(mx, my);
+	}
+
+	public void TakeTurn(Game game) {
+		Ai.TakeTurn(game, this);
 	}
 }
 
@@ -292,6 +325,11 @@ public class Game {
 	public void SetTile(int x, int y, Tile tile) {
 		if (x >= 0 && y >= 0 && x < Width && y < Height)
 			tiles[x,y] = tile;
+	}
+
+	public void TakeTurn() {
+		foreach (var c in Creatures)
+			c.TakeTurn(this);
 	}
 }
 
