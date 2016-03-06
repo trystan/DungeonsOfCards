@@ -5,7 +5,8 @@ using System.Linq;
 public class CreatureView : MonoBehaviour {
 	public SpriteRenderer CreatureSprite;
 
-	public Creature Creature;
+	Instantiator Instantiator;
+	Creature Creature;
 
 	void Start() {
 	
@@ -15,8 +16,9 @@ public class CreatureView : MonoBehaviour {
 	
 	}
 
-	public void Initialize(Creature creature) {
+	public void Initialize(Creature creature, Instantiator instantiator) {
 		Creature = creature;
+		Instantiator = instantiator;
 
 		var parts = creature.SpriteName.Split(':');
 		var sprites = Resources.LoadAll<Sprite>(parts[0]);

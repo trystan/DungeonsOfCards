@@ -4,32 +4,36 @@ using System;
 using System.Linq;
 
 public class GameController : MonoBehaviour {
-	public GameObject CreaturePrefab;
+	public Instantiator Instantiator;
 
 	Game game;
 	List<CreatureView> Views = new List<CreatureView>();
 
 	void Start() {
-		game = new Game();
-		game.Creatures.Add(new Creature() {
-			Position = new Point(1,1),
-			SpriteName = "DawnLike/Characters/Player0:Player0_1",
-		});
+		game = new Game() {
+			Catalog = new Catalog(),
+		};
 
-		game.Creatures.Add(new Creature() {
-			Position = new Point(4,2),
-			SpriteName = "DawnLike/Characters/Player0:Player0_6",
-		});
+		game.Creatures.Add(game.Catalog.Player(1,2));
+		game.Creatures.Add(game.Catalog.Player(6,4));
+		game.Creatures.Add(game.Catalog.Player(3,8));
+		game.Creatures.Add(game.Catalog.Player(4,3));
 
-		foreach (var c in game.Creatures) {
-			var view = Instantiate(CreaturePrefab);
-			view.GetComponent<CreatureView>().Initialize(c);
-			Views.Add(view.GetComponent<CreatureView>());
-		}
+		foreach (var c in game.Creatures)
+			Views.Add(Instantiator.Add(c));
 	}
 
 	void Update() {
 		
+	}
+}
+
+public class Catalog {
+	public Creature Player(int x, int y) {
+		return new Creature() {
+			Position = new Point(x, y),
+			SpriteName = "DawnLike/Characters/Player0:Player0_1",
+		};
 	}
 }
 
@@ -50,4 +54,5 @@ public class Creature {
 
 public class Game {
 	public List<Creature> Creatures = new List<Creature>();
+	public Catalog Catalog;
 }
