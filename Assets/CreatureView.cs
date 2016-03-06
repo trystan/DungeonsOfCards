@@ -9,6 +9,8 @@ public class CreatureView : MonoBehaviour {
 	Creature Creature;
 
 	Vector3 targetPosition;
+	float speed;
+
 	public bool IsMoving;
 
 	void Start() {
@@ -17,11 +19,12 @@ public class CreatureView : MonoBehaviour {
 	
 	void Update() {
 		if (IsMoving) {
-			transform.position = Vector3.MoveTowards(transform.position, targetPosition, 5f * Time.deltaTime);
+			transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
 			IsMoving = Vector3.Distance(transform.position, targetPosition) > 0.001f;
 		} else if (transform.position.x != Creature.Position.X || transform.position.y != Creature.Position.Y) {
 			IsMoving = true;
 			targetPosition = new Vector3(Creature.Position.X, Creature.Position.Y, 0);
+			speed = Vector3.Distance(transform.position, targetPosition) * 5f;
 		}
 	}
 

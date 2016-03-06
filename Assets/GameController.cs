@@ -182,6 +182,8 @@ public class GameController : MonoBehaviour {
 
 		foreach (var c in game.Creatures)
 			Views.Add(Instantiator.Add(c));
+
+		Camera.main.GetComponent<CameraController>().Follow(Views[0].gameObject);
 	}
 
 	void Update() {
@@ -355,6 +357,14 @@ public class WallView : ITileMeshSource {
 	public int Width { get { return game.Width; } }
 	public int Height { get { return game.Height; } }
 	public bool HasChangedSinceLastRender { get; set; }
+
+	int rowWidth = 21;
+	int columnWidth = 1;
+	int center = 85;
+
+	int at(int xdiff, int ydiff) {
+		return center + ydiff * rowWidth + xdiff * columnWidth;
+	}
 
 	public int GetTileIndex(int x, int y) {
 		return game.GetTile(x, y) == Tile.Wall ? 9 : 8;
