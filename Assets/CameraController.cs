@@ -7,7 +7,8 @@ public class CameraController : MonoBehaviour {
 	Vector3 offset = new Vector3(0,-1,-10);
 
 	void Update () {
-		transform.position = Vector3.Slerp(transform.position, target.transform.position + offset, 5f * Time.deltaTime);
+		if (target != null)
+			transform.position = Vector3.Slerp(transform.position, target.transform.position + offset, 5f * Time.deltaTime);
 	}
 
 	public void GoTo(Vector3 position) {

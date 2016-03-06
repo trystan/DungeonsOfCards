@@ -47,23 +47,27 @@ public class GameController : MonoBehaviour {
 
 		if (CreatureViews.Any(v => v.IsMoving))
 			return;
-		
-		var mx = 0;
-		if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.L) || Input.GetKey(KeyCode.Keypad6))
-			mx = 1;
-		if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.H) || Input.GetKey(KeyCode.Keypad4))
-			mx = -1;
 
-		var my = 0;
-		if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.Keypad8))
-			my = 1;
-		if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.J) || Input.GetKey(KeyCode.Keypad2))
-			my = -1;
-		
-		var wait = Input.GetKey(KeyCode.Period) || Input.GetKey(KeyCode.Keypad5);
+		if (game.Player.Exists) {
+			var mx = 0;
+			if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.L) || Input.GetKey(KeyCode.Keypad6))
+				mx = 1;
+			if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.H) || Input.GetKey(KeyCode.Keypad4))
+				mx = -1;
 
-		if (mx != 0 || my != 0 || wait) {
-			game.Player.MoveBy(game, mx, my);
+			var my = 0;
+			if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.Keypad8))
+				my = 1;
+			if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.J) || Input.GetKey(KeyCode.Keypad2))
+				my = -1;
+			
+			var wait = Input.GetKey(KeyCode.Period) || Input.GetKey(KeyCode.Keypad5);
+
+			if (mx != 0 || my != 0 || wait) {
+				game.Player.MoveBy(game, mx, my);
+				game.TakeTurn();
+			}
+		} else {
 			game.TakeTurn();
 		}
 	}
@@ -317,25 +321,25 @@ public class ComputerAi : AI {
 					+ creature.MaximumDefenseCards - creature.DefenseStack.Count
 					+ 1;
 				if (chance > 0)
-					cardsToPlay.Add(c, chance * chance);
+					cardsToPlay.Add(c, chance);
 				break;
 				}
 			case CardSpecialEffect.Draw5Attack: {
 				var chance = (creature.MaximumAttackCards - creature.AttackStack.Count) * 2;
 				if (chance > 0)
-					cardsToPlay.Add(c, chance * chance);
+					cardsToPlay.Add(c, chance);
 				break;
 				}
 			case CardSpecialEffect.Draw5Defense: {
 					var chance = (creature.MaximumDefenseCards - creature.DefenseStack.Count) * 2;
 					if (chance > 0)
-						cardsToPlay.Add(c, chance * chance);
+						cardsToPlay.Add(c, chance);
 					break;
 				}
 			case CardSpecialEffect.Heal1: {
 					var chance = (creature.MaximumHealth - creature.CurrentHealth) * 2;
 					if (chance > 0)
-						cardsToPlay.Add(c, chance * chance);
+						cardsToPlay.Add(c, chance);
 					break;
 				}
 			}
@@ -344,7 +348,7 @@ public class ComputerAi : AI {
 		for (var x = -1; x < 2; x++) {
 			for (var y = -1; y < 2; y++) {
 				if (x == 0 && y == 0)
-					cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, 5 * 5);
+					cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, 2);
 				
 				var neighbor = creature.Position + new Point(x,y);
 
@@ -352,14 +356,19 @@ public class ComputerAi : AI {
 				if (other != null) {
 					if (other.TeamName != creature.TeamName) {
 						var strength = 5 + creature.AttackValue + creature.AttackStack.Count - other.DefenseValue - other.DefenseStack.Count;
-						cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength * strength);
+						cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength);
 					}
 				} else if (!game.GetTile(neighbor.X, neighbor.Y).BlocksMovement) {
-					cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, 5 * 5);
+					cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, 1);
 				}
 			}
 		}
 
+		var averageWeight = cardsToPlay.Values.Sum() / cardsToPlay.Count;
+		var weightedCardsToPlay = new Dictionary<Card, int>();
+		foreach (var kv in cardsToPlay.Where(p => p.Value > averageWeight))
+			weightedCardsToPlay[kv.Key] = kv.Value * kv.Value;
+		
 		var chosenCard = Util.WeightedChoice(cardsToPlay);
 		if (chosenCard.Name.StartsWith("AI_MOVE")) {
 			var xy = chosenCard.Name.Split(' ')[1];
