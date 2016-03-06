@@ -47,9 +47,12 @@
   <ItemGroup>
      <Compile Include="Assets\CameraController.cs" />
      <Compile Include="Assets\CreatureView.cs" />
+     <Compile Include="Assets\FloorView.cs" />
      <Compile Include="Assets\GameController.cs" />
      <Compile Include="Assets\Instantiator.cs" />
+     <Compile Include="Assets\LevelBuilder.cs" />
      <Compile Include="Assets\TileMesh.cs" />
+     <Compile Include="Assets\WallView.cs" />
      <None Include="Assets\Resources\DawnLike\README.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
