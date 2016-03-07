@@ -12,11 +12,11 @@ public class GuiController : MonoBehaviour {
 	Creature Player;
 
 	void Update () {
-		DrawLabel.text = "Draw [" + Player.DrawStack.Count + "]";
-		AttackLabel.text = "Attack [" + Player.AttackStack.Count + "/" + Player.MaximumAttackCards + "]";
-		DefenseLabel.text = "Defense [" + Player.DefenseStack.Count + "/" + Player.MaximumDefenseCards + "]";
-		HandLabel.text = "Hand [" + Player.HandStack.Count + "/" + Player.MaximumHandCards + "]";
-		DiscardLabel.text = "Discard [" + Player.DiscardStack.Count + "]";
+		DrawLabel.text = "Draw (" + Player.DrawStack.Count + ")";
+		AttackLabel.text = "Attack (" + Player.AttackStack.Count + "/" + Player.MaximumAttackCards + ")";
+		DefenseLabel.text = "Defense (" + Player.DefenseStack.Count + "/" + Player.MaximumDefenseCards + ")";
+		HandLabel.text = "Hand (" + Player.HandStack.Count + "/" + Player.MaximumHandCards + ")";
+		DiscardLabel.text = "Discard (" + Player.DiscardStack.Count + ")";
 	}
 
 	public void Show(Creature creature) {
