@@ -45,18 +45,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AI.cs" />
      <Compile Include="Assets\CameraController.cs" />
+     <Compile Include="Assets\Card.cs" />
      <Compile Include="Assets\CardView.cs" />
+     <Compile Include="Assets\Catalog.cs" />
+     <Compile Include="Assets\Combat.cs" />
+     <Compile Include="Assets\Creature.cs" />
      <Compile Include="Assets\CreatureSummaryController.cs" />
      <Compile Include="Assets\CreatureView.cs" />
+     <Compile Include="Assets\DelayedEffect.cs" />
      <Compile Include="Assets\FloorView.cs" />
+     <Compile Include="Assets\Game.cs" />
      <Compile Include="Assets\GameController.cs" />
      <Compile Include="Assets\GuiController.cs" />
      <Compile Include="Assets\Instantiator.cs" />
      <Compile Include="Assets\LevelBuilder.cs" />
+     <Compile Include="Assets\Point.cs" />
      <Compile Include="Assets\StackView.cs" />
+     <Compile Include="Assets\TextPopup.cs" />
      <Compile Include="Assets\TextPopupView.cs" />
+     <Compile Include="Assets\Tile.cs" />
      <Compile Include="Assets\TileMesh.cs" />
+     <Compile Include="Assets\Util.cs" />
      <Compile Include="Assets\WallView.cs" />
      <None Include="Assets\Resources\DawnLike\README.txt" />
  <Reference Include="UnityEngine.UI">

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 5577e4e48f7bc4f438ef4ad0b8cf967b
-timeCreated: 1457301812
+timeCreated: 1457322197
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -78,7 +78,7 @@ TextureImporter:
     21300142: shield lizard
     21300144: Player0_72
     21300146: Player0_73
-    21300148: Player0_74
+    21300148: chief lizard
     21300150: Player0_75
     21300152: Player0_76
   serializedVersion: 2
@@ -941,7 +941,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Player0_74
+    - name: chief lizard
       rect:
         serializedVersion: 2
         x: 80
