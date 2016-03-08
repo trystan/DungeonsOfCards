@@ -15,6 +15,7 @@ public enum CardSpecialEffect {
 
 public class Card {
 	public string Name;
+	public int GoldCost = 2;
 	public CardType CardType;
 
 	public int CombatBonus;

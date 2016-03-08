@@ -48,6 +48,7 @@
      <Compile Include="Assets\AI.cs" />
      <Compile Include="Assets\CameraController.cs" />
      <Compile Include="Assets\Card.cs" />
+     <Compile Include="Assets\CardForSaleView.cs" />
      <Compile Include="Assets\CardView.cs" />
      <Compile Include="Assets\Catalog.cs" />
      <Compile Include="Assets\Combat.cs" />
@@ -64,6 +65,7 @@
      <Compile Include="Assets\Item.cs" />
      <Compile Include="Assets\ItemView.cs" />
      <Compile Include="Assets\LevelBuilder.cs" />
+     <Compile Include="Assets\MerchantPanelController.cs" />
      <Compile Include="Assets\Point.cs" />
      <Compile Include="Assets\StackView.cs" />
      <Compile Include="Assets\TextPopup.cs" />

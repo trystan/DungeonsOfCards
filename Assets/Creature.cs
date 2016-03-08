@@ -40,7 +40,9 @@ public class Creature {
 		
 		var other = game.GetCreature(next);
 		if (other != null && other != this) {
-			if (other.TeamName != TeamName)
+			if (other.TeamName == "Merchant" && this == game.Player)
+				game.CurrentMerchant = other;
+			else if (other.TeamName != TeamName)
 				Attack(game, other);
 		} else {
 			Position += new Point(mx, my);
@@ -73,17 +75,26 @@ public class Creature {
 		DiscardStack.Add(card);
 	}
 
-	void ReshuffleIntoDrawStack() {
-		if (!DiscardStack.Any()) {
-			DiscardStack.AddRange(AttackStack);
-			AttackStack.Clear();
-			DiscardStack.AddRange(DefenseStack);
-			DefenseStack.Clear();
-			DiscardStack.AddRange(HandStack);
-			HandStack.Clear();
-		}
+	public void ShuffleEverythingIntoDrawStack() {
+		DiscardStack.AddRange(AttackStack);
+		AttackStack.Clear();
+		DiscardStack.AddRange(DefenseStack);
+		DefenseStack.Clear();
+		DiscardStack.AddRange(HandStack);
+		HandStack.Clear();
+		DiscardStack.AddRange(DrawStack);
+		DrawStack.Clear();
 		DrawStack.AddRange(Util.Shuffle(DiscardStack));
 		DiscardStack.Clear();
+	}
+
+	void ReshuffleIntoDrawStack() {
+		if (!DiscardStack.Any()) {
+			ShuffleEverythingIntoDrawStack();
+		} else {
+			DrawStack.AddRange(Util.Shuffle(DiscardStack));
+			DiscardStack.Clear();
+		}
 	}
 
 	public Card GetTopDrawCard() {

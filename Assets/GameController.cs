@@ -10,6 +10,8 @@ public class GameController : MonoBehaviour {
 	public TileMesh DoorTileMesh;
 	public TileMesh WallTileMesh;
 
+	public MerchantPanelController merchantPanel;
+
 	Game game;
 	List<CreatureView> CreatureViews = new List<CreatureView>();
 	List<CardView> CardViews = new List<CardView>();
@@ -61,27 +63,35 @@ public class GameController : MonoBehaviour {
 
 		if (CreatureViews.Any(v => v.IsMoving))
 			return;
-
+		
 		if (game.Player.Exists) {
-			var mx = 0;
-			if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.L) || Input.GetKey(KeyCode.Keypad6))
-				mx = 1;
-			if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.H) || Input.GetKey(KeyCode.Keypad4))
-				mx = -1;
+			if (merchantPanel.gameObject.activeInHierarchy) {
+				// do nothing
+			} else if (game.CurrentMerchant != null) {
+				merchantPanel.Show(game.CurrentMerchant, game.Player);
+				game.CurrentMerchant = null;
+			} else {
+				var mx = 0;
+				if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.L) || Input.GetKey(KeyCode.Keypad6))
+					mx = 1;
+				if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.H) || Input.GetKey(KeyCode.Keypad4))
+					mx = -1;
 
-			var my = 0;
-			if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.Keypad8))
-				my = 1;
-			if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.J) || Input.GetKey(KeyCode.Keypad2))
-				my = -1;
-			
-			var wait = Input.GetKey(KeyCode.Period) || Input.GetKey(KeyCode.Keypad5);
+				var my = 0;
+				if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.K) || Input.GetKey(KeyCode.Keypad8))
+					my = 1;
+				if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.J) || Input.GetKey(KeyCode.Keypad2))
+					my = -1;
+				
+				var wait = Input.GetKey(KeyCode.Period) || Input.GetKey(KeyCode.Keypad5);
 
-			if (mx != 0 || my != 0 || wait) {
-				game.Player.MoveBy(game, mx, my);
-				game.TakeTurn();
+				if (mx != 0 || my != 0 || wait) {
+					game.Player.MoveBy(game, mx, my);
+					game.TakeTurn();
+				}
 			}
 		} else {
+			merchantPanel.Hide();
 			game.TakeTurn();
 		}
 	}

@@ -25,21 +25,63 @@ public class LevelBuilder {
 		AddCommonLoot(game);
 		AddRareLoot(game);
 
+		AddPlayer(game);
+		AddAlly(game);
+		AddEnemies(game);
+
+		game.Player = game.Creatures[0];
+	}
+
+	void AddPlayer(Game game) {
+		var x = -1;
+		var y = -1;
+
+		while (game.GetTile(x,y).BlocksMovement 
+				|| game.GetCreature(new Point(x,y)) != null 
+				|| game.GetItem(new Point (x,y)) != null) {
+			x = UnityEngine.Random.Range(0, game.Width);
+			y = UnityEngine.Random.Range(0, game.Height);
+		}
+
+		game.Creatures.Add(game.Catalog.Player(x,y));
+	}
+
+	void AddEnemies(Game game) {
 		for (var i = 0; i < 8; i++) {
 			var x = -1;
 			var y = -1;
 
-			while (game.GetTile(x,y).BlocksMovement) {
+			while (game.GetTile(x,y).BlocksMovement 
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point (x,y)) != null) {
 				x = UnityEngine.Random.Range(0, game.Width);
 				y = UnityEngine.Random.Range(0, game.Height);
 			}
 
-			if (game.Creatures.Any())
-				game.Creatures.Add(game.Catalog.Enemy(x,y));
-			else
-				game.Creatures.Add(game.Catalog.Player(x,y));
+			game.Creatures.Add(game.Catalog.Enemy(x,y));
 		}
-		game.Player = game.Creatures[0];
+	}
+
+	void AddAlly(Game game) {
+		var x = -1;
+		var y = -1;
+
+		while (game.GetTile(x,y).BlocksMovement
+				|| game.GetTile(x-1,y+1).BlocksMovement 
+				|| game.GetTile(x-1,y+0).BlocksMovement 
+				|| game.GetTile(x-1,y-1).BlocksMovement 
+				|| game.GetTile(x-0,y+1).BlocksMovement 
+				|| game.GetTile(x-0,y-1).BlocksMovement 
+				|| game.GetTile(x+1,y+1).BlocksMovement 
+				|| game.GetTile(x+1,y+0).BlocksMovement 
+				|| game.GetTile(x+1,y-1).BlocksMovement 
+				|| game.GetCreature(new Point(x,y)) != null 
+				|| game.GetItem(new Point (x,y)) != null) {
+			x = UnityEngine.Random.Range(0, game.Width);
+			y = UnityEngine.Random.Range(0, game.Height);
+		}
+
+		game.Creatures.Add(game.Catalog.Merchant(x,y));
 	}
 
 	void AddCommonLoot(Game game) {

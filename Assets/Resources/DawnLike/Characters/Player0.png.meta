@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 5577e4e48f7bc4f438ef4ad0b8cf967b
-timeCreated: 1457322197
+timeCreated: 1457411994
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -53,7 +53,7 @@ TextureImporter:
     21300092: Player0_46
     21300094: Player0_47
     21300096: Player0_48
-    21300098: Player0_49
+    21300098: merchant
     21300100: Player0_50
     21300102: Player0_51
     21300104: Player0_52
@@ -666,7 +666,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Player0_49
+    - name: merchant
       rect:
         serializedVersion: 2
         x: 96

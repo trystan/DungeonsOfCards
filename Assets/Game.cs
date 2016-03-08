@@ -13,6 +13,8 @@ public class Game {
 	public Catalog Catalog;
 	public Creature Player;
 
+	public Creature CurrentMerchant;
+
 	public bool Updated;
 	public int Width;
 	public int Height;

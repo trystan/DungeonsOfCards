@@ -12,6 +12,14 @@ public class PlayerAi : AI {
 	}
 }
 
+public class MerchantAi : AI {
+	public string Name;
+	public List<Card> CardsForSale;
+
+	public void TakeTurn(Game game, Creature creature) {
+	}
+}
+
 public class ComputerAi : AI {
 	public void TakeTurn(Game game, Creature creature) {
 		var cardsToPlay = new Dictionary<Card, int>();
@@ -67,7 +75,7 @@ public class ComputerAi : AI {
 
 				var other = game.GetCreature(neighbor);
 				if (other != null) {
-					if (other.TeamName != creature.TeamName) {
+					if (other.TeamName != creature.TeamName && other.TeamName != "Merchant") {
 						var strength = 5 + (creature.AttackValue + creature.AttackStack.Count) * 2 - other.DefenseValue - other.DefenseStack.Count;
 						if (strength > 0)
 							cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength);
