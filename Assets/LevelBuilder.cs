@@ -22,6 +22,9 @@ public class LevelBuilder {
 
 		AddSouthConnections(game);
 		AddEastConnections(game);
+
+		CleanupDoors(game);
+
 		AddCommonLoot(game);
 		AddRareLoot(game);
 
@@ -30,6 +33,24 @@ public class LevelBuilder {
 		AddEnemies(game);
 
 		game.Player = game.Creatures[0];
+	}
+
+	void CleanupDoors(Game game) {
+		for (var x = 0; x < game.Width; x++) {
+			for (var y = 0; y < game.Height; y++) {
+				if (!game.GetTile(x,y).IsDoor)
+					continue;
+				
+				var openSpaces = 0;
+				if (!game.GetTile(x-1,y).BlocksMovement) openSpaces++;
+				if (!game.GetTile(x+1,y).BlocksMovement) openSpaces++;
+				if (!game.GetTile(x,y-1).BlocksMovement) openSpaces++;
+				if (!game.GetTile(x,y+1).BlocksMovement) openSpaces++;
+
+				if (openSpaces > 2)
+					game.SetTile(x, y, Tile.Floor2);
+			}
+		}
 	}
 
 	void AddPlayer(Game game) {
