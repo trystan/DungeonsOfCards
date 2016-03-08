@@ -44,6 +44,16 @@ public class Creature {
 				Attack(game, other);
 		} else {
 			Position += new Point(mx, my);
+			var item = game.GetItem(Position);
+			if (item != null) {
+				item.Exists = false;
+				if (item.Card != null) {
+					if (this == game.Player)
+						game.NewCards.Add(item.Card);
+					DrawStack.Add(item.Card);
+					game.Popups.Add(new TextPopup(item.Card.Name, item.Position, Vector3.zero));
+				}
+			}
 			Draw1Card(game);
 		}
 

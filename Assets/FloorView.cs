@@ -19,10 +19,10 @@ public class FloorView : ITileMeshSource {
 		var tile = game.GetTile(x, y);
 
 		if (tile.IsFloor) {
-			var n = game.GetTile(x, y+1).IsFloor;
-			var s = game.GetTile(x, y-1).IsFloor;
-			var w = game.GetTile(x-1, y).IsFloor;
-			var e = game.GetTile(x+1, y).IsFloor;
+			var n = game.GetTile(x, y+1).FloorIndex == tile.FloorIndex;
+			var s = game.GetTile(x, y-1).FloorIndex == tile.FloorIndex;
+			var w = game.GetTile(x-1, y).FloorIndex == tile.FloorIndex;
+			var e = game.GetTile(x+1, y).FloorIndex == tile.FloorIndex;
 
 			if (n && s && w && e)
 				return at(tile.FloorIndex, 0,  0);

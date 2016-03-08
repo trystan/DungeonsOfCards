@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour {
 	Game game;
 	List<CreatureView> CreatureViews = new List<CreatureView>();
 	List<CardView> CardViews = new List<CardView>();
+	List<ItemView> ItemViews = new List<ItemView>();
 
 	void Start() {
 		game = new Game(20, 20) {
@@ -28,6 +29,9 @@ public class GameController : MonoBehaviour {
 		foreach (var c in game.Creatures)
 			CreatureViews.Add(Instantiator.Add(c));
 
+		foreach (var item in game.Items)
+			ItemViews.Add(Instantiator.Add(game, item));
+		
 		foreach (var c in game.Player.DrawStack)
 			CardViews.Add(Instantiator.Add(game, c, game.Player));
 		
@@ -40,6 +44,10 @@ public class GameController : MonoBehaviour {
 		foreach (var c in game.NewCards)
 			CardViews.Add(Instantiator.Add(game, c, game.Player));
 		game.NewCards.Clear();
+
+		foreach (var item in game.NewItems)
+			ItemViews.Add(Instantiator.Add(game, item));
+		game.NewItems.Clear();
 
 		game.Effects.ForEach(e => e.Delay -= Time.deltaTime);
 		foreach (var e in game.Effects.Where(e => e.Delay < 0).ToList()) {

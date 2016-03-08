@@ -22,6 +22,7 @@ public class LevelBuilder {
 
 		AddSouthConnections(game);
 		AddEastConnections(game);
+		AddLoot(game);
 
 		for (var i = 0; i < 8; i++) {
 			var x = -1;
@@ -38,6 +39,24 @@ public class LevelBuilder {
 				game.Creatures.Add(game.Catalog.Player(x,y));
 		}
 		game.Player = game.Creatures[0];
+	}
+
+	void AddLoot(Game game) {
+		for (var i = 0; i < 20; i++) {
+			var x = UnityEngine.Random.Range(0, game.Width);
+			var y = UnityEngine.Random.Range(0, game.Height);
+
+			if (game.GetTile(x,y).BlocksMovement)
+				continue;
+
+			var card = Util.Shuffle(new List<Card>() {
+				new Card() { Name = "Gold", CardType = CardType.Normal },
+				new Card() { Name = "Gold", CardType = CardType.Normal },
+				new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
+				new Card() { Name = "Defense +1", CardType = CardType.Normal, CombatBonus = 1 },
+			})[0];
+			game.Items.Add(game.Catalog.CardItem(x, y, card));
+		}
 	}
 
 	void AddSouthConnections(Game game) {

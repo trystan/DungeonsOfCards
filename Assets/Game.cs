@@ -5,9 +5,11 @@ using System.Linq;
 
 public class Game {
 	public List<Creature> Creatures = new List<Creature>();
+	public List<Item> Items = new List<Item>();
 	public List<DelayedEffect> Effects = new List<DelayedEffect>();
 	public List<TextPopup> Popups = new List<TextPopup>();
 	public List<Card> NewCards = new List<Card>();
+	public List<Item> NewItems = new List<Item>();
 	public Catalog Catalog;
 	public Creature Player;
 
@@ -29,6 +31,10 @@ public class Game {
 
 	public Creature GetCreature(Point p) {
 		return Creatures.FirstOrDefault(c => c.Exists && c.Position == p);
+	}
+
+	public Item GetItem(Point p) {
+		return Items.FirstOrDefault(i => i.Exists && i.Position == p);
 	}
 
 	public Tile GetTile(int x, int y) {

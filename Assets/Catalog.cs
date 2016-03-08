@@ -9,6 +9,14 @@ public class Pack {
 }
 
 public class Catalog {
+	public Item CardItem(int x, int y, Card card) {
+		return new Item() {
+			Position = new Point(x,y),
+			SpriteName = "DawnLike/Items/Scroll:card",
+			Card = card,
+		};
+	}
+
 	public Pack AdventurerPack() {
 		return new Pack() {
 			Name = "Adventurer",
