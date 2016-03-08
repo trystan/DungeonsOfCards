@@ -9,6 +9,7 @@ public class MerchantPanelController : MonoBehaviour {
 	public Transform CardsPanel;
 	public GameObject CardForSalePrefab;
 
+	Game Game;
 	MerchantAi Merchant;
 	Creature Seller;
 	Creature Buyer;
@@ -21,7 +22,7 @@ public class MerchantPanelController : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 
-	public void Show(Creature seller, Creature buyer) {
+	public void Show(Game game, Creature seller, Creature buyer) {
 		gameObject.SetActive(true);
 
 		Merchant = seller.Ai as MerchantAi;
@@ -35,7 +36,7 @@ public class MerchantPanelController : MonoBehaviour {
 
 		foreach (var c in Merchant.CardsForSale) {
 			var view = Instantiate(CardForSalePrefab);
-			view.GetComponent<CardForSaleView>().Show(c, Seller, Buyer, this);
+			view.GetComponent<CardForSaleView>().Show(game, c, Seller, Buyer, this);
 			view.transform.SetParent(CardsPanel);
 		}
 	}

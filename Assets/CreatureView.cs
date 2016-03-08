@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Linq;
+using UnityEngine.UI;
 
 public class CreatureView : MonoBehaviour {
 	public SpriteRenderer CreatureSprite;
 	public Transform HealthBackground;
 	public Transform HealthBar;
+	public Text NameLabel;
 
 	Instantiator Instantiator;
 	Creature Creature;
@@ -43,6 +45,8 @@ public class CreatureView : MonoBehaviour {
 				targetPosition = new Vector3(Creature.Position.X, Creature.Position.Y, 0);
 				speed = Vector3.Distance(transform.position, targetPosition) * 5f;
 			}
+
+			NameLabel.transform.position = Camera.main.WorldToScreenPoint(transform.position) - new Vector3(0,8,0);
 		} else
 			Instantiator.Remove(this);
 	}
@@ -50,6 +54,9 @@ public class CreatureView : MonoBehaviour {
 	public void Initialize(Creature creature, Instantiator instantiator) {
 		Creature = creature;
 		Instantiator = instantiator;
+
+		NameLabel.text = creature.TeamName;
+		NameLabel.enabled = creature.TeamName == "Merchant";
 
 		var parts = creature.SpriteName.Split(':');
 		var sprites = Resources.LoadAll<Sprite>(parts[0]);

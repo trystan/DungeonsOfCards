@@ -7,6 +7,7 @@ public class CardForSaleView : MonoBehaviour {
 	public Text CardTitle;
 	public Text CardCost;
 
+	Game Game;
 	Card Card;
 	Creature Seller;
 	Creature Buyer;
@@ -16,8 +17,9 @@ public class CardForSaleView : MonoBehaviour {
 		gameObject.SetActive(false);
 	}
 
-	public void Show(Card card, Creature seller, Creature buyer, MerchantPanelController panel) {
+	public void Show(Game game, Card card, Creature seller, Creature buyer, MerchantPanelController panel) {
 		gameObject.SetActive(true);
+		Game = game;
 		Card = card;
 		Buyer = buyer;
 		Seller = seller;
@@ -39,9 +41,13 @@ public class CardForSaleView : MonoBehaviour {
 			Buyer.DiscardStack.Add(Card);
 			Buyer.ShuffleEverythingIntoDrawStack();
 			var goldCardsSpent = Buyer.DrawStack.Where(c => c.Name == "Gold").Take(Card.GoldCost).ToList();
-			goldCardsSpent.ForEach(c => Buyer.DrawStack.Remove(c));
+			goldCardsSpent.ForEach(c => {
+				Buyer.DrawStack.Remove(c);
+				c.Exists = false;
+			});
 			Buyer.ShuffleEverythingIntoDrawStack();
 			Hide();
+			Game.NewCards.Add(Card);
 			Panel.Refresh();
 		}
 	}

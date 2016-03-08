@@ -68,7 +68,7 @@ public class GameController : MonoBehaviour {
 			if (merchantPanel.gameObject.activeInHierarchy) {
 				// do nothing
 			} else if (game.CurrentMerchant != null) {
-				merchantPanel.Show(game.CurrentMerchant, game.Player);
+				merchantPanel.Show(game, game.CurrentMerchant, game.Player);
 				game.CurrentMerchant = null;
 			} else {
 				var mx = 0;

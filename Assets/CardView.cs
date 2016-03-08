@@ -37,6 +37,11 @@ public class CardView : MonoBehaviour {
 	}
 
 	void Update() {
+		if (!Card.Exists) {
+			Instantiator.Remove(this);
+			return;
+		}
+
 		if (IsMoving) {
 			transform.position = Vector2.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
 			if (Vector2.Distance(transform.position, targetPosition) < 0.001f) {

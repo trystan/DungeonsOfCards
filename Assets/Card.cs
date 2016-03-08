@@ -14,6 +14,7 @@ public enum CardSpecialEffect {
 }
 
 public class Card {
+	public bool Exists = true;
 	public string Name;
 	public int GoldCost = 2;
 	public CardType CardType;
