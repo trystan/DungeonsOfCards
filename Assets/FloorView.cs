@@ -10,55 +10,56 @@ public class FloorView : ITileMeshSource {
 
 	int rowWidth = 21;
 	int columnWidth = 1;
-	int center = 85;
 
-	int at(int xdiff, int ydiff) {
-		return center + ydiff * rowWidth + xdiff * columnWidth;
+	int at(int floorIndex, int xdiff, int ydiff) {
+		return floorIndex + ydiff * rowWidth + xdiff * columnWidth;
 	}
 
 	public int GetTileIndex(int x, int y) {
-		if (game.GetTile(x, y) == Tile.Floor) {
-			var n = game.GetTile(x, y+1) == Tile.Floor;
-			var s = game.GetTile(x, y-1) == Tile.Floor;
-			var w = game.GetTile(x-1, y) == Tile.Floor;
-			var e = game.GetTile(x+1, y) == Tile.Floor;
+		var tile = game.GetTile(x, y);
+
+		if (tile.IsFloor) {
+			var n = game.GetTile(x, y+1).IsFloor;
+			var s = game.GetTile(x, y-1).IsFloor;
+			var w = game.GetTile(x-1, y).IsFloor;
+			var e = game.GetTile(x+1, y).IsFloor;
 
 			if (n && s && w && e)
-				return at( 0,  0);
+				return at(tile.FloorIndex, 0,  0);
 
 			if (!n && s && w && e)
-				return at( 0, -1);
+				return at(tile.FloorIndex, 0, -1);
 			if (n && !s && w && e)
-				return at( 0,  1);
+				return at(tile.FloorIndex, 0,  1);
 			if (n && s && !w && e)
-				return at(-1,  0);
+				return at(tile.FloorIndex,-1,  0);
 			if (n && s && w && !e)
-				return at( 1,  0);
+				return at(tile.FloorIndex, 1,  0);
 
 			if (!n && s && w && !e)
-				return at( 1, -1);
+				return at(tile.FloorIndex, 1, -1);
 			if (n && !s && w && !e)
-				return at( 1,  1);
+				return at(tile.FloorIndex, 1,  1);
 			if (!n && s && !w && e)
-				return at(-1, -1);
+				return at(tile.FloorIndex,-1, -1);
 			if (n && !s && !w && e)
-				return at(-1,  1);
+				return at(tile.FloorIndex,-1,  1);
 			
 			if (n && s && !w && !e)
-				return at( 2,  0);
+				return at(tile.FloorIndex, 2,  0);
 			if (n && !s && !w && !e)
-				return at( 2,  1);
+				return at(tile.FloorIndex, 2,  1);
 			if (!n && s && !w && !e)
-				return at( 2, -1);
+				return at(tile.FloorIndex, 2, -1);
 
 			if (!n && !s && w && e)
-				return at( 4,  0);
+				return at(tile.FloorIndex, 4,  0);
 			if (!n && !s && !w && e)
-				return at( 3,  0);
+				return at(tile.FloorIndex, 3,  0);
 			if (!n && !s && w && !e)
-				return at( 5,  0);
+				return at(tile.FloorIndex, 5,  0);
 			
-			return at( 4, -1);
+			return at(tile.FloorIndex, 4, -1);
 		} else {
 			return 9;
 		}

@@ -27,13 +27,18 @@ public class Creature {
 	public void MoveBy(Game game, int mx, int my) {
 		var next = Position + new Point(mx, my);
 
-		if (game.GetTile(Position.X + mx, Position.Y + my).BlocksMovement) {
+		var tile = game.GetTile(next.X, next.Y);
+
+		if (tile == Tile.DoorClosed) {
+			game.SetTile(next.X, next.Y, Tile.DoorOpen);
+			EndTurn(game);
+			return;
+		} else if (tile.BlocksMovement) {
 			EndTurn(game);
 			return;
 		}
 		
 		var other = game.GetCreature(next);
-
 		if (other != null && other != this) {
 			if (other.TeamName != TeamName)
 				Attack(game, other);

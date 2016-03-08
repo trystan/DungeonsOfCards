@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour {
 	public Instantiator Instantiator;
 	public GuiController guiController;
 	public TileMesh FloorTileMesh;
+	public TileMesh DoorTileMesh;
 	public TileMesh WallTileMesh;
 
 	Game game;
@@ -21,6 +22,7 @@ public class GameController : MonoBehaviour {
 		new LevelBuilder().Build(game);
 
 		FloorTileMesh.ShowLevel(new FloorView(game));
+		DoorTileMesh.ShowLevel(new DoorView(game));
 		WallTileMesh.ShowLevel(new WallView(game));
 
 		foreach (var c in game.Creatures)

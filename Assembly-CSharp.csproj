@@ -55,6 +55,7 @@
      <Compile Include="Assets\CreatureSummaryController.cs" />
      <Compile Include="Assets\CreatureView.cs" />
      <Compile Include="Assets\DelayedEffect.cs" />
+     <Compile Include="Assets\DoorView.cs" />
      <Compile Include="Assets\FloorView.cs" />
      <Compile Include="Assets\Game.cs" />
      <Compile Include="Assets\GameController.cs" />

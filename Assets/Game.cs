@@ -11,6 +11,7 @@ public class Game {
 	public Catalog Catalog;
 	public Creature Player;
 
+	public bool Updated;
 	public int Width;
 	public int Height;
 	Tile[,] tiles;
@@ -38,8 +39,10 @@ public class Game {
 	}
 
 	public void SetTile(int x, int y, Tile tile) {
-		if (x >= 0 && y >= 0 && x < Width && y < Height)
+		if (x >= 0 && y >= 0 && x < Width && y < Height) {
 			tiles[x,y] = tile;
+			Updated = true;
+		}
 	}
 
 	public void TakeTurn() {

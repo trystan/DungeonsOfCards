@@ -9,8 +9,8 @@ public enum CardType {
 
 public enum CardSpecialEffect {
 	None, Discard1FromEachPile, Heal1Health, Lose1Health, Draw3, Vampire1, Evade,
-	Draw5Attack, Draw5Defense, IncreaseDefenseSize, IncreaseAttackSize,
-	SpawnSkeleton, AddCardToOther, AddCardToSelf
+	Draw5Attack, Draw5Defense, IncreaseDefenseSize, IncreaseAttackSize, IncreaseHandSize,
+	SpawnSkeleton, AddCardToOther, AddCardToSelf, Pray, HealTeam, TurnUndead, DamageClosest,
 }
 
 public class Card {
@@ -20,6 +20,7 @@ public class Card {
 	public int CombatBonus;
 	public bool DoesBlockOtherCard;
 	public bool DoesStopCombat;
+	public string StrongVs;
 	public Func<Card> ExtraCard;
 
 	public CardSpecialEffect OnInHand = CardSpecialEffect.None;
@@ -30,6 +31,42 @@ public class Card {
 	public void DoAction(Game game, Creature user, Creature other, CardSpecialEffect effect) {
 		switch (effect) {
 		case CardSpecialEffect.None:
+			break;
+		case CardSpecialEffect.Pray:
+			Debug.Log("Pray " + user.TeamName);
+			break;
+		case CardSpecialEffect.DamageClosest:
+			var closest = game.Creatures
+				.Where(c => c != user && user.Position.DistanceTo(c.Position) < 5)
+				.OrderBy(c => user.Position.DistanceTo(c.Position))
+				.FirstOrDefault();
+			if (closest != null) {
+				var damage = 2;
+				if (closest.TeamName == StrongVs)
+					damage *= 2;
+				closest.TakeDamage(damage);
+				game.Popups.Add(new TextPopup(Name, closest.Position, new Vector3(0,14,0)));
+			}
+			break;
+		case CardSpecialEffect.HealTeam:
+			foreach (var c in game.Creatures.Where(c => c.Exists 
+								&& c.TeamName == user.TeamName
+								&& c.Position.DistanceTo(user.Position) < 5)) {
+				if (c.CurrentHealth < c.MaximumHealth) {
+					c.CurrentHealth++;
+					game.Popups.Add(new TextPopup("Heal", c.Position, new Vector3(0,14,0)));
+				}
+			}
+			break;
+		case CardSpecialEffect.TurnUndead:
+			foreach (var c in game.Creatures.Where(c => c.Exists 
+								&& c.TeamName == "Undead"
+								&& c.Position.DistanceTo(user.Position) < 5)) {
+				if (c.CurrentHealth < c.MaximumHealth) {
+					c.CurrentHealth++;
+					game.Popups.Add(new TextPopup("Heal", c.Position, new Vector3(0,14,0)));
+				}
+			}
 			break;
 		case CardSpecialEffect.Evade:
 			var candidates = new List<Point>();
@@ -132,6 +169,9 @@ public class Card {
 		case CardSpecialEffect.IncreaseDefenseSize:
 			user.MaximumDefenseCards++;
 			break;
+		case CardSpecialEffect.IncreaseHandSize:
+			user.MaximumDefenseCards += 2;
+			break;
 		case CardSpecialEffect.SpawnSkeleton:
 			game.Creatures.Add(game.Catalog.Skeleton(user.Position.X, user.Position.Y));
 			break;
@@ -147,6 +187,9 @@ public class Card {
 			break;
 		case CardSpecialEffect.IncreaseDefenseSize:
 			user.MaximumDefenseCards--;
+			break;
+		case CardSpecialEffect.IncreaseHandSize:
+			user.MaximumDefenseCards -= 2;
 			break;
 		}
 	}

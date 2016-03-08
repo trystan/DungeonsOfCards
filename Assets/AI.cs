@@ -18,6 +18,8 @@ public class ComputerAi : AI {
 
 		foreach (var c in creature.HandStack) {
 			switch (c.OnUse) {
+			case CardSpecialEffect.None:
+				break;
 			case CardSpecialEffect.Draw3: {
 					var chance = creature.MaximumHandCards - creature.HandStack.Count
 						+ creature.MaximumAttackCards - creature.AttackStack.Count
@@ -44,6 +46,9 @@ public class ComputerAi : AI {
 						cardsToPlay.Add(c, chance);
 					break;
 				}
+			default:
+				cardsToPlay.Add(c, UnityEngine.Random.Range(1, 5));
+				break;
 			}
 		}
 

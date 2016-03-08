@@ -20,6 +20,9 @@ public class Combat {
 
 		var maxCards = Mathf.Max(Attacker.AttackStack.Count, Defender.DefenseStack.Count);
 
+		var defenderStrongVs = new List<string>();
+		var attackerStrongVs = new List<string>();
+
 		for (var i = 0; i < maxCards; i++) {
 			var defenderCard = Defender.DefenseStack.Count > i ? Defender.DefenseStack[i] : null;
 			var attackerCard = Attacker.AttackStack.Count > i ? Attacker.AttackStack[i] : null;
@@ -30,6 +33,9 @@ public class Combat {
 				defenderDefense += defenderCard.CombatBonus;
 				blockAttack = defenderCard.DoesBlockOtherCard;
 				endsCombat = defenderCard.DoesStopCombat;
+
+				if (defenderCard.StrongVs != null)
+					defenderStrongVs.Add(defenderCard.StrongVs);
 					
 				defenderCard.DoAction(Game, Defender, Attacker, defenderCard.OnUse);
 
@@ -44,6 +50,9 @@ public class Combat {
 				attackerAttack += attackerCard.CombatBonus;
 				endsCombat = endsCombat || attackerCard.DoesStopCombat;
 
+				if (attackerCard.StrongVs != null)
+					attackerStrongVs.Add(attackerCard.StrongVs);
+
 				attackerCard.DoAction(Game, Attacker, Defender, attackerCard.OnUse);
 
 				var popup = new TextPopup(attackerCard.Name, Attacker.Position, new Vector3(0,14 * i + 7,0));
@@ -57,6 +66,12 @@ public class Combat {
 				break;
 		}
 
+		if (attackerStrongVs.Contains(Defender.TeamName))
+			attackerAttack *= 2;
+		
+		if (defenderStrongVs.Contains(Attacker.TeamName))
+			defenderDefense *= 2;
+		
 		Defender.TakeDamage(Mathf.Max(1, attackerAttack - defenderDefense));
 
 		if (!Defender.Exists)
