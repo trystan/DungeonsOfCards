@@ -22,7 +22,8 @@ public class LevelBuilder {
 
 		AddSouthConnections(game);
 		AddEastConnections(game);
-		AddLoot(game);
+		AddCommonLoot(game);
+		AddRareLoot(game);
 
 		for (var i = 0; i < 8; i++) {
 			var x = -1;
@@ -41,7 +42,7 @@ public class LevelBuilder {
 		game.Player = game.Creatures[0];
 	}
 
-	void AddLoot(Game game) {
+	void AddCommonLoot(Game game) {
 		for (var i = 0; i < 20; i++) {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
@@ -56,6 +57,26 @@ public class LevelBuilder {
 				new Card() { Name = "Defense +1", CardType = CardType.Normal, CombatBonus = 1 },
 			})[0];
 			game.Items.Add(game.Catalog.CardItem(x, y, card));
+		}
+	}
+
+	void AddRareLoot(Game game) {
+		for (var i = 0; i < 1; i++) {
+			var x = UnityEngine.Random.Range(0, game.Width);
+			var y = UnityEngine.Random.Range(0, game.Height);
+
+			if (game.GetTile(x,y).BlocksMovement)
+				continue;
+
+			var pack = Util.Shuffle(new List<Pack>() {
+				game.Catalog.AdventurerPack(),
+				game.Catalog.AttackPack(),
+				game.Catalog.DefensePack(),
+				game.Catalog.PriestPack(),
+				game.Catalog.RoguePack(),
+				game.Catalog.WizardPack(),
+			})[0];
+			game.Items.Add(game.Catalog.PackItem(x, y, pack));
 		}
 	}
 

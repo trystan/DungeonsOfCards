@@ -17,6 +17,14 @@ public class Catalog {
 		};
 	}
 
+	public Item PackItem(int x, int y, Pack pack) {
+		return new Item() {
+			Position = new Point(x,y),
+			SpriteName = "DawnLike/Items/Book:deck of cards",
+			Pack = pack,
+		};
+	}
+
 	public Pack AdventurerPack() {
 		return new Pack() {
 			Name = "Adventurer",

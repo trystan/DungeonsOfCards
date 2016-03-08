@@ -28,7 +28,7 @@ public class ItemView : MonoBehaviour {
 		Player = player;
 
 		NameLabel.gameObject.SetActive(false);
-		NameLabel.text = item.Card != null ? item.Card.Name : "???";
+		NameLabel.text = item.Card != null ? item.Card.Name : item.Pack.Name;
 
 		var parts = item.SpriteName.Split(':');
 		var sprites = Resources.LoadAll<Sprite>(parts[0]);

@@ -52,6 +52,12 @@ public class Creature {
 						game.NewCards.Add(item.Card);
 					DrawStack.Add(item.Card);
 					game.Popups.Add(new TextPopup(item.Card.Name, item.Position, Vector3.zero));
+				} else if (item.Pack != null) {
+					var allCards = Util.Shuffle(item.Pack.Cards);
+					if (this == game.Player)
+						game.NewCards.AddRange(allCards);
+					DrawStack.AddRange(allCards);
+					game.Popups.Add(new TextPopup(item.Pack.Name, item.Position, Vector3.zero));
 				}
 			}
 			Draw1Card(game);
