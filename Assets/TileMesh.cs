@@ -41,6 +41,9 @@ public class TileMesh : MonoBehaviour {
 	}
 	
 	void Update() {
+		if (currentLevel == null)
+			return;
+		
 		var x = (int)Camera.main.transform.position.x;
 		var y = (int)Camera.main.transform.position.y;
 		

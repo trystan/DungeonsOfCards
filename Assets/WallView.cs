@@ -6,7 +6,10 @@ using System.Linq;
 public class WallView : ITileMeshSource {
 	public int Width { get { return game.Width; } }
 	public int Height { get { return game.Height; } }
-	public bool HasChangedSinceLastRender { get; set; }
+	public bool HasChangedSinceLastRender { 
+		get { return game.WallsUpdated; }
+		set { game.WallsUpdated = value; }
+	}
 
 	int rowWidth = 21;
 	int columnWidth = 1;

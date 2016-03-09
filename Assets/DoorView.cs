@@ -7,8 +7,8 @@ public class DoorView : ITileMeshSource {
 	public int Width { get { return game.Width; } }
 	public int Height { get { return game.Height; } }
 	public bool HasChangedSinceLastRender { 
-		get { return game.Updated; }
-		set { game.Updated = value; }
+		get { return game.ObjectsUpdated; }
+		set { game.ObjectsUpdated = value; }
 	}
 
 	public int GetTileIndex(int x, int y) {
@@ -19,6 +19,5 @@ public class DoorView : ITileMeshSource {
 	Game game;
 	public DoorView(Game game) {
 		this.game = game;
-		HasChangedSinceLastRender = true;
 	}
 }

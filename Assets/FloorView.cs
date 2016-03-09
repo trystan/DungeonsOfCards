@@ -6,7 +6,10 @@ using System.Linq;
 public class FloorView : ITileMeshSource {
 	public int Width { get { return game.Width; } }
 	public int Height { get { return game.Height; } }
-	public bool HasChangedSinceLastRender { get; set; }
+	public bool HasChangedSinceLastRender { 
+		get { return game.FloorsUpdated; }
+		set { game.FloorsUpdated = value; }
+	}
 
 	int rowWidth = 21;
 	int columnWidth = 1;

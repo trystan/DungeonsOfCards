@@ -10,17 +10,13 @@ public class CreatureView : MonoBehaviour {
 	public Text NameLabel;
 
 	Instantiator Instantiator;
-	Creature Creature;
+	public Creature Creature;
 
 	Vector3 targetPosition;
 	float speed;
 
 	public bool IsMoving;
 
-	void Start() {
-	
-	}
-	
 	void Update() {
 		if (Creature.Exists) {
 			if (Creature.CurrentHealth == Creature.MaximumHealth) {

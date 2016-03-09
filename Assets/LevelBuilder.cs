@@ -9,13 +9,18 @@ public class LevelBuilder {
 		var roomWidth = UnityEngine.Random.Range(3,5);
 		var roomHeight = UnityEngine.Random.Range(3,5);
 
+		game.FloorsUpdated = true;
+		game.WallsUpdated = true;
+		game.ObjectsUpdated = true;
+
 		var rx = (game.Width - roomWidth) / 2;
 		var ry = (game.Height - roomHeight) / 2;
 		var floor = Tile.RandomFloor();
-		for (var x = 0; x < roomWidth; x++)
+		for (var x = 0; x < roomWidth; x++) {
 			for (var y = 0; y < roomHeight; y++) {
 				game.SetTile(rx + x, ry + y, floor);
 			}
+		}
 
 		for (var i = 0; i < 30; i++)
 			AddRoom(game, UnityEngine.Random.Range(5,7), UnityEngine.Random.Range(5,7));
@@ -25,14 +30,43 @@ public class LevelBuilder {
 
 		CleanupDoors(game);
 
+		AddStairsDown(game);
+
 		AddCommonLoot(game);
 		AddRareLoot(game);
 
-		AddPlayer(game);
+		if (game.Player == null)
+			AddPlayer(game);
+		else 
+			RepositionPlayer(game);
+		
 		AddAlly(game);
 		AddEnemies(game);
 
-		game.Player = game.Creatures[0];
+		if (game.Player == null)
+			game.Player = game.Creatures[0];
+	}
+
+	void AddStairsDown(Game game) {
+		var x = -1;
+		var y = -1;
+
+		while (game.GetTile(x,y).BlocksMovement
+			|| game.GetTile(x-1,y+1).BlocksMovement 
+			|| game.GetTile(x-1,y+0).BlocksMovement 
+			|| game.GetTile(x-1,y-1).BlocksMovement 
+			|| game.GetTile(x-0,y+1).BlocksMovement 
+			|| game.GetTile(x-0,y-1).BlocksMovement 
+			|| game.GetTile(x+1,y+1).BlocksMovement 
+			|| game.GetTile(x+1,y+0).BlocksMovement 
+			|| game.GetTile(x+1,y-1).BlocksMovement 
+			|| game.GetCreature(new Point(x,y)) != null 
+			|| game.GetItem(new Point (x,y)) != null) {
+			x = UnityEngine.Random.Range(0, game.Width);
+			y = UnityEngine.Random.Range(0, game.Height);
+		}
+
+		game.SetTile(x,y,Tile.StairsDown);
 	}
 
 	void CleanupDoors(Game game) {
@@ -52,12 +86,27 @@ public class LevelBuilder {
 			}
 		}
 	}
+	void RepositionPlayer(Game game) {
+		var x = -1;
+		var y = -1;
+
+		while (game.GetTile(x,y).BlocksMovement
+			|| game.GetTile(x,y) == Tile.StairsDown
+			|| game.GetCreature(new Point(x,y)) != null 
+			|| game.GetItem(new Point (x,y)) != null) {
+			x = UnityEngine.Random.Range(0, game.Width);
+			y = UnityEngine.Random.Range(0, game.Height);
+		}
+
+		game.Player.Position = new Point(x,y);
+	}
 
 	void AddPlayer(Game game) {
 		var x = -1;
 		var y = -1;
 
 		while (game.GetTile(x,y).BlocksMovement 
+				|| game.GetTile(x,y) == Tile.StairsDown
 				|| game.GetCreature(new Point(x,y)) != null 
 				|| game.GetItem(new Point (x,y)) != null) {
 			x = UnityEngine.Random.Range(0, game.Width);
@@ -73,6 +122,7 @@ public class LevelBuilder {
 			var y = -1;
 
 			while (game.GetTile(x,y).BlocksMovement 
+					|| game.GetTile(x,y) == Tile.StairsDown
 					|| game.GetCreature(new Point(x,y)) != null 
 					|| game.GetItem(new Point (x,y)) != null) {
 				x = UnityEngine.Random.Range(0, game.Width);
@@ -96,6 +146,7 @@ public class LevelBuilder {
 				|| game.GetTile(x+1,y+1).BlocksMovement 
 				|| game.GetTile(x+1,y+0).BlocksMovement 
 				|| game.GetTile(x+1,y-1).BlocksMovement 
+				|| game.GetTile(x,y) == Tile.StairsDown
 				|| game.GetCreature(new Point(x,y)) != null 
 				|| game.GetItem(new Point (x,y)) != null) {
 			x = UnityEngine.Random.Range(0, game.Width);
@@ -110,7 +161,7 @@ public class LevelBuilder {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
-			if (game.GetTile(x,y).BlocksMovement)
+			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown)
 				continue;
 
 			var card = Util.Shuffle(new List<Card>() {
@@ -119,6 +170,7 @@ public class LevelBuilder {
 				new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
 				new Card() { Name = "Defense +1", CardType = CardType.Normal, CombatBonus = 1 },
 			})[0];
+
 			game.Items.Add(game.Catalog.CardItem(x, y, card));
 		}
 	}
@@ -128,7 +180,7 @@ public class LevelBuilder {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
-			if (game.GetTile(x,y).BlocksMovement)
+			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown)
 				continue;
 
 			var pack = Util.Shuffle(new List<Pack>() {

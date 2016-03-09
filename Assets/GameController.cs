@@ -17,7 +17,15 @@ public class GameController : MonoBehaviour {
 	List<CardView> CardViews = new List<CardView>();
 	List<ItemView> ItemViews = new List<ItemView>();
 
+	CreatureView playerView;
+
+	bool ready = false;
+
 	void Start() {
+		guiController.FadeIn("Level 1", NewGame);
+	}
+
+	void NewGame() {
 		game = new Game(20, 20) {
 			Catalog = new Catalog(),
 		};
@@ -33,16 +41,30 @@ public class GameController : MonoBehaviour {
 
 		foreach (var item in game.Items)
 			ItemViews.Add(Instantiator.Add(game, item));
-		
+
 		foreach (var c in game.Player.DrawStack)
 			CardViews.Add(Instantiator.Add(game, c, game.Player));
-		
-		Camera.main.GetComponent<CameraController>().Follow(CreatureViews[0].gameObject);
+
+		playerView = CreatureViews.Single(v => v.Creature == game.Player);
+		Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
 
 		guiController.Show(game.Player);
+		ready = true;
 	}
 
 	void Update() {
+		if (ready && game.ReadyToLoadNextLevel) {
+			ready = false;
+			guiController.FadeOutAndIn("Level " + (game.CurrentLevel + 1), () => { 
+				game.NextLevel();
+				Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
+				ready = true;
+			});
+		}
+
+		if (!ready)
+			return;
+		
 		foreach (var c in game.NewCards)
 			CardViews.Add(Instantiator.Add(game, c, game.Player));
 		game.NewCards.Clear();
@@ -50,6 +72,10 @@ public class GameController : MonoBehaviour {
 		foreach (var item in game.NewItems)
 			ItemViews.Add(Instantiator.Add(game, item));
 		game.NewItems.Clear();
+
+		foreach (var c in game.NewCreatures)
+			CreatureViews.Add(Instantiator.Add(c));
+		game.NewCreatures.Clear();
 
 		game.Effects.ForEach(e => e.Delay -= Time.deltaTime);
 		foreach (var e in game.Effects.Where(e => e.Delay < 0).ToList()) {

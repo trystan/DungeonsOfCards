@@ -28,24 +28,22 @@ public class Creature {
 		var next = Position + new Point(mx, my);
 
 		var tile = game.GetTile(next.X, next.Y);
-
-		if (tile == Tile.DoorClosed) {
-			game.SetTile(next.X, next.Y, Tile.DoorOpen);
-			EndTurn(game);
-			return;
-		} else if (tile.BlocksMovement) {
-			EndTurn(game);
-			return;
-		}
-		
 		var other = game.GetCreature(next);
+
 		if (other != null && other != this) {
 			if (other.TeamName == "Merchant" && this == game.Player)
 				game.CurrentMerchant = other;
 			else if (other.TeamName != TeamName)
 				Attack(game, other);
+		} else if (tile == Tile.DoorClosed) {
+			game.SetTile(next.X, next.Y, Tile.DoorOpen);
+		} else if (tile == Tile.StairsDown) {
+			Position = next;
+			game.ExitLevel(this);
+		} else if (tile.BlocksMovement) {
+			
 		} else {
-			Position += new Point(mx, my);
+			Position = next;
 			var item = game.GetItem(Position);
 			if (item != null) {
 				item.Exists = false;

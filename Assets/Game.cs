@@ -10,12 +10,17 @@ public class Game {
 	public List<TextPopup> Popups = new List<TextPopup>();
 	public List<Card> NewCards = new List<Card>();
 	public List<Item> NewItems = new List<Item>();
+	public List<Creature> NewCreatures = new List<Creature>();
 	public Catalog Catalog;
 	public Creature Player;
 
+	public int CurrentLevel = 1;
 	public Creature CurrentMerchant;
 
-	public bool Updated;
+	public bool FloorsUpdated;
+	public bool WallsUpdated;
+	public bool ObjectsUpdated;
+	public bool ReadyToLoadNextLevel;
 	public int Width;
 	public int Height;
 	Tile[,] tiles;
@@ -28,6 +33,20 @@ public class Game {
 		for (var x = 0; x < width; x++)
 		for (var y = 0; y < height; y++) {
 			tiles[x,y] = Tile.Wall;
+		}
+	}
+
+	void Clear() {
+		Creatures.Where(c => c != Player).ToList().ForEach(c => c.Exists = false);
+		Items.ForEach(i => i.Exists = false);
+		Effects.Clear();
+		Popups.Clear();
+		NewCards.Clear();
+		NewItems.Clear();
+		for (var x = 0; x < Width; x++) {
+			for (var y = 0; y < Height; y++) {
+				tiles[x,y] = Tile.Wall;
+			}
 		}
 	}
 
@@ -49,7 +68,7 @@ public class Game {
 	public void SetTile(int x, int y, Tile tile) {
 		if (x >= 0 && y >= 0 && x < Width && y < Height) {
 			tiles[x,y] = tile;
-			Updated = true;
+			ObjectsUpdated = true;
 		}
 	}
 
@@ -60,5 +79,22 @@ public class Game {
 		}
 
 		Creatures.RemoveAll(c => !c.Exists);
+	}
+
+	public void ExitLevel(Creature creature) {
+		if (creature == Player) {
+			ReadyToLoadNextLevel = true;
+		} else {
+			creature.Exists = false;
+		}
+	}
+
+	public void NextLevel() {
+		CurrentLevel++;
+		ReadyToLoadNextLevel = false;
+		Clear();
+		new LevelBuilder().Build(this);
+		NewItems.AddRange(Items);
+		NewCreatures.AddRange(Creatures);
 	}
 }
