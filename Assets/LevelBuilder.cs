@@ -4,8 +4,30 @@ using System;
 using System.Linq;
 
 public class LevelBuilder {
-	
+	float doorPercentage;
+	int roomAttempts;
+	int extraConnectionAttempts;
+	int enemyCount;
+	int commonLootCount;
+	int rareLootCount;
+
+	Tile defaultFloor;
+	List<Point> corridors = new List<Point>();
+
+	Tile RandomFloorTile() {
+		return Util.Shuffle(new List<Tile>() { Tile.Floor1, Tile.Floor2, Tile.Floor3, Tile.Floor4, Tile.Floor5, Tile.Floor6 })[0];
+	}
+
 	public void Build(Game game) {
+		doorPercentage = UnityEngine.Random.value;
+		roomAttempts = UnityEngine.Random.Range(20, 40);
+		extraConnectionAttempts = UnityEngine.Random.Range(20, 40);
+		enemyCount = UnityEngine.Random.Range(8, 14);
+		commonLootCount = UnityEngine.Random.Range(8, 14);
+		rareLootCount = UnityEngine.Random.Range(0, 2);
+
+		defaultFloor = RandomFloorTile();
+
 		var roomWidth = UnityEngine.Random.Range(3,5);
 		var roomHeight = UnityEngine.Random.Range(3,5);
 
@@ -13,20 +35,21 @@ public class LevelBuilder {
 		game.WallsUpdated = true;
 		game.ObjectsUpdated = true;
 
+		var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();
 		var rx = (game.Width - roomWidth) / 2;
 		var ry = (game.Height - roomHeight) / 2;
-		var floor = Tile.RandomFloor();
 		for (var x = 0; x < roomWidth; x++) {
 			for (var y = 0; y < roomHeight; y++) {
 				game.SetTile(rx + x, ry + y, floor);
 			}
 		}
 
-		for (var i = 0; i < 30; i++)
+		for (var i = 0; i < roomAttempts; i++)
 			AddRoom(game, UnityEngine.Random.Range(5,7), UnityEngine.Random.Range(5,7));
 
 		AddSouthConnections(game);
 		AddEastConnections(game);
+		AddExtraDoors(game);
 
 		CleanupDoors(game);
 
@@ -47,21 +70,32 @@ public class LevelBuilder {
 			game.Player = game.Creatures[0];
 	}
 
+	void AddExtraDoors(Game game) {
+		var doorCount = Mathf.RoundToInt(doorPercentage * 5);
+		for (var i = 0; i < doorCount; i++) {
+			if (corridors.Any()) {
+				var p = Util.Shuffle(corridors)[0];
+				corridors.Remove(p);
+				game.SetTile(p.X, p.Y, Tile.DoorClosed);
+			}
+		}
+	}
+
 	void AddStairsDown(Game game) {
 		var x = -1;
 		var y = -1;
 
 		while (game.GetTile(x,y).BlocksMovement
-			|| game.GetTile(x-1,y+1).BlocksMovement 
-			|| game.GetTile(x-1,y+0).BlocksMovement 
-			|| game.GetTile(x-1,y-1).BlocksMovement 
-			|| game.GetTile(x-0,y+1).BlocksMovement 
-			|| game.GetTile(x-0,y-1).BlocksMovement 
-			|| game.GetTile(x+1,y+1).BlocksMovement 
-			|| game.GetTile(x+1,y+0).BlocksMovement 
-			|| game.GetTile(x+1,y-1).BlocksMovement 
-			|| game.GetCreature(new Point(x,y)) != null 
-			|| game.GetItem(new Point (x,y)) != null) {
+				|| game.GetTile(x-1,y+1).BlocksMovement 
+				|| game.GetTile(x-1,y+0).BlocksMovement 
+				|| game.GetTile(x-1,y-1).BlocksMovement 
+				|| game.GetTile(x-0,y+1).BlocksMovement 
+				|| game.GetTile(x-0,y-1).BlocksMovement 
+				|| game.GetTile(x+1,y+1).BlocksMovement 
+				|| game.GetTile(x+1,y+0).BlocksMovement 
+				|| game.GetTile(x+1,y-1).BlocksMovement 
+				|| game.GetCreature(new Point(x,y)) != null 
+				|| game.GetItem(new Point (x,y)) != null) {
 			x = UnityEngine.Random.Range(0, game.Width);
 			y = UnityEngine.Random.Range(0, game.Height);
 		}
@@ -81,11 +115,14 @@ public class LevelBuilder {
 				if (!game.GetTile(x,y-1).BlocksMovement) openSpaces++;
 				if (!game.GetTile(x,y+1).BlocksMovement) openSpaces++;
 
-				if (openSpaces > 2)
-					game.SetTile(x, y, Tile.Floor2);
+				if (openSpaces > 2) {
+					var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();
+					game.SetTile(x, y, floor);
+				}
 			}
 		}
 	}
+
 	void RepositionPlayer(Game game) {
 		var x = -1;
 		var y = -1;
@@ -117,7 +154,7 @@ public class LevelBuilder {
 	}
 
 	void AddEnemies(Game game) {
-		for (var i = 0; i < 8; i++) {
+		for (var i = 0; i < enemyCount; i++) {
 			var x = -1;
 			var y = -1;
 
@@ -157,7 +194,7 @@ public class LevelBuilder {
 	}
 
 	void AddCommonLoot(Game game) {
-		for (var i = 0; i < 20; i++) {
+		for (var i = 0; i < commonLootCount; i++) {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
@@ -176,7 +213,7 @@ public class LevelBuilder {
 	}
 
 	void AddRareLoot(Game game) {
-		for (var i = 0; i < 1; i++) {
+		for (var i = 0; i < rareLootCount; i++) {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
@@ -196,8 +233,7 @@ public class LevelBuilder {
 	}
 
 	void AddSouthConnections(Game game) {
-		var floor = Tile.RandomFloor();
-		for (var i = 0; i < 20; i++) {
+		for (var i = 0; i < extraConnectionAttempts; i++) {
 			var cx = UnityEngine.Random.Range(0, game.Width);
 			var cy = UnityEngine.Random.Range(0, game.Height);
 
@@ -212,15 +248,17 @@ public class LevelBuilder {
 				length++;
 
 			if (game.GetTile(cx,cy+length).IsFloor && length > 1 && length < 8) {
-				for (var l = 0; l < length; l++)
+				var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();
+				for (var l = 0; l < length; l++) {
 					game.SetTile(cx,cy+l,floor);
+					corridors.Add(new Point(cx, cy+l));
+				}
 			}
 		}
 	}
 
 	void AddEastConnections(Game game) {
-		var floor = Tile.RandomFloor();
-		for (var i = 0; i < 20; i++) {
+		for (var i = 0; i < extraConnectionAttempts; i++) {
 			var cx = UnityEngine.Random.Range(0, game.Width);
 			var cy = UnityEngine.Random.Range(0, game.Height);
 
@@ -235,8 +273,11 @@ public class LevelBuilder {
 				length++;
 
 			if (game.GetTile(cx+length,cy).IsFloor && length > 1 && length < 8) {
-				for (var l = 0; l < length; l++)
+				var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();
+				for (var l = 0; l < length; l++) {
 					game.SetTile(cx+l,cy,floor);
+					corridors.Add(new Point(cx+l, cy));
+				}
 			}
 		}
 	}
@@ -285,8 +326,8 @@ public class LevelBuilder {
 		var sDoorCandidates = new List<Point>();
 		var wDoorCandidates = new List<Point>();
 		var eDoorCandidates = new List<Point>();
+		var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();
 
-		var floor = Tile.RandomFloor();
 		for (var xo = 0; xo < roomWidth; xo++) {
 			for (var yo = 0; yo < roomHeight; yo++) {
 				if (xo == 0 && yo == 0 || xo == 0 && yo == roomHeight - 1 
@@ -336,7 +377,8 @@ public class LevelBuilder {
 	}
 
 	void AddDoor(Game game, Point candidate) {
-		var floor = UnityEngine.Random.value < 0.33f ? Tile.DoorClosed : Tile.Floor2;
-		game.SetTile(candidate.X, candidate.Y, floor);
+		var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();
+		var thisFloor = UnityEngine.Random.value < doorPercentage ? Tile.DoorClosed : floor;
+		game.SetTile(candidate.X, candidate.Y, thisFloor);
 	}
 }

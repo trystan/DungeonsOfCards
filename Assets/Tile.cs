@@ -6,19 +6,20 @@ using System.Linq;
 public class Tile {
 	public static Tile OutOfBounds = new Tile { FloorIndex = 8, BlocksMovement = true, IsFloor = false };
 
-	public static Tile Floor1 = new Tile { FloorIndex = 21 *  3 + 22 };
-	public static Tile Floor2 = new Tile { FloorIndex = 21 *  6 + 22 };
-	public static Tile Floor3 = new Tile { FloorIndex = 21 *  9 + 22 };
-	public static Tile Floor4 = new Tile { FloorIndex = 21 * 12 + 22 };
-	public static Tile Wall = new Tile { FloorIndex = 0, BlocksMovement = true, IsFloor = false };
-	public static Tile DoorClosed = new Tile { FloorIndex = Floor2.FloorIndex, MiddleIndex = 0, IsFloor = true, IsDoor = true, BlocksMovement = true };
-	public static Tile DoorOpen   = new Tile { FloorIndex = Floor2.FloorIndex, MiddleIndex = 6, IsFloor = true, IsDoor = true };
-
-	public static Tile StairsDown = new Tile { FloorIndex = Floor4.FloorIndex, IsFloor = true };
-
-	public static Tile RandomFloor() {
-		return Floor2; // Util.Shuffle(new List<Tile>() { Floor1, Floor2, Floor3, Floor4 })[0];
+	private static int FloorCenter(int x, int y) {
+		return x * 7 + 1 + y * 63 + 21;
 	}
+	public static Tile Floor1 = new Tile { FloorIndex = FloorCenter( 0, 1) };
+	public static Tile Floor2 = new Tile { FloorIndex = FloorCenter( 0, 2) };
+	public static Tile Floor3 = new Tile { FloorIndex = FloorCenter( 1, 7) };
+	public static Tile Floor4 = new Tile { FloorIndex = FloorCenter( 1, 8) };
+	public static Tile Floor5 = new Tile { FloorIndex = FloorCenter( 0, 8) };
+	public static Tile Floor6 = new Tile { FloorIndex = FloorCenter( 1, 3) };
+	public static Tile Wall = new Tile { FloorIndex = 0, BlocksMovement = true, IsFloor = false };
+	public static Tile DoorClosed = new Tile { FloorIndex = FloorCenter(1,8), MiddleIndex = 0, IsFloor = true, IsDoor = true, BlocksMovement = true };
+	public static Tile DoorOpen   = new Tile { FloorIndex = FloorCenter(1,8), MiddleIndex = 6, IsFloor = true, IsDoor = true };
+
+	public static Tile StairsDown = new Tile { FloorIndex = FloorCenter(0,1), IsFloor = true };
 
 	public int FloorIndex = -1;
 	public int MiddleIndex = -1;
