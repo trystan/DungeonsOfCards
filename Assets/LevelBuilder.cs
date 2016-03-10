@@ -22,7 +22,7 @@ public class LevelBuilder {
 		doorPercentage = UnityEngine.Random.value;
 		roomAttempts = UnityEngine.Random.Range(20, 40);
 		extraConnectionAttempts = UnityEngine.Random.Range(20, 40);
-		enemyCount = UnityEngine.Random.Range(8, 14);
+		enemyCount = UnityEngine.Random.Range(8, 14) + game.CurrentLevel;
 		commonLootCount = UnityEngine.Random.Range(8, 14);
 		rareLootCount = UnityEngine.Random.Range(0, 2);
 
@@ -166,7 +166,11 @@ public class LevelBuilder {
 				y = UnityEngine.Random.Range(0, game.Height);
 			}
 
-			game.Creatures.Add(game.Catalog.Enemy(x,y));
+			var enemy = game.Catalog.Enemy(x,y);
+			if (enemy.TeamName == game.Player.TeamName)
+				enemy = game.Catalog.Enemy(x,y);
+			
+			game.Creatures.Add(enemy);
 		}
 	}
 
