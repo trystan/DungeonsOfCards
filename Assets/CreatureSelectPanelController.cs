@@ -21,7 +21,7 @@ public class CreatureSelectPanelController : MonoBehaviour {
 		Stats.text = "Hitpoints:\t\t" + creature.MaximumHealth
 			+ "\nAttack:\t\t\t" + creature.AttackValue + " + " + creature.MaximumAttackCards + " cards"
 			+ "\nDefense:\t\t" + creature.DefenseValue + " + " + creature.MaximumDefenseCards + " cards"
-			+ "\nHand:\t\t\t\t" + creature.MaximumHandCards + " cards";
+			+ "\nHand:\t\t\t" + creature.MaximumHandCards + " cards";
 		
 		var parts = creature.SpriteName.Split(':');
 		var sprites = Resources.LoadAll<Sprite>(parts[0]);

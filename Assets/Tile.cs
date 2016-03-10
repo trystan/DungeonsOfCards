@@ -9,8 +9,8 @@ public class Tile {
 	private static int FloorCenter(int x, int y) {
 		return x * 7 + 1 + y * 63 + 21;
 	}
-	public static Tile Floor1 = new Tile { FloorIndex = FloorCenter( 0, 1) };
-	public static Tile Floor2 = new Tile { FloorIndex = FloorCenter( 0, 2) };
+	public static Tile Floor1 = new Tile { FloorIndex = FloorCenter( 0, 2) };
+	public static Tile Floor2 = new Tile { FloorIndex = FloorCenter( 0, 3) };
 	public static Tile Floor3 = new Tile { FloorIndex = FloorCenter( 1, 7) };
 	public static Tile Floor4 = new Tile { FloorIndex = FloorCenter( 1, 8) };
 	public static Tile Floor5 = new Tile { FloorIndex = FloorCenter( 0, 8) };

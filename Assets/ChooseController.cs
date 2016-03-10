@@ -1,10 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class ChooseController : MonoBehaviour {
-	public RectTransform Container;
-	public GameObject ChoicePanel;
+	public CreatureSelectPanelController ChoicePanel;
+
+	List<Creature> Creatures = new List<Creature>();
+	List<Pack> Pack1s = new List<Pack>();
+	List<Pack> Pack2s = new List<Pack>();
+
+	int index;
 
 	void Start() {
 		var catalog = new Catalog();
@@ -22,11 +27,51 @@ public class ChooseController : MonoBehaviour {
 		AddChoice(catalog.LeafPerson(0,0), catalog.FloraPack(), catalog.FloraPack());
 		AddChoice(catalog.ShroomPerson(0,0), catalog.FloraPack(), catalog.FungusPack());
 		AddChoice(catalog.MossMan(0,0), catalog.FloraPack(), catalog.MossPack());
+
+		index = UnityEngine.Random.Range(0, Creatures.Count);
+		Show();
+	}
+
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.H) || Input.GetKeyDown(KeyCode.Keypad4))
+			Previous();
+		if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.L) || Input.GetKeyDown(KeyCode.Keypad6))
+			Next();
+		if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
+			SelectCurrentCreature();
 	}
 
 	void AddChoice(Creature creature, Pack pack1, Pack pack2) {
-		var view = Instantiate(ChoicePanel);
-		view.transform.SetParent(Container);
-		view.GetComponent<CreatureSelectPanelController>().Show(creature, pack1, pack2);
+		Creatures.Add(creature);
+		Pack1s.Add(pack1);
+		Pack2s.Add(pack2);
+	}
+
+	public void Previous() {
+		index--;
+		if (index < 0)
+			index += Creatures.Count;
+		Show();
+	}
+
+	public void Next() {
+		index++;
+		if (index >= Creatures.Count)
+			index -= Creatures.Count;
+		Show();
+	}
+
+	public void SelectCurrentCreature() {
+		Globals.nextPlayer = Creatures[index];
+		Globals.nextPlayer.Ai = new PlayerAi();
+		UnityEngine.SceneManagement.SceneManager.LoadScene(2);
+	}
+
+	void Show() {
+		var creature = Creatures[index];
+		var pack1 = Pack1s[index];
+		var pack2 = Pack2s[index];
+
+		ChoicePanel.Show(creature, pack1, pack2);
 	}
 }
