@@ -12,6 +12,9 @@ public class GuiController : MonoBehaviour {
 	public Image FadeToBlack;
 	public Text FadeText;
 
+	public GameObject AlivePanel;
+	public GameObject DeadPanel;
+
 	bool fadeOut = false;
 	bool fadeIn = false;
 	float fadeCounter = 1f;
@@ -26,6 +29,11 @@ public class GuiController : MonoBehaviour {
 			DefenseLabel.text = "Defense (" + Player.DefenseStack.Count + "/" + Player.MaximumDefenseCards + ")";
 			HandLabel.text = "Hand (" + Player.HandStack.Count + "/" + Player.MaximumHandCards + ")";
 			DiscardLabel.text = "Discard (" + Player.DiscardStack.Count + ")";
+		}
+
+		if (Player != null && !Player.Exists) {
+			AlivePanel.SetActive(false);
+			DeadPanel.SetActive(true);
 		}
 
 		if (fadeOut) {
@@ -57,6 +65,8 @@ public class GuiController : MonoBehaviour {
 
 	public void Show(Creature creature) {
 		Player = creature;
+		AlivePanel.SetActive(true);
+		DeadPanel.SetActive(false);
 	}
 
 	public void FadeIn(string text, Action callback) {

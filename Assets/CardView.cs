@@ -28,6 +28,11 @@ public class CardView : MonoBehaviour {
 	Vector2 targetPosition;
 
 	void Start() {
+		if (!Card.Exists || !Player.Exists) {
+			Instantiator.Remove(this);
+			return;
+		}
+
 		DrawPile = GameObject.Find("DrawPile").GetComponent<RectTransform>();
 		HandPile = GameObject.Find("HandPile").GetComponent<RectTransform>();
 		AttackPile = GameObject.Find("AttackPile").GetComponent<RectTransform>();
@@ -37,7 +42,7 @@ public class CardView : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!Card.Exists) {
+		if (!Card.Exists || !Player.Exists) {
 			Instantiator.Remove(this);
 			return;
 		}

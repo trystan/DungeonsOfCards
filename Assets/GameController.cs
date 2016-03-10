@@ -121,6 +121,9 @@ public class GameController : MonoBehaviour {
 		} else {
 			merchantPanel.Hide();
 			game.TakeTurn();
+
+			if (Input.GetKey(KeyCode.KeypadEnter) || Input.GetKey(KeyCode.Return))
+				UnityEngine.SceneManagement.SceneManager.LoadScene(1);
 		}
 	}
 }
