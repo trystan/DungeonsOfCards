@@ -394,6 +394,7 @@ public class Catalog {
 	public Creature Merchant(int x, int y) {
 		var pack = Util.Shuffle(new List<Pack>() { GenericPack(), AdventurerPack(), AttackPack(), DefensePack(), PriestPack(), WizardPack() })[0];
 		return new Creature() {
+			Name = "Merchant",
 			Position = new Point(x, y),
 			Ai = new MerchantAi() {
 				Name = pack.Name + " pack merchant",
@@ -414,6 +415,7 @@ public class Catalog {
 
 	public Creature Player(int x, int y) {
 		return new Creature() {
+			Name = "Hero",
 			Position = new Point(x, y),
 			Ai = new PlayerAi(),
 			TeamName = "Player",
@@ -431,6 +433,7 @@ public class Catalog {
 
 	public Creature Skeleton(int x, int y) {
 		return new Creature() {
+			Name = "Skeleton",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
@@ -448,6 +451,7 @@ public class Catalog {
 
 	public Creature Zombie(int x, int y) {
 		return new Creature() {
+			Name = "Zombie",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
@@ -465,6 +469,7 @@ public class Catalog {
 
 	public Creature Vampire(int x, int y) {
 		return new Creature() {
+			Name = "Vampire",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
@@ -482,6 +487,7 @@ public class Catalog {
 
 	public Creature Ghost(int x, int y) {
 		return new Creature() {
+			Name = "Ghost",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
@@ -499,6 +505,7 @@ public class Catalog {
 
 	public Creature TreePerson(int x, int y) {
 		return new Creature() {
+			Name = "Tree",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
@@ -516,6 +523,7 @@ public class Catalog {
 
 	public Creature LeafPerson(int x, int y) {
 		return new Creature() {
+			Name = "Leaf",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
@@ -533,6 +541,7 @@ public class Catalog {
 
 	public Creature ShroomPerson(int x, int y) {
 		return new Creature() {
+			Name = "Shroom",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
@@ -550,6 +559,7 @@ public class Catalog {
 
 	public Creature MossMan(int x, int y) {
 		return new Creature() {
+			Name = "Moss man",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
@@ -567,6 +577,7 @@ public class Catalog {
 
 	public Creature RogueLizard(int x, int y) {
 		return new Creature() {
+			Name = "Rogue lizard",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
@@ -584,6 +595,7 @@ public class Catalog {
 
 	public Creature AttackLizard(int x, int y) {
 		return new Creature() {
+			Name = "Spear lizard",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
@@ -601,6 +613,7 @@ public class Catalog {
 
 	public Creature DefenseLizard(int x, int y) {
 		return new Creature() {
+			Name = "Shield lizard",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
@@ -618,6 +631,7 @@ public class Catalog {
 
 	public Creature PriestLizard(int x, int y) {
 		return new Creature() {
+			Name = "Priest lizard",
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",

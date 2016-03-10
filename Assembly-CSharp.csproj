@@ -51,8 +51,10 @@
      <Compile Include="Assets\CardForSaleView.cs" />
      <Compile Include="Assets\CardView.cs" />
      <Compile Include="Assets\Catalog.cs" />
+     <Compile Include="Assets\ChooseController.cs" />
      <Compile Include="Assets\Combat.cs" />
      <Compile Include="Assets\Creature.cs" />
+     <Compile Include="Assets\CreatureSelectPanelController.cs" />
      <Compile Include="Assets\CreatureSummaryController.cs" />
      <Compile Include="Assets\CreatureView.cs" />
      <Compile Include="Assets\DelayedEffect.cs" />
@@ -60,6 +62,7 @@
      <Compile Include="Assets\FloorView.cs" />
      <Compile Include="Assets\Game.cs" />
      <Compile Include="Assets\GameController.cs" />
+     <Compile Include="Assets\Globals.cs" />
      <Compile Include="Assets\GuiController.cs" />
      <Compile Include="Assets\Instantiator.cs" />
      <Compile Include="Assets\IntroController.cs" />

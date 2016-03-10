@@ -29,6 +29,8 @@ public class GameController : MonoBehaviour {
 		game = new Game(20, 20) {
 			Catalog = new Catalog(),
 		};
+		game.Player = Globals.nextPlayer;
+		game.Creatures.Add(game.Player);
 
 		new LevelBuilder().Build(game);
 

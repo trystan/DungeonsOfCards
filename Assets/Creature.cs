@@ -7,6 +7,7 @@ public class Creature {
 	public bool Exists = true;
 	public Point Position;
 	public string SpriteName;
+	public string Name;
 	public string TeamName;
 	public AI Ai;
 
