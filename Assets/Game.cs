@@ -82,6 +82,7 @@ public class Game {
 	}
 
 	public void ExitLevelDownStairs(Creature creature) {
+		creature.StairsDownCounter++;
 		if (creature == Player) {
 			ReadyToLoadNextLevel = 1;
 		} else {
@@ -90,6 +91,7 @@ public class Game {
 	}
 
 	public void ExitLevelUpStairs(Creature creature) {
+		creature.StairsUpCounter++;
 		if (creature == Player) {
 			ReadyToLoadNextLevel = -1;
 		} else {
@@ -111,6 +113,7 @@ public class Game {
 		ReadyToLoadNextLevel = 0;
 		Clear();
 		new LevelBuilder().Build(this, false);
+		Player.DeepestFloor = Mathf.Max(Player.DeepestFloor, CurrentLevel);
 		NewItems.AddRange(Items);
 		NewCreatures.AddRange(Creatures);
 	}

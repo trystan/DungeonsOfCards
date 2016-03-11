@@ -19,6 +19,10 @@ public class Creature {
 	public int CurrentHealth;
 	public int MaximumHandCards;
 
+	public int DeepestFloor;
+	public int StairsUpCounter;
+	public int StairsDownCounter;
+
 	public List<Card> DrawStack = new List<Card>();
 	public List<Card> AttackStack = new List<Card>();
 	public List<Card> DefenseStack = new List<Card>();

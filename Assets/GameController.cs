@@ -148,7 +148,7 @@ public class GameController : MonoBehaviour {
 			game.TakeTurn();
 
 			if (Input.GetKey(KeyCode.KeypadEnter) || Input.GetKey(KeyCode.Return))
-				UnityEngine.SceneManagement.SceneManager.LoadScene(1);
+				UnityEngine.SceneManagement.SceneManager.LoadScene(3);
 		}
 	}
 }

@@ -70,6 +70,7 @@
      <Compile Include="Assets\LevelBuilder.cs" />
      <Compile Include="Assets\MerchantPanelController.cs" />
      <Compile Include="Assets\Point.cs" />
+     <Compile Include="Assets\ScoreController.cs" />
      <Compile Include="Assets\StackView.cs" />
      <Compile Include="Assets\StartController.cs" />
      <Compile Include="Assets\TextPopup.cs" />
