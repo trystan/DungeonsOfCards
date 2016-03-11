@@ -110,10 +110,10 @@ public class LevelBuilder {
 					continue;
 				
 				var openSpaces = 0;
-				if (!game.GetTile(x-1,y).BlocksMovement) openSpaces++;
-				if (!game.GetTile(x+1,y).BlocksMovement) openSpaces++;
-				if (!game.GetTile(x,y-1).BlocksMovement) openSpaces++;
-				if (!game.GetTile(x,y+1).BlocksMovement) openSpaces++;
+				if (!game.GetTile(x-1,y).IsWall) openSpaces++;
+				if (!game.GetTile(x+1,y).IsWall) openSpaces++;
+				if (!game.GetTile(x,y-1).IsWall) openSpaces++;
+				if (!game.GetTile(x,y+1).IsWall) openSpaces++;
 
 				if (openSpaces > 2) {
 					var floor = UnityEngine.Random.value < 0.9f ? defaultFloor : RandomFloorTile();

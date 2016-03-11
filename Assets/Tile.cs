@@ -15,7 +15,7 @@ public class Tile {
 	public static Tile Floor4 = new Tile { FloorIndex = FloorCenter( 1, 8) };
 	public static Tile Floor5 = new Tile { FloorIndex = FloorCenter( 0, 8) };
 	public static Tile Floor6 = new Tile { FloorIndex = FloorCenter( 1, 3) };
-	public static Tile Wall = new Tile { FloorIndex = 0, BlocksMovement = true, IsFloor = false };
+	public static Tile Wall = new Tile { FloorIndex = 0, BlocksMovement = true, IsFloor = false, IsWall = true };
 	public static Tile DoorClosed = new Tile { FloorIndex = FloorCenter(1,8), MiddleIndex = 0, IsFloor = true, IsDoor = true, BlocksMovement = true };
 	public static Tile DoorOpen   = new Tile { FloorIndex = FloorCenter(1,8), MiddleIndex = 6, IsFloor = true, IsDoor = true };
 
@@ -26,4 +26,5 @@ public class Tile {
 	public bool BlocksMovement;
 	public bool IsFloor = true;
 	public bool IsDoor = false;
+	public bool IsWall = false;
 }
