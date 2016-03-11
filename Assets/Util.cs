@@ -18,10 +18,11 @@ public static class Util {
 	public static T WeightedChoice<T>(Dictionary<T, int> choices) {
 		var i = UnityEngine.Random.Range(0, choices.Values.Sum());
 		foreach (var kv in choices) {
-			if (i <= kv.Value)
+			if (i < kv.Value)
 				return kv.Key;
 			i -= kv.Value;
 		}
+		Debug.Log("WeightedChoice miss " + i + " / " + choices.Values.Sum());
 		return choices.First().Key;
 	}
 }

@@ -18,6 +18,10 @@ public struct Point {
 		return Mathf.CeilToInt(Mathf.Sqrt(dx*dx + dy*dy));
 	}
 
+	public static Point operator *(Point a, int m) {
+		return new Point(a.X * m, a.Y * m);
+	}
+
 	public static Point operator +(Point a, Point b) {
 		return new Point(a.X + b.X, a.Y + b.Y);
 	}

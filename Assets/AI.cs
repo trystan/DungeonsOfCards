@@ -21,6 +21,8 @@ public class MerchantAi : AI {
 }
 
 public class ComputerAi : AI {
+	Point lastMovedDirection;
+
 	public void TakeTurn(Game game, Creature creature) {
 		var cardsToPlay = new Dictionary<Card, int>();
 
@@ -65,52 +67,97 @@ public class ComputerAi : AI {
 				if (x != 0 && y != 0)
 					continue;
 
+				var neighbor = creature.Position + new Point(x,y);
+				var cardName = "AI_MOVE " + x + "x" + y;
+
+				var strength = 0;
+				if (new Point(x,y) == lastMovedDirection)
+					strength = 2;
+				else if (new Point(x,y) == lastMovedDirection * -1)
+					strength = 0;
+				else
+					strength = 1;
+
+				var fear = Mathf.RoundToInt(5 * (1f - (1f * creature.CurrentHealth / creature.MaximumHealth)));
+
 				if (x == 0 && y == 0) {
-					var strength = 3 - GetDanger(game, creature, new Point(0,0));
+					strength -= GetDanger(game, creature, new Point(0,0)) + fear;
 					if (strength > 0)
-						cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength);
+						cardsToPlay.Add(new Card() { Name = cardName }, strength);
 				}
 
-				var neighbor = creature.Position + new Point(x,y);
 
 				var other = game.GetCreature(neighbor);
 				if (other != null) {
 					if (other.TeamName != creature.TeamName && other.TeamName != "Merchant") {
-						var strength = 5 + (creature.AttackValue + creature.AttackStack.Count) * 2 - other.DefenseValue - other.DefenseStack.Count;
+						strength = GetAttackability(creature, other) - fear;
 						if (strength > 0)
-							cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength);
+							cardsToPlay.Add(new Card() { Name = cardName }, strength);
 					}
 				} else if (!game.GetTile(neighbor.X, neighbor.Y).BlocksMovement) {
-					var strength = 5 - GetDanger(game, creature, neighbor);
+					strength -= GetDanger(game, creature, neighbor);
 					if (strength > 0)
-						cardsToPlay.Add(new Card() { Name = "AI_MOVE " + x + "x" + y }, strength);
+						cardsToPlay.Add(new Card() { Name = cardName }, strength);
 				}
 			}
 		}
 
-		var averageWeight = cardsToPlay.Values.Sum() / cardsToPlay.Count;
-		var weightedCardsToPlay = new Dictionary<Card, int>();
-		foreach (var kv in cardsToPlay.Where(p => p.Value > averageWeight))
-			weightedCardsToPlay[kv.Key] = kv.Value * kv.Value;
+		if (cardsToPlay.Count == 0) {
+			creature.MoveBy(game, 0, 0);
+		} else {
+			var averageWeight = cardsToPlay.Values.Sum() / cardsToPlay.Count;
+			var weightedCardsToPlay = new Dictionary<Card, int>();
+			foreach (var kv in cardsToPlay.Where(p => p.Value > averageWeight))
+				weightedCardsToPlay[kv.Key] = kv.Value * kv.Value;
 
-		var chosenCard = Util.WeightedChoice(cardsToPlay);
-		if (chosenCard.Name.StartsWith("AI_MOVE")) {
-			var xy = chosenCard.Name.Split(' ')[1];
-			var x = int.Parse(xy.Split('x')[0]);
-			var y = int.Parse(xy.Split('x')[1]);
-			creature.MoveBy(game, x, y);
-		} else
-			creature.UseCard(game, chosenCard);
+			var chosenCard = Util.WeightedChoice(cardsToPlay);
+			if (chosenCard.Name.StartsWith("AI_MOVE")) {
+				var xy = chosenCard.Name.Split(' ')[1];
+				var x = int.Parse(xy.Split('x')[0]);
+				var y = int.Parse(xy.Split('x')[1]);
+				creature.MoveBy(game, x, y);
+				if (x != 0 && y != 0)
+					lastMovedDirection = new Point(x,y);
+			} else
+				creature.UseCard(game, chosenCard);
+		}
 	}
 
 	int GetDanger(Game game, Creature creature, Point point) {
+		var total = 0;
+		foreach (var p in new Point[] { new Point( -1, 1), new Point(-1, 0), new Point(-1,-1),
+				new Point(  0, 1), new Point( 0, 0), new Point( 0,-1),
+				new Point(  1, 1), new Point( 1, 0), new Point( 1,-1),
+				new Point( -2, 0), new Point( 2, 0), new Point( 0,-2), new Point( 0, 2),
+				new Point( -3, 0), new Point( 3, 0), new Point( 0,-3), new Point( 0, 3)})
+			total += GetImmediateDanger(game, creature, point);
+		return total;
+	}
+
+	int GetImmediateDanger(Game game, Creature creature, Point point) {
 		var n = game.GetCreature(point + new Point( 0, 1));
 		var s = game.GetCreature(point + new Point( 0,-1));
 		var w = game.GetCreature(point + new Point(-1, 0));
 		var e = game.GetCreature(point + new Point( 1, 0));
-		return (n != null && n.TeamName != creature.TeamName ? 1 : 0)
-			+ (s != null && s.TeamName != creature.TeamName ? 1 : 0)
-			+ (w != null && w.TeamName != creature.TeamName ? 1 : 0)
-			+ (e != null && e.TeamName != creature.TeamName ? 1 : 0);
+		return (n == null ? 0 : GetDanger(creature, n))
+			+ (s == null ? 0 : GetDanger(creature, s))
+			+ (w == null ? 0 : GetDanger(creature, w))
+			+ (e == null ? 0 : GetDanger(creature, e));
+	}
+
+	int GetDanger(Creature self, Creature other) {
+		if (self.TeamName == other.TeamName || other.TeamName == "Merchant")
+			return 0;
+		else {
+			return (((other.AttackValue + other.MaximumAttackCards / 2) - (self.DefenseValue + self.DefenseStack.Count)) * 2
+				- GetAttackability(self, other)) * 2;
+		}
+	}
+
+	int GetAttackability(Creature self, Creature other) {
+		if (self.TeamName == other.TeamName || other.TeamName == "Merchant")
+			return 0;
+		else
+			return ((self.AttackValue + self.AttackStack.Count) - (other.DefenseValue + other.MaximumDefenseCards / 2)) * 2;
 	}
 }
