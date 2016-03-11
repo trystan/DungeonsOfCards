@@ -34,7 +34,10 @@ public class Creature {
 		if (other != null && other != this) {
 			if (other.TeamName == "Merchant" && this == game.Player)
 				game.CurrentMerchant = other;
-			else if (other.TeamName != TeamName)
+			else if (other.TeamName == TeamName && this == game.Player) {
+				other.Position = this.Position;
+				this.Position = next;
+			} else
 				Attack(game, other);
 		} else if (tile == Tile.DoorClosed) {
 			game.SetTile(next.X, next.Y, Tile.DoorOpen);

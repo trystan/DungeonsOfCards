@@ -13,10 +13,10 @@ public class ChooseController : MonoBehaviour {
 
 	void Start() {
 		var catalog = new Catalog();
-		AddChoice(catalog.RogueLizard(0,0), catalog.GenericPack(), catalog.RoguePack());
-		AddChoice(catalog.AttackLizard(0,0), catalog.GenericPack(), catalog.AttackPack());
-		AddChoice(catalog.DefenseLizard(0,0), catalog.GenericPack(), catalog.DefensePack());
-		AddChoice(catalog.PriestLizard(0,0), catalog.GenericPack(), catalog.PriestPack());
+		AddChoice(catalog.RogueLizard(0,0), catalog.BasicPack(), catalog.RoguePack());
+		AddChoice(catalog.AttackLizard(0,0), catalog.BasicPack(), catalog.AttackPack());
+		AddChoice(catalog.DefenseLizard(0,0), catalog.BasicPack(), catalog.DefensePack());
+		AddChoice(catalog.PriestLizard(0,0), catalog.BasicPack(), catalog.PriestPack());
 
 		AddChoice(catalog.Skeleton(0,0), catalog.UndeadPack(), catalog.SkeletonPack());
 		AddChoice(catalog.Zombie(0,0), catalog.UndeadPack(), catalog.ZombiePack());

@@ -79,6 +79,24 @@ public class Catalog {
 		};
 	}
 
+	public Pack GoldPack() {
+		return new Pack() {
+			Name = "Gold",
+			Cards = new List<Card>() {
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+				Card("Gold"),
+			}
+		};
+	}
+
 	public Pack MerchantPack() {
 		return new Pack() {
 			Name = "Merchant",
@@ -120,6 +138,8 @@ public class Catalog {
 			Name = "Wizard",
 			Cards = new List<Card>() {
 				Card("Freeze closest"),
+				Card("Freeze closest"),
+				Card("Burn closest"),
 				Card("Burn closest"),
 				Card("Draw 3"),
 				Card("Draw 3"),
@@ -157,9 +177,6 @@ public class Catalog {
 				Card("Focus"),
 				Card("Draw 3"),
 				Card("Draw 3"),
-
-				Card("Miss"),
-				Card("Miss"),
 				Card("Evade"),
 				Card("Evade"),
 				Card("Stab +1"),
@@ -204,7 +221,7 @@ public class Catalog {
 		};
 	}
 
-	public Pack GenericPack() {
+	public Pack BasicPack() {
 		return new Pack() {
 			Name = "Basic",
 			Cards = new List<Card>() {
@@ -396,7 +413,7 @@ public class Catalog {
 	}
 
 	public Creature Merchant(int x, int y) {
-		var pack = Util.Shuffle(new List<Pack>() { GenericPack(), AdventurerPack(), AttackPack(), DefensePack(), PriestPack(), WizardPack() })[0];
+		var pack = Util.Shuffle(new List<Pack>() { BasicPack(), AdventurerPack(), AttackPack(), DefensePack(), PriestPack(), WizardPack() })[0];
 		return new Creature() {
 			Name = "Merchant",
 			Position = new Point(x, y),
@@ -568,9 +585,9 @@ public class Catalog {
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
 			SpriteName = "DawnLike/Characters/Plant0:moss man",
-			AttackValue = 4,
+			AttackValue = 3,
 			MaximumAttackCards = 5,
-			DefenseValue = 4,
+			DefenseValue = 3,
 			MaximumDefenseCards = 5,
 			MaximumHealth = 12,
 			CurrentHealth = 12,
@@ -593,7 +610,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), GenericPack(), RoguePack()),
+			DrawStack = Packs(new Point(x,y), BasicPack(), RoguePack()),
 		};
 	}
 
@@ -611,7 +628,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), GenericPack(), AttackPack()),
+			DrawStack = Packs(new Point(x,y), BasicPack(), AttackPack()),
 		};
 	}
 
@@ -629,7 +646,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), GenericPack(), DefensePack()),
+			DrawStack = Packs(new Point(x,y), BasicPack(), DefensePack()),
 		};
 	}
 
@@ -647,7 +664,7 @@ public class Catalog {
 			MaximumHealth = 8,
 			CurrentHealth = 8,
 			MaximumHandCards = 5,
-			DrawStack = Packs(new Point(x,y), GenericPack(), PriestPack()),
+			DrawStack = Packs(new Point(x,y), BasicPack(), PriestPack()),
 		};
 	}
 

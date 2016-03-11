@@ -225,10 +225,11 @@ public class LevelBuilder {
 				continue;
 
 			var card = Util.Shuffle(new List<Card>() {
-				new Card() { Name = "Gold", CardType = CardType.Normal },
-				new Card() { Name = "Gold", CardType = CardType.Normal },
-				new Card() { Name = "Attack +1", CardType = CardType.Attack, CombatBonus = 1 },
-				new Card() { Name = "Defense +1", CardType = CardType.Normal, CombatBonus = 1 },
+				game.Catalog.Card("Gold"),
+				game.Catalog.Card("Gold"),
+				game.Catalog.Card("Gold"),
+				game.Catalog.Card("Attack +1"),
+				game.Catalog.Card("Defense +1"),
 			})[0];
 
 			game.Items.Add(game.Catalog.CardItem(x, y, card));
@@ -244,6 +245,8 @@ public class LevelBuilder {
 				continue;
 
 			var pack = Util.Shuffle(new List<Pack>() {
+				game.Catalog.GoldPack(),
+				game.Catalog.BasicPack(),
 				game.Catalog.AdventurerPack(),
 				game.Catalog.AttackPack(),
 				game.Catalog.DefensePack(),

@@ -65,10 +65,8 @@ public class Card {
 			foreach (var c in game.Creatures.Where(c => c.Exists 
 								&& c.TeamName == "Undead"
 								&& c.Position.DistanceTo(user.Position) < 5)) {
-				if (c.CurrentHealth < c.MaximumHealth) {
-					c.CurrentHealth++;
-					game.Popups.Add(new TextPopup("Heal", c.Position, new Vector3(0,14,0)));
-				}
+				c.TakeDamage(3);
+				game.Popups.Add(new TextPopup("Turn undead", c.Position, new Vector3(0,14,0)));
 			}
 			break;
 		case CardSpecialEffect.Evade:
