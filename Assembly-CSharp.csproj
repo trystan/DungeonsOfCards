@@ -65,7 +65,6 @@
      <Compile Include="Assets\Globals.cs" />
      <Compile Include="Assets\GuiController.cs" />
      <Compile Include="Assets\Instantiator.cs" />
-     <Compile Include="Assets\IntroController.cs" />
      <Compile Include="Assets\Item.cs" />
      <Compile Include="Assets\ItemView.cs" />
      <Compile Include="Assets\LevelBuilder.cs" />

@@ -18,6 +18,11 @@ public class MerchantPanelController : MonoBehaviour {
 		Hide();
 	}
 
+	void Update() {
+		if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
+			Hide();
+	}
+
 	public void Hide() {
 		gameObject.SetActive(false);
 	}
@@ -50,6 +55,9 @@ public class MerchantPanelController : MonoBehaviour {
 			+ Buyer.DefenseStack.Count(c => c.Name == "Gold")
 			+ Buyer.DiscardStack.Count(c => c.Name == "Gold");
 
-		Exposition.text = "You have " + goldCardCount + " gold cards.";
+		if (goldCardCount == 1)
+			Exposition.text = "You have " + goldCardCount + " gold card.";
+		else
+			Exposition.text = "You have " + goldCardCount + " gold cards.";
 	}
 }

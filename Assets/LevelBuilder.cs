@@ -14,6 +14,9 @@ public class LevelBuilder {
 	Tile defaultFloor;
 	List<Point> corridors = new List<Point>();
 
+	Point stairsUpPosition;
+	Point stairsDownPosition;
+
 	Tile RandomFloorTile() {
 		return Util.Shuffle(new List<Tile>() { Tile.Floor1, Tile.Floor2, Tile.Floor3, Tile.Floor4, Tile.Floor5, Tile.Floor6 })[0];
 	}
@@ -53,7 +56,7 @@ public class LevelBuilder {
 
 		CleanupDoors(game);
 
-		AddStairsDown(game);
+		AddStairsDownAndStairsUpPosition(game);
 
 		AddCommonLoot(game);
 		AddRareLoot(game);
@@ -65,7 +68,6 @@ public class LevelBuilder {
 		
 		AddAlly(game);
 		AddEnemies(game);
-
 	}
 
 	void AddExtraDoors(Game game) {
@@ -79,26 +81,63 @@ public class LevelBuilder {
 		}
 	}
 
-	void AddStairsDown(Game game) {
+	void AddStairsDownAndStairsUpPosition(Game game) {
 		var x = -1;
 		var y = -1;
 
-		while (game.GetTile(x,y).BlocksMovement
-				|| game.GetTile(x-1,y+1).BlocksMovement 
-				|| game.GetTile(x-1,y+0).BlocksMovement 
-				|| game.GetTile(x-1,y-1).BlocksMovement 
-				|| game.GetTile(x-0,y+1).BlocksMovement 
-				|| game.GetTile(x-0,y-1).BlocksMovement 
-				|| game.GetTile(x+1,y+1).BlocksMovement 
-				|| game.GetTile(x+1,y+0).BlocksMovement 
-				|| game.GetTile(x+1,y-1).BlocksMovement 
-				|| game.GetCreature(new Point(x,y)) != null 
-				|| game.GetItem(new Point (x,y)) != null) {
+		var downPositions = new List<Point>();
+		var upPositions = new List<Point>();
+
+		while (downPositions.Count < 5) {
 			x = UnityEngine.Random.Range(0, game.Width);
 			y = UnityEngine.Random.Range(0, game.Height);
+			if (game.GetTile(x,y).BlocksMovement
+					|| game.GetTile(x-1,y+1).BlocksMovement 
+					|| game.GetTile(x-1,y+0).BlocksMovement 
+					|| game.GetTile(x-1,y-1).BlocksMovement 
+					|| game.GetTile(x-0,y+1).BlocksMovement 
+					|| game.GetTile(x-0,y-1).BlocksMovement 
+					|| game.GetTile(x+1,y+1).BlocksMovement 
+					|| game.GetTile(x+1,y+0).BlocksMovement 
+					|| game.GetTile(x+1,y-1).BlocksMovement 
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point (x,y)) != null)
+				continue;
+			downPositions.Add(new Point(x,y));
 		}
 
-		game.SetTile(x,y,Tile.StairsDown);
+		while (upPositions.Count < 5) {
+			x = UnityEngine.Random.Range(0, game.Width);
+			y = UnityEngine.Random.Range(0, game.Height);
+			if (game.GetTile(x,y).BlocksMovement
+					|| game.GetTile(x-1,y+1).BlocksMovement 
+					|| game.GetTile(x-1,y+0).BlocksMovement 
+					|| game.GetTile(x-1,y-1).BlocksMovement 
+					|| game.GetTile(x-0,y+1).BlocksMovement 
+					|| game.GetTile(x-0,y-1).BlocksMovement 
+					|| game.GetTile(x+1,y+1).BlocksMovement 
+					|| game.GetTile(x+1,y+0).BlocksMovement 
+					|| game.GetTile(x+1,y-1).BlocksMovement 
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point (x,y)) != null)
+				continue;
+			upPositions.Add(new Point(x,y));
+		}
+
+		int longestDistance = 0;
+		for (var i = 0; i < upPositions.Count; i++) {
+			for (var j = 0; j < downPositions.Count; j++) {
+				var dist = upPositions[i].DistanceTo(downPositions[j]);
+				if (dist <= longestDistance)
+					continue;
+
+				longestDistance = dist;
+				stairsUpPosition = upPositions[i];
+				stairsDownPosition = downPositions[j];
+			}
+		}
+
+		game.SetTile(stairsDownPosition.X, stairsDownPosition.Y ,Tile.StairsDown);
 	}
 
 	void CleanupDoors(Game game) {
@@ -122,33 +161,11 @@ public class LevelBuilder {
 	}
 
 	void RepositionPlayer(Game game) {
-		var x = -1;
-		var y = -1;
-
-		while (game.GetTile(x,y).BlocksMovement
-			|| game.GetTile(x,y) == Tile.StairsDown
-			|| game.GetCreature(new Point(x,y)) != null 
-			|| game.GetItem(new Point (x,y)) != null) {
-			x = UnityEngine.Random.Range(0, game.Width);
-			y = UnityEngine.Random.Range(0, game.Height);
-		}
-
-		game.Player.Position = new Point(x,y);
+		game.Player.Position = stairsUpPosition;
 	}
 
 	void AddPlayer(Game game) {
-		var x = -1;
-		var y = -1;
-
-		while (game.GetTile(x,y).BlocksMovement 
-				|| game.GetTile(x,y) == Tile.StairsDown
-				|| game.GetCreature(new Point(x,y)) != null 
-				|| game.GetItem(new Point (x,y)) != null) {
-			x = UnityEngine.Random.Range(0, game.Width);
-			y = UnityEngine.Random.Range(0, game.Height);
-		}
-
-		var player = game.Catalog.Player(x,y);
+		var player = game.Catalog.Player(stairsUpPosition.X, stairsUpPosition.Y);
 		game.Player = player;
 		game.Creatures.Add(player);
 	}
