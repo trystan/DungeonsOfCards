@@ -40,7 +40,12 @@ public class Creature {
 			game.SetTile(next.X, next.Y, Tile.DoorOpen);
 		} else if (tile == Tile.StairsDown) {
 			Position = next;
-			game.ExitLevel(this);
+			game.ExitLevelDownStairs(this);
+		} else if (tile == Tile.StairsUp) {
+			if (game.CurrentLevel > 0) {
+				Position = next;
+				game.ExitLevelUpStairs(this);
+			}
 		} else if (tile.BlocksMovement) {
 			
 		} else {

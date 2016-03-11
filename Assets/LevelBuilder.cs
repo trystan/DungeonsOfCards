@@ -21,7 +21,7 @@ public class LevelBuilder {
 		return Util.Shuffle(new List<Tile>() { Tile.Floor1, Tile.Floor2, Tile.Floor3, Tile.Floor4, Tile.Floor5, Tile.Floor6 })[0];
 	}
 
-	public void Build(Game game) {
+	public void Build(Game game, bool atDownStairs) {
 		doorPercentage = UnityEngine.Random.value;
 		roomAttempts = UnityEngine.Random.Range(20, 40);
 		extraConnectionAttempts = UnityEngine.Random.Range(20, 40);
@@ -64,7 +64,7 @@ public class LevelBuilder {
 		if (game.Player == null)
 			AddPlayer(game);
 		else 
-			RepositionPlayer(game);
+			RepositionPlayer(game, atDownStairs);
 		
 		AddAlly(game);
 		AddEnemies(game);
@@ -91,15 +91,15 @@ public class LevelBuilder {
 		while (downPositions.Count < 5) {
 			x = UnityEngine.Random.Range(0, game.Width);
 			y = UnityEngine.Random.Range(0, game.Height);
-			if (game.GetTile(x,y).BlocksMovement
-					|| game.GetTile(x-1,y+1).BlocksMovement 
-					|| game.GetTile(x-1,y+0).BlocksMovement 
-					|| game.GetTile(x-1,y-1).BlocksMovement 
-					|| game.GetTile(x-0,y+1).BlocksMovement 
-					|| game.GetTile(x-0,y-1).BlocksMovement 
-					|| game.GetTile(x+1,y+1).BlocksMovement 
-					|| game.GetTile(x+1,y+0).BlocksMovement 
-					|| game.GetTile(x+1,y-1).BlocksMovement 
+			if (game.GetTile(x,y).IsWall
+					|| game.GetTile(x-1,y+1).IsWall 
+					|| game.GetTile(x-1,y+0).IsWall 
+					|| game.GetTile(x-1,y-1).IsWall 
+					|| game.GetTile(x-0,y+1).IsWall 
+					|| game.GetTile(x-0,y-1).IsWall 
+					|| game.GetTile(x+1,y+1).IsWall 
+					|| game.GetTile(x+1,y+0).IsWall 
+					|| game.GetTile(x+1,y-1).IsWall 
 					|| game.GetCreature(new Point(x,y)) != null 
 					|| game.GetItem(new Point (x,y)) != null)
 				continue;
@@ -109,15 +109,15 @@ public class LevelBuilder {
 		while (upPositions.Count < 5) {
 			x = UnityEngine.Random.Range(0, game.Width);
 			y = UnityEngine.Random.Range(0, game.Height);
-			if (game.GetTile(x,y).BlocksMovement
-					|| game.GetTile(x-1,y+1).BlocksMovement 
-					|| game.GetTile(x-1,y+0).BlocksMovement 
-					|| game.GetTile(x-1,y-1).BlocksMovement 
-					|| game.GetTile(x-0,y+1).BlocksMovement 
-					|| game.GetTile(x-0,y-1).BlocksMovement 
-					|| game.GetTile(x+1,y+1).BlocksMovement 
-					|| game.GetTile(x+1,y+0).BlocksMovement 
-					|| game.GetTile(x+1,y-1).BlocksMovement 
+			if (game.GetTile(x,y).IsWall
+					|| game.GetTile(x-1,y+1).IsWall
+					|| game.GetTile(x-1,y+0).IsWall
+					|| game.GetTile(x-1,y-1).IsWall
+					|| game.GetTile(x-0,y+1).IsWall
+					|| game.GetTile(x-0,y-1).IsWall
+					|| game.GetTile(x+1,y+1).IsWall
+					|| game.GetTile(x+1,y+0).IsWall
+					|| game.GetTile(x+1,y-1).IsWall
 					|| game.GetCreature(new Point(x,y)) != null 
 					|| game.GetItem(new Point (x,y)) != null)
 				continue;
@@ -137,6 +137,7 @@ public class LevelBuilder {
 			}
 		}
 
+		game.SetTile(stairsUpPosition.X, stairsUpPosition.Y ,Tile.StairsUp);
 		game.SetTile(stairsDownPosition.X, stairsDownPosition.Y ,Tile.StairsDown);
 	}
 
@@ -160,12 +161,13 @@ public class LevelBuilder {
 		}
 	}
 
-	void RepositionPlayer(Game game) {
-		game.Player.Position = stairsUpPosition;
+	void RepositionPlayer(Game game, bool atDownStairs) {
+		game.Player.Position = atDownStairs ? (stairsDownPosition + new Point(0,1)) : (stairsUpPosition - new Point(0,1));
 	}
 
 	void AddPlayer(Game game) {
-		var player = game.Catalog.Player(stairsUpPosition.X, stairsUpPosition.Y);
+		var p = stairsUpPosition - new Point(0,1);
+		var player = game.Catalog.Player(p.X, p.Y);
 		game.Player = player;
 		game.Creatures.Add(player);
 	}
@@ -195,15 +197,15 @@ public class LevelBuilder {
 		var x = -1;
 		var y = -1;
 
-		while (game.GetTile(x,y).BlocksMovement
-				|| game.GetTile(x-1,y+1).BlocksMovement 
-				|| game.GetTile(x-1,y+0).BlocksMovement 
-				|| game.GetTile(x-1,y-1).BlocksMovement 
-				|| game.GetTile(x-0,y+1).BlocksMovement 
-				|| game.GetTile(x-0,y-1).BlocksMovement 
-				|| game.GetTile(x+1,y+1).BlocksMovement 
-				|| game.GetTile(x+1,y+0).BlocksMovement 
-				|| game.GetTile(x+1,y-1).BlocksMovement 
+		while (game.GetTile(x,y).IsWall
+				|| game.GetTile(x-1,y+1).IsWall 
+				|| game.GetTile(x-1,y+0).IsWall 
+				|| game.GetTile(x-1,y-1).IsWall 
+				|| game.GetTile(x-0,y+1).IsWall 
+				|| game.GetTile(x-0,y-1).IsWall 
+				|| game.GetTile(x+1,y+1).IsWall 
+				|| game.GetTile(x+1,y+0).IsWall 
+				|| game.GetTile(x+1,y-1).IsWall 
 				|| game.GetTile(x,y) == Tile.StairsDown
 				|| game.GetCreature(new Point(x,y)) != null 
 				|| game.GetItem(new Point (x,y)) != null) {

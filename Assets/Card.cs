@@ -178,7 +178,9 @@ public class Card {
 			user.MaximumDefenseCards += 2;
 			break;
 		case CardSpecialEffect.SpawnSkeleton:
-			game.Creatures.Add(game.Catalog.Skeleton(user.Position.X, user.Position.Y));
+			var creature = game.Catalog.Skeleton(user.Position.X, user.Position.Y);
+			game.Creatures.Add(creature);
+			game.NewCreatures.Add(creature);
 			break;
 		default:
 			throw new NotImplementedException(Name + " " + effect);

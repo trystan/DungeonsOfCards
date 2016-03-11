@@ -20,7 +20,7 @@ public class Game {
 	public bool FloorsUpdated;
 	public bool WallsUpdated;
 	public bool ObjectsUpdated;
-	public bool ReadyToLoadNextLevel;
+	public int ReadyToLoadNextLevel;
 	public int Width;
 	public int Height;
 	Tile[,] tiles;
@@ -81,19 +81,36 @@ public class Game {
 		Creatures.RemoveAll(c => !c.Exists);
 	}
 
-	public void ExitLevel(Creature creature) {
+	public void ExitLevelDownStairs(Creature creature) {
 		if (creature == Player) {
-			ReadyToLoadNextLevel = true;
+			ReadyToLoadNextLevel = 1;
 		} else {
 			creature.Exists = false;
 		}
 	}
 
+	public void ExitLevelUpStairs(Creature creature) {
+		if (creature == Player) {
+			ReadyToLoadNextLevel = -1;
+		} else {
+			creature.Exists = false;
+		}
+	}
+
+	public void PreviousLevel() {
+		CurrentLevel--;
+		ReadyToLoadNextLevel = 0;
+		Clear();
+		new LevelBuilder().Build(this, true);
+		NewItems.AddRange(Items);
+		NewCreatures.AddRange(Creatures);
+	}
+
 	public void NextLevel() {
 		CurrentLevel++;
-		ReadyToLoadNextLevel = false;
+		ReadyToLoadNextLevel = 0;
 		Clear();
-		new LevelBuilder().Build(this);
+		new LevelBuilder().Build(this, false);
 		NewItems.AddRange(Items);
 		NewCreatures.AddRange(Creatures);
 	}
