@@ -49,16 +49,24 @@ public class Creature {
 			if (item != null) {
 				item.Exists = false;
 				if (item.Card != null) {
+					game.Popups.Add(new TextPopup(item.Card.Name, item.Position, Vector3.zero));
 					if (this == game.Player)
 						game.NewCards.Add(item.Card);
 					DrawStack.Add(item.Card);
-					game.Popups.Add(new TextPopup(item.Card.Name, item.Position, Vector3.zero));
 				} else if (item.Pack != null) {
-					var allCards = Util.Shuffle(item.Pack.Cards);
-					if (this == game.Player)
-						game.NewCards.AddRange(allCards);
-					DrawStack.AddRange(allCards);
 					game.Popups.Add(new TextPopup(item.Pack.Name, item.Position, Vector3.zero));
+					var allCards = Util.Shuffle(item.Pack.Cards);
+					for (var i = 0; i < allCards.Count; i++) {
+						var index = i;
+						game.Effects.Add(new DelayedEffect() {
+							Delay = 0.05f * index,
+							Callback = (g) => {
+								if (this == game.Player)
+									g.NewCards.Add(allCards[index]);
+								this.DrawStack.Add(allCards[index]);
+							}
+						});
+					}
 				}
 			}
 			Draw1Card(game);

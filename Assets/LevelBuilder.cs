@@ -23,7 +23,7 @@ public class LevelBuilder {
 		roomAttempts = UnityEngine.Random.Range(20, 40);
 		extraConnectionAttempts = UnityEngine.Random.Range(20, 40);
 		enemyCount = UnityEngine.Random.Range(8, 14) + game.CurrentLevel;
-		commonLootCount = UnityEngine.Random.Range(8, 14);
+		commonLootCount = UnityEngine.Random.Range(8, 14) + game.CurrentLevel;
 		rareLootCount = UnityEngine.Random.Range(0, 2);
 
 		defaultFloor = RandomFloorTile();

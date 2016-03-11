@@ -26,7 +26,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void NewGame() {
-		game = new Game(20, 20) {
+		game = new Game(25, 25) {
 			Catalog = new Catalog(),
 		};
 		game.Player = Globals.nextPlayer;
