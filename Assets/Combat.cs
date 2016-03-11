@@ -42,7 +42,7 @@ public class Combat {
 				var popup = new TextPopup(defenderCard.Name, Defender.Position, new Vector3(0,14 * i,0));
 				Game.Effects.Add(new DelayedEffect() {
 					Delay = i * 0.1f,
-					Callback = g => g.Popups.Add(popup),
+					Callback = g => Globals.MessageBus.Send(new Messages.AddPopup(popup)),
 				});
 			}
 
@@ -58,7 +58,7 @@ public class Combat {
 				var popup = new TextPopup(attackerCard.Name, Attacker.Position, new Vector3(0,14 * i + 7,0));
 				Game.Effects.Add(new DelayedEffect() {
 					Delay = i * 0.1f + 0.05f,
-					Callback = g => g.Popups.Add(popup),
+					Callback = g => Globals.MessageBus.Send(new Messages.AddPopup(popup)),
 				});
 			}
 

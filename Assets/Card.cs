@@ -48,7 +48,7 @@ public class Card {
 				if (closest.TeamName == StrongVs)
 					damage *= 2;
 				closest.TakeDamage(damage);
-				game.Popups.Add(new TextPopup(Name, closest.Position, new Vector3(0,14,0)));
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, closest.Position, new Vector3(0,14,0))));
 			}
 			break;
 		case CardSpecialEffect.HealTeam:
@@ -57,7 +57,7 @@ public class Card {
 								&& c.Position.DistanceTo(user.Position) < 5)) {
 				if (c.CurrentHealth < c.MaximumHealth) {
 					c.CurrentHealth++;
-					game.Popups.Add(new TextPopup("Heal", c.Position, new Vector3(0,14,0)));
+					Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Heal", c.Position, new Vector3(0,14,0))));
 				}
 			}
 			break;
@@ -66,7 +66,7 @@ public class Card {
 								&& c.TeamName == "Undead"
 								&& c.Position.DistanceTo(user.Position) < 5)) {
 				c.TakeDamage(3);
-				game.Popups.Add(new TextPopup("Turn undead", c.Position, new Vector3(0,14,0)));
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Turn undead", c.Position, new Vector3(0,14,0))));
 			}
 			break;
 		case CardSpecialEffect.Evade:
@@ -94,7 +94,7 @@ public class Card {
 			newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
 			user.DrawStack.Add(newCard);
 			if (user == game.Player)
-				game.NewCards.Add(newCard);
+				Globals.MessageBus.Send(new Messages.CardAdded(newCard));
 			break; 
 		}
 		case CardSpecialEffect.AddCardToOther: {
@@ -102,8 +102,8 @@ public class Card {
 			newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
 			other.DrawStack.Add(newCard);
 			if (other == game.Player)
-				game.NewCards.Add(newCard);
-				break;
+				Globals.MessageBus.Send(new Messages.CardAdded(newCard));
+			break;
 		}
 		case CardSpecialEffect.Draw3:
 			game.Effects.Add(new DelayedEffect() { Delay = 0.1f, Callback = g => user.Draw1Card(game) });
@@ -178,7 +178,7 @@ public class Card {
 		case CardSpecialEffect.SpawnSkeleton:
 			var creature = game.Catalog.Skeleton(user.Position.X, user.Position.Y);
 			game.Creatures.Add(creature);
-			game.NewCreatures.Add(creature);
+			Globals.MessageBus.Send(new Messages.CreatureAdded(creature));
 			break;
 		default:
 			throw new NotImplementedException(Name + " " + effect);

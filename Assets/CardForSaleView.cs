@@ -47,7 +47,7 @@ public class CardForSaleView : MonoBehaviour {
 			});
 			Buyer.ShuffleEverythingIntoDrawStack();
 			Hide();
-			Game.NewCards.Add(Card);
+			Globals.MessageBus.Send(new Messages.CardAdded(Card));
 			Panel.Refresh();
 		}
 	}

@@ -7,10 +7,6 @@ public class Game {
 	public List<Creature> Creatures = new List<Creature>();
 	public List<Item> Items = new List<Item>();
 	public List<DelayedEffect> Effects = new List<DelayedEffect>();
-	public List<TextPopup> Popups = new List<TextPopup>();
-	public List<Card> NewCards = new List<Card>();
-	public List<Item> NewItems = new List<Item>();
-	public List<Creature> NewCreatures = new List<Creature>();
 	public Catalog Catalog;
 	public Creature Player;
 
@@ -40,9 +36,6 @@ public class Game {
 		Creatures.Where(c => c != Player).ToList().ForEach(c => c.Exists = false);
 		Items.ForEach(i => i.Exists = false);
 		Effects.Clear();
-		Popups.Clear();
-		NewCards.Clear();
-		NewItems.Clear();
 		for (var x = 0; x < Width; x++) {
 			for (var y = 0; y < Height; y++) {
 				tiles[x,y] = Tile.Wall;
@@ -106,8 +99,8 @@ public class Game {
 		ReadyToLoadNextLevel = 0;
 		Clear();
 		new LevelBuilder().Build(this, true);
-		NewItems.AddRange(Items);
-		NewCreatures.AddRange(Creatures);
+		Items.ForEach(i => Globals.MessageBus.Send(new Messages.ItemAdded(i)));
+		Creatures.ForEach(c => Globals.MessageBus.Send(new Messages.CreatureAdded(c)));
 	}
 
 	public void NextLevel() {
@@ -116,7 +109,7 @@ public class Game {
 		Clear();
 		new LevelBuilder().Build(this, false);
 		Player.DeepestFloor = Mathf.Max(Player.DeepestFloor, CurrentLevel);
-		NewItems.AddRange(Items);
-		NewCreatures.AddRange(Creatures);
+		Items.ForEach(i => Globals.MessageBus.Send(new Messages.ItemAdded(i)));
+		Creatures.ForEach(c => Globals.MessageBus.Send(new Messages.CreatureAdded(c)));
 	}
 }

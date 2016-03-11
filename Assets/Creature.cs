@@ -61,12 +61,12 @@ public class Creature {
 			if (item != null) {
 				item.Exists = false;
 				if (item.Card != null) {
-					game.Popups.Add(new TextPopup(item.Card.Name, item.Position, Vector3.zero));
+					Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(item.Card.Name, item.Position, Vector3.zero)));
 					if (this == game.Player)
-						game.NewCards.Add(item.Card);
+						Globals.MessageBus.Send(new Messages.CardAdded(item.Card));
 					DrawStack.Add(item.Card);
 				} else if (item.Pack != null) {
-					game.Popups.Add(new TextPopup(item.Pack.Name, item.Position, Vector3.zero));
+					Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(item.Pack.Name, item.Position, Vector3.zero)));
 					var allCards = Util.Shuffle(item.Pack.Cards);
 					for (var i = 0; i < allCards.Count; i++) {
 						var index = i;
@@ -74,7 +74,7 @@ public class Creature {
 							Delay = 0.05f * index,
 							Callback = (g) => {
 								if (this == game.Player)
-									g.NewCards.Add(allCards[index]);
+									Globals.MessageBus.Send(new Messages.CardAdded(allCards[index]));
 								this.DrawStack.Add(allCards[index]);
 							}
 						});
@@ -90,7 +90,7 @@ public class Creature {
 	public void UseCard(Game game, Card card) {
 		HandStack.Remove(card);
 		card.DoAction(game, this, null, card.OnUse);
-		game.Popups.Add(new TextPopup(card.Name, Position, new Vector3(0,4,0)));
+		Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(card.Name, Position, new Vector3(0,4,0))));
 		DiscardStack.Add(card);
 	}
 

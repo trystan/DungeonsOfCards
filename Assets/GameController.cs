@@ -38,6 +38,22 @@ public class GameController : MonoBehaviour {
 				ready = true;
 			});
 		});
+
+		Globals.MessageBus.On<Messages.CreatureAdded>(message => {
+			CreatureViews.Add(Instantiator.Add(message.Creature));
+		});
+			
+		Globals.MessageBus.On<Messages.ItemAdded>(message => {
+			ItemViews.Add(Instantiator.Add(game, message.Item));
+		});
+
+		Globals.MessageBus.On<Messages.CardAdded>(message => {
+			CardViews.Add(Instantiator.Add(game, message.Card, game.Player));
+		});
+
+		Globals.MessageBus.On<Messages.AddPopup>(message => {
+			Instantiator.Add(message.Popup);
+		});
 	}
 
 	void NewGame() {
@@ -92,27 +108,11 @@ public class GameController : MonoBehaviour {
 		if (!ready)
 			return;
 		
-		foreach (var c in game.NewCards)
-			CardViews.Add(Instantiator.Add(game, c, game.Player));
-		game.NewCards.Clear();
-
-		foreach (var item in game.NewItems)
-			ItemViews.Add(Instantiator.Add(game, item));
-		game.NewItems.Clear();
-
-		foreach (var c in game.NewCreatures)
-			CreatureViews.Add(Instantiator.Add(c));
-		game.NewCreatures.Clear();
-
 		game.Effects.ForEach(e => e.Delay -= Time.deltaTime);
 		foreach (var e in game.Effects.Where(e => e.Delay < 0).ToList()) {
 			e.Callback(game);
 			game.Effects.Remove(e);
 		}
-
-		foreach (var popup in game.Popups)
-			Instantiator.Add(popup);
-		game.Popups.Clear();
 
 		if (CreatureViews.Any(v => v.IsMoving))
 			return;
