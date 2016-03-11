@@ -25,6 +25,19 @@ public class GameController : MonoBehaviour {
 
 	void Start() {
 		guiController.FadeIn("Dungeon level 1", NewGame);
+
+		Globals.MessageBus.On<Messages.NextLevel>(message => {
+			ready = false;
+			guiController.FadeOutAndIn("Dungeon level " + (game.CurrentLevel + game.ReadyToLoadNextLevel), () => { 
+				if (game.ReadyToLoadNextLevel > 0)
+					game.NextLevel();
+				else
+					game.PreviousLevel();
+				PositionStairs();
+				Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
+				ready = true;
+			});
+		});
 	}
 
 	void NewGame() {
@@ -76,19 +89,6 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Update() {
-		if (ready && game.ReadyToLoadNextLevel != 0) {
-			ready = false;
-			guiController.FadeOutAndIn("Dungeon level " + (game.CurrentLevel + game.ReadyToLoadNextLevel), () => { 
-				if (game.ReadyToLoadNextLevel > 0)
-					game.NextLevel();
-				else
-					game.PreviousLevel();
-				PositionStairs();
-				Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
-				ready = true;
-			});
-		}
-
 		if (!ready)
 			return;
 		

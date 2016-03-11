@@ -69,6 +69,8 @@
      <Compile Include="Assets\ItemView.cs" />
      <Compile Include="Assets\LevelBuilder.cs" />
      <Compile Include="Assets\MerchantPanelController.cs" />
+     <Compile Include="Assets\MessageBus.cs" />
+     <Compile Include="Assets\Messages.cs" />
      <Compile Include="Assets\Point.cs" />
      <Compile Include="Assets\ScoreController.cs" />
      <Compile Include="Assets\StackView.cs" />

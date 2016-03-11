@@ -85,6 +85,7 @@ public class Game {
 		creature.StairsDownCounter++;
 		if (creature == Player) {
 			ReadyToLoadNextLevel = 1;
+			Globals.MessageBus.Send(new Messages.NextLevel(this));
 		} else {
 			creature.Exists = false;
 		}
@@ -94,6 +95,7 @@ public class Game {
 		creature.StairsUpCounter++;
 		if (creature == Player) {
 			ReadyToLoadNextLevel = -1;
+			Globals.MessageBus.Send(new Messages.NextLevel(this));
 		} else {
 			creature.Exists = false;
 		}

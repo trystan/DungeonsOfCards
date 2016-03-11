@@ -2,4 +2,5 @@
 
 public static class Globals {
 	public static Creature nextPlayer;
+	public static MessageBus MessageBus = new MessageBus();
 }
