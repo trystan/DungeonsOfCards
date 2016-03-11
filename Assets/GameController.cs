@@ -9,6 +9,8 @@ public class GameController : MonoBehaviour {
 	public TileMesh FloorTileMesh;
 	public TileMesh DoorTileMesh;
 	public TileMesh WallTileMesh;
+	public SpriteRenderer StairsUpImage;
+	public SpriteRenderer StairsDownImage;
 
 	public MerchantPanelController merchantPanel;
 
@@ -29,8 +31,10 @@ public class GameController : MonoBehaviour {
 		game = new Game(25, 25) {
 			Catalog = new Catalog(),
 		};
-		game.Player = Globals.nextPlayer;
-		game.Creatures.Add(game.Player);
+		if (Globals.nextPlayer != null) {
+			game.Player = Globals.nextPlayer;
+			game.Creatures.Add(game.Player);
+		}
 
 		new LevelBuilder().Build(game);
 
@@ -47,6 +51,8 @@ public class GameController : MonoBehaviour {
 		foreach (var c in game.Player.DrawStack)
 			CardViews.Add(Instantiator.Add(game, c, game.Player));
 
+		PositionStairs();
+
 		playerView = CreatureViews.Single(v => v.Creature == game.Player);
 		Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
 
@@ -54,11 +60,27 @@ public class GameController : MonoBehaviour {
 		ready = true;
 	}
 
+	void PositionStairs() {
+		StairsDownImage.transform.position = new Vector3(-99,-99,0);
+		StairsUpImage.transform.position = new Vector3(-99,-99,0);
+		for (var x = 0; x < game.Width; x++) {
+			for (var y = 0; y < game.Height; y++) {
+				var tile = game.GetTile(x,y);
+				if (tile == Tile.StairsDown) {
+					StairsDownImage.transform.position = new Vector3(x,y,0);
+				} else if (tile == Tile.StairsUp) {
+					StairsUpImage.transform.position = new Vector3(x,y,0);
+				}
+			}
+		}
+	}
+
 	void Update() {
 		if (ready && game.ReadyToLoadNextLevel) {
 			ready = false;
 			guiController.FadeOutAndIn("Level " + (game.CurrentLevel + 1), () => { 
 				game.NextLevel();
+				PositionStairs();
 				Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
 				ready = true;
 			});

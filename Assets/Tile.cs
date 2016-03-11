@@ -20,6 +20,7 @@ public class Tile {
 	public static Tile DoorOpen   = new Tile { FloorIndex = FloorCenter(1,8), MiddleIndex = 6, IsFloor = true, IsDoor = true };
 
 	public static Tile StairsDown = new Tile { FloorIndex = FloorCenter(0,1), IsFloor = true };
+	public static Tile StairsUp = new Tile { FloorIndex = FloorCenter(0,1), IsFloor = true };
 
 	public int FloorIndex = -1;
 	public int MiddleIndex = -1;

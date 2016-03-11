@@ -66,8 +66,6 @@ public class LevelBuilder {
 		AddAlly(game);
 		AddEnemies(game);
 
-		if (game.Player == null)
-			game.Player = game.Creatures[0];
 	}
 
 	void AddExtraDoors(Game game) {
@@ -150,7 +148,9 @@ public class LevelBuilder {
 			y = UnityEngine.Random.Range(0, game.Height);
 		}
 
-		game.Creatures.Add(game.Catalog.Player(x,y));
+		var player = game.Catalog.Player(x,y);
+		game.Player = player;
+		game.Creatures.Add(player);
 	}
 
 	void AddEnemies(Game game) {
