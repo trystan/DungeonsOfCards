@@ -117,6 +117,7 @@ public class CardView : MonoBehaviour {
 		Player = holder;
 		Instantiator = instantiator;
 		title.text = card.Name;
+		transform.position = Camera.main.WorldToScreenPoint(card.WorldPointOrigin);
 	}
 
 	void FaceUp() {

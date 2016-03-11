@@ -62,6 +62,7 @@ public class Catalog {
 	}
 
 	public Item CardItem(int x, int y, Card card) {
+		card.WorldPointOrigin = new Vector3(x,y,0);
 		return new Item() {
 			Position = new Point(x,y),
 			SpriteName = "DawnLike/Items/Scroll:card",
@@ -70,6 +71,7 @@ public class Catalog {
 	}
 
 	public Item PackItem(int x, int y, Pack pack) {
+		pack.Cards.ForEach(c => c.WorldPointOrigin = new Vector3(x,y,0));
 		return new Item() {
 			Position = new Point(x,y),
 			SpriteName = "DawnLike/Items/Book:deck of cards",
@@ -384,10 +386,12 @@ public class Catalog {
 		};
 	}
 
-	public List<Card> Packs(params Pack[] packs) {
+	public List<Card> Packs(Point start, params Pack[] packs) {
 		var deck = new List<Card>();
 		foreach (var pack in packs)
 			deck.AddRange(pack.Cards);
+
+		deck.ForEach(c => c.WorldPointOrigin = new Vector3(start.X, start.Y, 0));
 		return Util.Shuffle(deck);
 	}
 
@@ -409,7 +413,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 12,
-			DrawStack = Packs(AttackPack(), DefensePack(), RoguePack(), MerchantPack()),
+			DrawStack = Packs(new Point(x,y), AttackPack(), DefensePack(), RoguePack(), MerchantPack()),
 		};
 	}
 
@@ -427,7 +431,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(AttackPack(), AdventurerPack()),
+			DrawStack = Packs(new Point(x,y), AttackPack(), AdventurerPack()),
 		};
 	}
 
@@ -445,7 +449,7 @@ public class Catalog {
 			MaximumHealth = 8,
 			CurrentHealth = 8,
 			MaximumHandCards = 5,
-			DrawStack = Packs(UndeadPack(), SkeletonPack()),
+			DrawStack = Packs(new Point(x,y), UndeadPack(), SkeletonPack()),
 		};
 	}
 
@@ -463,7 +467,7 @@ public class Catalog {
 			MaximumHealth = 8,
 			CurrentHealth = 8,
 			MaximumHandCards = 5,
-			DrawStack = Packs(UndeadPack(), ZombiePack()),
+			DrawStack = Packs(new Point(x,y), UndeadPack(), ZombiePack()),
 		};
 	}
 
@@ -481,7 +485,7 @@ public class Catalog {
 			MaximumHealth = 8,
 			CurrentHealth = 8,
 			MaximumHandCards = 5,
-			DrawStack = Packs(UndeadPack(), VampirePack()),
+			DrawStack = Packs(new Point(x,y), UndeadPack(), VampirePack()),
 		};
 	}
 
@@ -499,7 +503,7 @@ public class Catalog {
 			MaximumHealth = 8,
 			CurrentHealth = 8,
 			MaximumHandCards = 5,
-			DrawStack = Packs(UndeadPack(), GhostPack()),
+			DrawStack = Packs(new Point(x,y), UndeadPack(), GhostPack()),
 		};
 	}
 
@@ -517,7 +521,7 @@ public class Catalog {
 			MaximumHealth = 12,
 			CurrentHealth = 12,
 			MaximumHandCards = 6,
-			DrawStack = Packs(FloraPack(), TreePack()),
+			DrawStack = Packs(new Point(x,y), FloraPack(), TreePack()),
 		};
 	}
 
@@ -535,7 +539,7 @@ public class Catalog {
 			MaximumHealth = 12,
 			CurrentHealth = 12,
 			MaximumHandCards = 6,
-			DrawStack = Packs(FloraPack(), FloraPack()),
+			DrawStack = Packs(new Point(x,y), FloraPack(), FloraPack()),
 		};
 	}
 
@@ -553,7 +557,7 @@ public class Catalog {
 			MaximumHealth = 12,
 			CurrentHealth = 12,
 			MaximumHandCards = 8,
-			DrawStack = Packs(FloraPack(), FungusPack()),
+			DrawStack = Packs(new Point(x,y), FloraPack(), FungusPack()),
 		};
 	}
 
@@ -571,7 +575,7 @@ public class Catalog {
 			MaximumHealth = 12,
 			CurrentHealth = 12,
 			MaximumHandCards = 7,
-			DrawStack = Packs(FloraPack(), MossPack()),
+			DrawStack = Packs(new Point(x,y), FloraPack(), MossPack()),
 		};
 	}
 
@@ -589,7 +593,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(GenericPack(), RoguePack()),
+			DrawStack = Packs(new Point(x,y), GenericPack(), RoguePack()),
 		};
 	}
 
@@ -607,7 +611,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(GenericPack(), AttackPack()),
+			DrawStack = Packs(new Point(x,y), GenericPack(), AttackPack()),
 		};
 	}
 
@@ -625,7 +629,7 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(GenericPack(), DefensePack()),
+			DrawStack = Packs(new Point(x,y), GenericPack(), DefensePack()),
 		};
 	}
 
@@ -643,7 +647,7 @@ public class Catalog {
 			MaximumHealth = 8,
 			CurrentHealth = 8,
 			MaximumHandCards = 5,
-			DrawStack = Packs(GenericPack(), PriestPack()),
+			DrawStack = Packs(new Point(x,y), GenericPack(), PriestPack()),
 		};
 	}
 

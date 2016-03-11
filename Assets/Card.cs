@@ -18,6 +18,7 @@ public class Card {
 	public string Name;
 	public int GoldCost = 2;
 	public CardType CardType;
+	public Vector3 WorldPointOrigin;
 
 	public int CombatBonus;
 	public bool DoesBlockOtherCard;
@@ -92,6 +93,7 @@ public class Card {
 			break;
 		case CardSpecialEffect.AddCardToSelf: {
 			var newCard = ExtraCard();
+			newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
 			user.DrawStack.Add(newCard);
 			if (user == game.Player)
 				game.NewCards.Add(newCard);
@@ -99,6 +101,7 @@ public class Card {
 		}
 		case CardSpecialEffect.AddCardToOther: {
 			var newCard = ExtraCard();
+			newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
 			other.DrawStack.Add(newCard);
 			if (other == game.Player)
 				game.NewCards.Add(newCard);
