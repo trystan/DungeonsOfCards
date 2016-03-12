@@ -19,7 +19,7 @@ public class Creature {
 	public int CurrentHealth;
 	public int MaximumHandCards;
 
-	public int DeepestFloor;
+	public int DeepestFloor = 1;
 	public int StairsUpCounter;
 	public int StairsDownCounter;
 
@@ -37,7 +37,7 @@ public class Creature {
 
 		if (other != null && other != this) {
 			if (other.TeamName == "Merchant" && this == game.Player)
-				game.CurrentMerchant = other;
+				Globals.MessageBus.Send(new Messages.TalkToMerchant(this, other));
 			else if (other.TeamName == TeamName && this == game.Player) {
 				other.Position = this.Position;
 				this.Position = next;

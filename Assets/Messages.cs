@@ -39,4 +39,14 @@ namespace Messages {
 			Popup = popup;
 		}
 	}
+
+	public struct TalkToMerchant {
+		public Creature Buyer;
+		public Creature Merchant;
+
+		public TalkToMerchant(Creature buyer, Creature merchant) {
+			Buyer = buyer;
+			Merchant = merchant;
+		}
+	}
 }

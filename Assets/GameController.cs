@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour {
 	List<CreatureView> CreatureViews = new List<CreatureView>();
 	List<CardView> CardViews = new List<CardView>();
 	List<ItemView> ItemViews = new List<ItemView>();
+	List<Subscription> Subscriptions = new List<Subscription>();
 
 	CreatureView playerView;
 
@@ -26,34 +27,46 @@ public class GameController : MonoBehaviour {
 	void Start() {
 		guiController.FadeIn("Dungeon level 1", NewGame);
 
-		Globals.MessageBus.On<Messages.NextLevel>(message => {
+		Subscriptions.Add(Globals.MessageBus.On<Messages.NextLevel>(message => {
 			ready = false;
-			guiController.FadeOutAndIn("Dungeon level " + (game.CurrentLevel + game.ReadyToLoadNextLevel), () => { 
-				if (game.ReadyToLoadNextLevel > 0)
-					game.NextLevel();
-				else
-					game.PreviousLevel();
-				PositionStairs();
-				Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
-				ready = true;
-			});
-		});
+			var level = game.CurrentLevel + game.ReadyToLoadNextLevel;
+			if (level < 1) {
+				guiController.FadeOutAndIn("Exiting the dungeon", () => {
+					Subscriptions.ForEach(s => s.Remove());
+					UnityEngine.SceneManagement.SceneManager.LoadScene(3);
+				});
+			} else {
+				guiController.FadeOutAndIn("Dungeon level " + level, () => { 
+					if (game.ReadyToLoadNextLevel > 0)
+						game.NextLevel();
+					else
+						game.PreviousLevel();
+					PositionStairs();
+					Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
+					ready = true;
+				});
+			}
+		}));
 
-		Globals.MessageBus.On<Messages.CreatureAdded>(message => {
+		Subscriptions.Add(Globals.MessageBus.On<Messages.CreatureAdded>(message => {
 			CreatureViews.Add(Instantiator.Add(message.Creature));
-		});
+		}));
 			
-		Globals.MessageBus.On<Messages.ItemAdded>(message => {
+		Subscriptions.Add(Globals.MessageBus.On<Messages.ItemAdded>(message => {
 			ItemViews.Add(Instantiator.Add(game, message.Item));
-		});
+		}));
 
-		Globals.MessageBus.On<Messages.CardAdded>(message => {
+		Subscriptions.Add(Globals.MessageBus.On<Messages.CardAdded>(message => {
 			CardViews.Add(Instantiator.Add(game, message.Card, game.Player));
-		});
+		}));
 
-		Globals.MessageBus.On<Messages.AddPopup>(message => {
+		Subscriptions.Add(Globals.MessageBus.On<Messages.AddPopup>(message => {
 			Instantiator.Add(message.Popup);
-		});
+		}));
+
+		Subscriptions.Add(Globals.MessageBus.On<Messages.TalkToMerchant>(message => {
+			merchantPanel.Show(game, message.Merchant, message.Buyer);
+		}));
 	}
 
 	void NewGame() {
@@ -120,9 +133,6 @@ public class GameController : MonoBehaviour {
 		if (game.Player.Exists) {
 			if (merchantPanel.gameObject.activeInHierarchy) {
 				// do nothing
-			} else if (game.CurrentMerchant != null) {
-				merchantPanel.Show(game, game.CurrentMerchant, game.Player);
-				game.CurrentMerchant = null;
 			} else {
 				var mx = 0;
 				if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.L) || Input.GetKey(KeyCode.Keypad6))
@@ -147,8 +157,10 @@ public class GameController : MonoBehaviour {
 			merchantPanel.Hide();
 			game.TakeTurn();
 
-			if (Input.GetKey(KeyCode.KeypadEnter) || Input.GetKey(KeyCode.Return))
+			if (Input.GetKey(KeyCode.KeypadEnter) || Input.GetKey(KeyCode.Return)) {
+				Subscriptions.ForEach(s => s.Remove());
 				UnityEngine.SceneManagement.SceneManager.LoadScene(3);
+			}
 		}
 	}
 }

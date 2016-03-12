@@ -11,7 +11,6 @@ public class Game {
 	public Creature Player;
 
 	public int CurrentLevel = 1;
-	public Creature CurrentMerchant;
 
 	public bool FloorsUpdated;
 	public bool WallsUpdated;
