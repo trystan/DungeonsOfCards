@@ -19,19 +19,18 @@ public class GuiController : MonoBehaviour {
 	bool fadeIn = false;
 	float fadeCounter = 1f;
 	Action fadeCallback;
-
-	Creature Player;
+	Game game;
 
 	void Update () {
-		if (Player != null) {
-			DrawLabel.text = "Draw (" + Player.DrawStack.Count + ")";
-			AttackLabel.text = "Attack (" + Player.AttackStack.Count + "/" + Player.MaximumAttackCards + ")";
-			DefenseLabel.text = "Defense (" + Player.DefenseStack.Count + "/" + Player.MaximumDefenseCards + ")";
-			HandLabel.text = "Hand (" + Player.HandStack.Count + "/" + Player.MaximumHandCards + ")";
-			DiscardLabel.text = "Discard (" + Player.DiscardStack.Count + ")";
+		if (game.Player != null) {
+			DrawLabel.text = "Draw (" + game.Player.DrawPile.Count + ")";
+			AttackLabel.text = "Attack " + game.Player.AttackValue + " + (" + game.Player.AttackPile.Count + "/" + game.Player.MaximumAttackCards + ")";
+			DefenseLabel.text = "Defense " + game.Player.DefenseValue + " + (" + game.Player.DefensePile.Count + "/" + game.Player.MaximumDefenseCards + ")";
+			HandLabel.text = "Hand (" + game.Player.HandPile.Count + "/" + game.Player.MaximumHandCards + ")";
+			DiscardLabel.text = "Discard (" + game.Player.DiscardPile.Count + ")";
 		}
 
-		if (Player != null && !Player.Exists) {
+		if (game.Player != null && !game.Player.Exists) {
 			AlivePanel.SetActive(false);
 			DeadPanel.SetActive(true);
 		}
@@ -63,8 +62,8 @@ public class GuiController : MonoBehaviour {
 		}
 	}
 
-	public void Show(Creature creature) {
-		Player = creature;
+	public void Show(Game game) {
+		this.game = game;
 		AlivePanel.SetActive(true);
 		DeadPanel.SetActive(false);
 	}

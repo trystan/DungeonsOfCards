@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 using System.Linq;
 
@@ -7,8 +7,7 @@ public class CreatureSelectPanelController : MonoBehaviour {
 	public Text Name;
 	public Text Category;
 	public Text Stats;
-	public Text Pack1;
-	public Text Pack2;
+	public Text Cards;
 	public Image Image;
 
 	Creature Creature;
@@ -27,8 +26,19 @@ public class CreatureSelectPanelController : MonoBehaviour {
 		var sprites = Resources.LoadAll<Sprite>(parts[0]);
 		Image.sprite = sprites.Single(s => s.name == parts[1]);
 
-		Pack1.text = pack1.Name + " pack:\n" + string.Join("\n", pack1.Cards.Select(c => c.Name).Distinct().OrderBy(x => x).ToArray());
-		Pack2.text = pack2.Name + " pack:\n" + string.Join("\n", pack2.Cards.Select(c => c.Name).Distinct().OrderBy(x => x).ToArray());
+		var standardCards = new List<string>();
+		standardCards.AddRange(pack1.Cards.Select(c => c.Name));
+		standardCards.AddRange(pack2.Cards.Select(c => c.Name));
+
+		Cards.text = "Cards: " + pack1.Name + " pack, " + pack2.Name + " pack";
+		foreach (var cards in creature.DrawPile.Where(c => !standardCards.Contains(c.Name)).GroupBy(c => c.Name)) {
+			var card = cards.First();
+			var count = creature.DrawPile.Count(c => c.Name == card.Name);
+			if (count == 1)
+				Cards.text += ", " + card.Name;
+			else
+				Cards.text += ", " + card.Name + " (x" + count + ")";
+		}
 	}
 
 	public void Clicked() {

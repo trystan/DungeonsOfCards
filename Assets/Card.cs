@@ -8,9 +8,12 @@ public enum CardType {
 }
 
 public enum CardSpecialEffect {
-	None, Discard1FromEachPile, Heal1Health, Lose1Health, Draw3, Vampire1, Evade,
+	None, Discard1FromEachPile, Heal1Health, Lose1Health, Draw3, Evade, Blink,
 	Draw5Attack, Draw5Defense, IncreaseDefenseSize, IncreaseAttackSize, IncreaseHandSize,
 	SpawnSkeleton, AddCardToOther, AddCardToSelf, Pray, HealTeam, TurnUndead, DamageClosest,
+	VampireBite, GhostForm, IncreaseAllStats,
+	IncreaseAllSizes, ChargeNearest,
+	IncreaseAttackValue3, IncreaseDefenseValue3,
 }
 
 public class Card {
@@ -33,9 +36,63 @@ public class Card {
 	public CardSpecialEffect OnDie = CardSpecialEffect.None;
 	public CardSpecialEffect OnUse = CardSpecialEffect.None;
 
+	void DoBlinkAction(Game game, Creature user) {
+		var goodCandidates = new List<Point>();
+		var okCandidates = new List<Point>();
+		for (var x = -3; x < 4; x++) {
+			for (var y = -3; y < 4; y++) {
+				var xy = new Point(user.Position.X + x, user.Position.Y + y);
+				var tile = game.GetTile(xy.X, xy.Y);
+				if (tile.BlocksMovement
+					|| tile == Tile.StairsUp
+					|| tile == Tile.StairsDown
+					|| game.GetCreature(xy) != null
+					|| game.GetItem(xy) != null)
+					continue;
+
+				okCandidates.Add(xy);
+
+				if (game.GetCreature(xy + new Point(-1, 0)) == null
+					&& game.GetCreature(xy + new Point( 1, 0)) == null
+					&& game.GetCreature(xy + new Point( 0,-1)) == null
+					&& game.GetCreature(xy + new Point( 0, 1)) == null)
+					goodCandidates.Add(xy);
+			}
+		}
+		if (goodCandidates.Any()) {
+			var target = Util.Shuffle(goodCandidates)[0];
+			user.Position = target;
+			Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Blink!", target, new Vector3(0,14,0))));
+		} else if (okCandidates.Any()) {
+			var target = Util.Shuffle(okCandidates)[0];
+			user.Position = target;
+			Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Blink!", target, new Vector3(0,14,0))));
+		}
+	}
+
+	void DoEvadeAction(Game game, Creature user) {
+		var candidates = new List<Point>();
+		foreach (var p in new Point[] { new Point(-1,0), new Point(1,0), new Point(0,1), new Point(0,-1) }) {
+			var there = user.Position + p;
+			if (game.GetTile(there.X, there.Y).BlocksMovement)
+				continue;
+			if (game.GetCreature(there) != null)
+				continue;
+			candidates.Add(p);
+		}
+
+		if (candidates.Any()) {
+			var candidate = Util.Shuffle(candidates)[0];
+			user.MoveBy(game, candidate.X, candidate.Y);
+		}
+	}
+
 	public void DoAction(Game game, Creature user, Creature other, CardSpecialEffect effect) {
 		switch (effect) {
 		case CardSpecialEffect.None:
+			break;
+		case CardSpecialEffect.Blink:
+			DoBlinkAction(game, user);
 			break;
 		case CardSpecialEffect.Pray:
 			Debug.Log("Pray " + user.TeamName);
@@ -72,39 +129,47 @@ public class Card {
 			}
 			break;
 		case CardSpecialEffect.Evade:
-			var candidates = new List<Point>();
-			foreach (var p in new Point[] { new Point(-1,0), new Point(1,0), new Point(0,1), new Point(0,-1) }) {
-				var there = user.Position + p;
-				if (game.GetTile(there.X, there.Y).BlocksMovement)
-					continue;
-				if (game.GetCreature(there) != null)
-					continue;
-				candidates.Add(p);
-			}
-			if (candidates.Any()) {
-				var candidate = Util.Shuffle(candidates)[0];
-				user.MoveBy(game, candidate.X, candidate.Y);
-			}
-			break;
-		case CardSpecialEffect.Vampire1: 
-			other.TakeDamage(game, 1);
-			if (user.CurrentHealth < user.MaximumHealth)
-				user.CurrentHealth++;
+			DoEvadeAction(game, user);
 			break;
 		case CardSpecialEffect.AddCardToSelf: {
 			var newCard = ExtraCard();
 			newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
-			user.DrawStack.Add(newCard);
+			user.DrawPile.Add(newCard);
 			if (user == game.Player)
 				Globals.MessageBus.Send(new Messages.CardAdded(newCard));
 			break; 
 		}
 		case CardSpecialEffect.AddCardToOther: {
-			var newCard = ExtraCard();
-			newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
-			other.DrawStack.Add(newCard);
-			if (other == game.Player)
-				Globals.MessageBus.Send(new Messages.CardAdded(newCard));
+			if (other == null) {
+				for (var x = -1; x < 2; x++) {
+					for (var y = -1; y < 2; y++) {
+						if (x == 0 && y == 0)
+							continue;
+						
+						var position = user.Position + new Point(x,y);
+
+						Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, position,Vector2.zero)));
+
+						var enemy = game.GetCreature(position);
+						if (enemy == null)
+							continue;
+						
+						var newCard = ExtraCard();
+						newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
+						enemy.DrawPile.Add(newCard);
+						if (enemy == game.Player)
+							Globals.MessageBus.Send(new Messages.CardAdded(newCard));
+					}
+				}
+			} else {
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, other.Position, Vector2.zero)));
+
+				var newCard = ExtraCard();
+				newCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
+				other.DrawPile.Add(newCard);
+				if (other == game.Player)
+					Globals.MessageBus.Send(new Messages.CardAdded(newCard));
+			}
 			break;
 		}
 		case CardSpecialEffect.Draw3:
@@ -118,7 +183,7 @@ public class Card {
 				if (c.CardType == CardType.Attack)
 					user.KeepCard(game, c);
 				else
-					user.DiscardStack.Add(c);
+					user.DiscardPile.Add(c);
 			};
 			game.Effects.Add(new DelayedEffect() { Delay = 0.1f, Callback = drawAttack });
 			game.Effects.Add(new DelayedEffect() { Delay = 0.2f, Callback = drawAttack });
@@ -132,7 +197,7 @@ public class Card {
 				if (c.CardType == CardType.Defense)
 					user.KeepCard(game, c);
 				else
-					user.DiscardStack.Add(c);
+					user.DiscardPile.Add(c);
 			};
 			game.Effects.Add(new DelayedEffect() { Delay = 0.1f, Callback = drawDefense });
 			game.Effects.Add(new DelayedEffect() { Delay = 0.2f, Callback = drawDefense });
@@ -148,25 +213,43 @@ public class Card {
 			user.TakeDamage(game, 1);
 			break;
 		case CardSpecialEffect.Discard1FromEachPile:
-			if (user.HandStack.Any()) {
-				var i = UnityEngine.Random.Range(0, user.HandStack.Count);
-				var card = user.HandStack[i];
-				user.HandStack.RemoveAt(i);
+			if (user.HandPile.Any()) {
+				var i = UnityEngine.Random.Range(0, user.HandPile.Count);
+				var card = user.HandPile[i];
+				user.HandPile.RemoveAt(i);
 				card.UndoAction(game, user, card.OnInHand);
-				user.DiscardStack.Add(card);
+				user.DiscardPile.Add(card);
 			}
-			if (user.AttackStack.Any()) {
-				var i = UnityEngine.Random.Range(0, user.AttackStack.Count);
-				var card = user.AttackStack[i];
-				user.AttackStack.RemoveAt(i);
-				user.DiscardStack.Add(card);
+			if (user.AttackPile.Any()) {
+				var i = UnityEngine.Random.Range(0, user.AttackPile.Count);
+				var card = user.AttackPile[i];
+				user.AttackPile.RemoveAt(i);
+				user.DiscardPile.Add(card);
 			}
-			if (user.DefenseStack.Any()) {
-				var i = UnityEngine.Random.Range(0, user.DefenseStack.Count);
-				var card = user.DefenseStack[i];
-				user.DefenseStack.RemoveAt(i);
-				user.DiscardStack.Add(card);
+			if (user.DefensePile.Any()) {
+				var i = UnityEngine.Random.Range(0, user.DefensePile.Count);
+				var card = user.DefensePile[i];
+				user.DefensePile.RemoveAt(i);
+				user.DiscardPile.Add(card);
 			}
+			break;
+
+		case CardSpecialEffect.IncreaseAttackValue3:
+			user.AttackValue += 3;
+			break;
+		case CardSpecialEffect.IncreaseDefenseValue3:
+			user.DefenseValue += 3;
+			break;
+		case CardSpecialEffect.IncreaseAllSizes:
+			user.MaximumAttackCards += 2;
+			user.MaximumDefenseCards += 2;
+			user.MaximumDefenseCards += 4;
+			break;
+		case CardSpecialEffect.IncreaseAllStats:
+			user.AttackValue++;
+			user.DefenseValue++;
+			user.MaximumHealth++;
+			user.CurrentHealth++;
 			break;
 		case CardSpecialEffect.IncreaseAttackSize:
 			user.MaximumAttackCards++;
@@ -181,6 +264,69 @@ public class Card {
 			var creature = game.Catalog.Skeleton(user.Position.X, user.Position.Y);
 			game.Creatures.Add(creature);
 			Globals.MessageBus.Send(new Messages.CreatureAdded(creature));
+			if (user == game.Player && !user.Exists)
+				Globals.MessageBus.Send(new Messages.PlayerChangedToCreature(creature));
+			break;
+
+		case CardSpecialEffect.ChargeNearest:
+			var distance = 5;
+			Creature n = null;
+			for (var offset = 1; offset < distance && n == null; offset++) {
+				if (game.GetTile(user.Position + new Point(0, offset)).BlocksMovement)
+					break;
+				n = game.GetCreature(user.Position + new Point(0, offset));
+			}
+			Creature s = null;
+			for (var offset = 1; offset < distance && s == null; offset++) {
+				if (game.GetTile(user.Position + new Point(0, -offset)).BlocksMovement)
+					break;
+				s = game.GetCreature(user.Position + new Point(0, -offset));
+			}
+			Creature w = null;
+			for (var offset = 1; offset < distance && w == null; offset++) {
+				if (game.GetTile(user.Position + new Point(-offset, 0)).BlocksMovement)
+					break;
+				w = game.GetCreature(user.Position + new Point(-offset, 0));
+			}
+			Creature e = null;
+			for (var offset = 1; offset < distance && e == null; offset++) {
+				if (game.GetTile(user.Position + new Point(offset, 0)).BlocksMovement)
+					break;
+				e = game.GetCreature(user.Position + new Point(offset, 0));
+			}
+
+			var others = new List<Creature>();
+			if (n != null && n.TeamName != user.TeamName) others.Add(n);
+			if (s != null && s.TeamName != user.TeamName) others.Add(s);
+			if (w != null && w.TeamName != user.TeamName) others.Add(w);
+			if (e != null && e.TeamName != user.TeamName) others.Add(e);
+
+			if (others.Any()) {
+				var enemy = Util.Shuffle(others)[0];
+				enemy.TakeDamage(game, 4);
+				if (enemy.Exists) {
+					var next = enemy.Position;
+					if (enemy == n) next += new Point( 0,-1);
+					if (enemy == s) next += new Point( 0, 1);
+					if (enemy == w) next += new Point( 1, 0);
+					if (enemy == e) next += new Point(-1, 0);
+					user.Position = next;
+				} else {
+					user.Position = enemy.Position;
+				}
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, user.Position, Vector2.zero)));
+			}
+			break;
+
+		case CardSpecialEffect.GhostForm:
+			DoEvadeAction(game, user);
+			game.Effects.Add(new DelayedEffect() { Delay = 0.1f, Callback = g => user.Draw1Card(game) });
+			game.Effects.Add(new DelayedEffect() { Delay = 0.2f, Callback = g => user.Draw1Card(game) });
+			break;
+		case CardSpecialEffect.VampireBite: 
+			other.TakeDamage(game, 3);
+			user.CurrentHealth = Mathf.Min(user.CurrentHealth + 3, user.MaximumHealth);
+			DoBlinkAction(game, user);
 			break;
 		default:
 			throw new NotImplementedException(Name + " " + effect);
@@ -189,6 +335,17 @@ public class Card {
 
 	public void UndoAction(Game game, Creature user, CardSpecialEffect effect) {
 		switch (effect) {
+		case CardSpecialEffect.IncreaseAllSizes:
+			user.MaximumAttackCards -= 2;
+			user.MaximumDefenseCards -= 2;
+			user.MaximumDefenseCards -= 4;
+			break;
+		case CardSpecialEffect.IncreaseAllStats:
+			user.AttackValue--;
+			user.DefenseValue--;
+			user.MaximumHealth--;
+			user.TakeDamage(game, 1);
+			break;
 		case CardSpecialEffect.IncreaseAttackSize:
 			user.MaximumAttackCards--;
 			break;
@@ -197,6 +354,12 @@ public class Card {
 			break;
 		case CardSpecialEffect.IncreaseHandSize:
 			user.MaximumDefenseCards -= 2;
+			break;
+		case CardSpecialEffect.IncreaseAttackValue3:
+			user.AttackValue += 3;
+			break;
+		case CardSpecialEffect.IncreaseDefenseValue3:
+			user.DefenseValue += 3;
 			break;
 		}
 	}

@@ -67,6 +67,16 @@ public class GameController : MonoBehaviour {
 		Subscriptions.Add(Globals.MessageBus.On<Messages.TalkToMerchant>(message => {
 			merchantPanel.Show(game, message.Merchant, message.Buyer);
 		}));
+
+		Subscriptions.Add(Globals.MessageBus.On<Messages.PlayerChangedToCreature>(message => {
+			game.Player = message.Creature;
+			game.Player.Ai = new PlayerAi();
+			game.Player.DrawPile.ForEach(c => Globals.MessageBus.Send(new Messages.CardAdded(c)));
+			game.Player.AttackPile.ForEach(c => Globals.MessageBus.Send(new Messages.CardAdded(c)));
+			game.Player.DefensePile.ForEach(c => Globals.MessageBus.Send(new Messages.CardAdded(c)));
+			game.Player.HandPile.ForEach(c => Globals.MessageBus.Send(new Messages.CardAdded(c)));
+			game.Player.DiscardPile.ForEach(c => Globals.MessageBus.Send(new Messages.CardAdded(c)));
+		}));
 	}
 
 	void NewGame() {
@@ -91,7 +101,7 @@ public class GameController : MonoBehaviour {
 		foreach (var item in game.Items)
 			ItemViews.Add(Instantiator.Add(game, item));
 
-		foreach (var c in game.Player.DrawStack)
+		foreach (var c in game.Player.DrawPile)
 			CardViews.Add(Instantiator.Add(game, c, game.Player));
 
 		PositionStairs();
@@ -99,7 +109,7 @@ public class GameController : MonoBehaviour {
 		playerView = CreatureViews.Single(v => v.Creature == game.Player);
 		Camera.main.GetComponent<CameraController>().Follow(playerView.gameObject);
 
-		guiController.Show(game.Player);
+		guiController.Show(game);
 		ready = true;
 	}
 

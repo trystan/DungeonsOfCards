@@ -18,14 +18,14 @@ public class Combat {
 		var attackerAttack = Attacker.AttackValue;
 		var defenderDefense = Defender.DefenseValue;
 
-		var maxCards = Mathf.Max(Attacker.AttackStack.Count, Defender.DefenseStack.Count);
+		var maxCards = Mathf.Max(Attacker.AttackPile.Count, Defender.DefensePile.Count);
 
 		var defenderStrongVs = new List<string>();
 		var attackerStrongVs = new List<string>();
 
 		for (var i = 0; i < maxCards; i++) {
-			var defenderCard = Defender.DefenseStack.Count > i ? Defender.DefenseStack[i] : null;
-			var attackerCard = Attacker.AttackStack.Count > i ? Attacker.AttackStack[i] : null;
+			var defenderCard = Defender.DefensePile.Count > i ? Defender.DefensePile[i] : null;
+			var attackerCard = Attacker.AttackPile.Count > i ? Attacker.AttackPile[i] : null;
 			var blockAttack = false;
 			var endsCombat = false;
 
@@ -75,12 +75,12 @@ public class Combat {
 		Defender.TakeDamage(Game, Mathf.Max(1, attackerAttack - defenderDefense));
 
 		if (!Defender.Exists)
-			Defender.DefenseStack.ForEach(c => c.DoAction(Game, Defender, Attacker, c.OnDie));
+			Defender.DefensePile.ForEach(c => c.DoAction(Game, Defender, Attacker, c.OnDie));
 
-		Attacker.DiscardStack.AddRange(Attacker.AttackStack);
-		Attacker.AttackStack.Clear();
+		Attacker.DiscardPile.AddRange(Attacker.AttackPile);
+		Attacker.AttackPile.Clear();
 
-		Defender.DiscardStack.AddRange(Defender.DefenseStack);
-		Defender.DefenseStack.Clear();
+		Defender.DiscardPile.AddRange(Defender.DefensePile);
+		Defender.DefensePile.Clear();
 	}
 }

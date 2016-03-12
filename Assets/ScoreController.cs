@@ -26,17 +26,17 @@ public class ScoreController : MonoBehaviour {
 		totalScore += player.StairsDownCounter * -2;
 		StairsDownLabel.text 	= "Stairs down\t\t\t" + player.StairsDownCounter + "\tx\t-2\t= " + player.StairsDownCounter * -2;
 
-		var goldCardCount = player.DrawStack.Count(c => c.Name == "Gold")
-			+ player.HandStack.Count(c => c.Name == "Gold")
-			+ player.AttackStack.Count(c => c.Name == "Gold")
-			+ player.DefenseStack.Count(c => c.Name == "Gold")
-			+ player.DiscardStack.Count(c => c.Name == "Gold");
+		var goldCardCount = player.DrawPile.Count(c => c.Name == "Gold")
+			+ player.HandPile.Count(c => c.Name == "Gold")
+			+ player.AttackPile.Count(c => c.Name == "Gold")
+			+ player.DefensePile.Count(c => c.Name == "Gold")
+			+ player.DiscardPile.Count(c => c.Name == "Gold");
 
-		var amuletCount = player.DrawStack.Count(c => c.Name.StartsWith("Amulet of "))
-			+ player.HandStack.Count(c => c.Name.StartsWith("Amulet of "))
-			+ player.AttackStack.Count(c => c.Name.StartsWith("Amulet of "))
-			+ player.DefenseStack.Count(c => c.Name.StartsWith("Amulet of "))
-			+ player.DiscardStack.Count(c => c.Name.StartsWith("Amulet of "));
+		var amuletCount = player.DrawPile.Count(c => c.Name.StartsWith("Amulet of "))
+			+ player.HandPile.Count(c => c.Name.StartsWith("Amulet of "))
+			+ player.AttackPile.Count(c => c.Name.StartsWith("Amulet of "))
+			+ player.DefensePile.Count(c => c.Name.StartsWith("Amulet of "))
+			+ player.DiscardPile.Count(c => c.Name.StartsWith("Amulet of "));
 
 		totalScore += goldCardCount * 2;
 		GoldLabel.text = "Gold\t\t\t\t\t\t" + goldCardCount + "\tx\t 2\t= " + goldCardCount * 2;

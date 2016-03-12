@@ -24,6 +24,14 @@ namespace Messages {
 		}
 	}
 
+	public struct PlayerChangedToCreature {
+		public Creature Creature;
+
+		public PlayerChangedToCreature(Creature creature) { 
+			Creature = creature;
+		}
+	}
+
 	public struct ItemAdded {
 		public Item Item;
 

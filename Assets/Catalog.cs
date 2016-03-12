@@ -52,14 +52,13 @@ public class Catalog {
 
 			new Card() { Name = "Freeze closest", GoldCost = 4, CardType = CardType.Normal, StrongVs = "Lizards", OnUse = CardSpecialEffect.DamageClosest },
 			new Card() { Name = "Burn closest", GoldCost = 4, CardType = CardType.Normal, StrongVs = "Plants", OnUse = CardSpecialEffect.DamageClosest },
-			new Card() { Name = "Focus", GoldCost = 3, CardType = CardType.Attack, OnInHand = CardSpecialEffect.IncreaseHandSize },
+			new Card() { Name = "Blink", GoldCost = 3, CardType = CardType.Normal, OnUse = CardSpecialEffect.Blink },
+			new Card() { Name = "Focus", GoldCost = 3, CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseHandSize },
 			new Card() { Name = "Miss", CardType = CardType.Defense, DoesBlockOtherCard = true },
 			new Card() { Name = "Evade", CardType = CardType.Defense, DoesStopCombat = true, OnUse = CardSpecialEffect.Evade },
-			new Card() { Name = "Stab +1", GoldCost = 4, CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
-			new Card() { Name = "Bash +1", CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
+			new Card() { Name = "Stab +1", GoldCost = 4, CardType = CardType.Attack, CombatBonus = 1, OnUse = CardSpecialEffect.Discard1FromEachPile },
 
 			new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
-			new Card() { Name = "Blood suck", CardType = CardType.Attack, OnUse = CardSpecialEffect.Vampire1 },
 
 			new Card() { Name = "Revive", CardType = CardType.Defense, OnDie = CardSpecialEffect.Heal1Health },
 			new Card() { Name = "Rot", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Lose1Health },
@@ -94,14 +93,40 @@ public class Catalog {
 			new Card() { Name = "Leafs", CardType = CardType.Normal,
 				FlavorText = "Stupid plant people dumping useless leafs everywhere." },
 
-			new Card() { Name = "Plant attack", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
+			new Card() { Name = "Plant attack +1", CardType = CardType.Attack, CombatBonus = 1, OnUse = CardSpecialEffect.AddCardToOther, 
 				ExtraCard = () => Card("Leafs") },
-			new Card() { Name = "Plant armor", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
+			new Card() { Name = "Plant armor +1", CardType = CardType.Defense, CombatBonus = 1, OnUse = CardSpecialEffect.AddCardToOther, 
 				ExtraCard = () => Card("Leafs") },
 
-			new Card() { Name = "Defensive branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseDefenseSize },
-			new Card() { Name = "Attack branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAttackSize },
-			new Card() { Name = "Holding branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseHandSize },
+			new Card() { Name = "Thief's getaway", CardType = CardType.Normal, 
+				OnInHand = CardSpecialEffect.IncreaseAllSizes,
+				OnUse = CardSpecialEffect.Blink },
+			new Card() { Name = "Spear +3", CardType = CardType.Normal, 
+				OnUse = CardSpecialEffect.AddCardToSelf, ExtraCard = () => Card("Attack +1"),
+				OnInHand = CardSpecialEffect.IncreaseAttackValue3 },
+			new Card() { Name = "Shield +3", CardType = CardType.Normal, 
+				OnUse = CardSpecialEffect.AddCardToSelf, ExtraCard = () => Card("Defense +1"),
+				OnInHand = CardSpecialEffect.IncreaseDefenseValue3 },
+			new Card() { Name = "Vestments", CardType = CardType.Normal, 
+				OnDraw = CardSpecialEffect.Heal1Health,
+				OnUse = CardSpecialEffect.HealTeam,
+				OnInHand = CardSpecialEffect.IncreaseAllSizes },
+
+			new Card() { Name = "Vampire bite +1", CardType = CardType.Attack, CombatBonus = 1, OnUse = CardSpecialEffect.VampireBite },
+			new Card() { Name = "Ghost form +1", CardType = CardType.Defense, CombatBonus = 1, OnUse = CardSpecialEffect.GhostForm },
+			new Card() { Name = "Bones", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAllStats },
+			new Card() { Name = "Zombie rot", CardType = CardType.Normal, 
+				OnDraw = CardSpecialEffect.AddCardToOther, ExtraCard = () => Card("Diseased"),
+				OnUse = CardSpecialEffect.HealTeam },
+
+			new Card() { Name = "Branches", CardType = CardType.Normal, 
+				OnUse = CardSpecialEffect.Draw3,
+				OnInHand = CardSpecialEffect.IncreaseAllSizes },
+			new Card() { Name = "Bloom", CardType = CardType.Normal, OnUse = CardSpecialEffect.AddCardToOther, ExtraCard = () => Card("Leafs") },
+			new Card() { Name = "Spores", CardType = CardType.Defense, 
+				OnDraw = CardSpecialEffect.AddCardToSelf,
+				OnUse = CardSpecialEffect.AddCardToSelf, ExtraCard = () => Card("Regenerate") },
+			new Card() { Name = "Charge", CardType = CardType.Normal, OnUse = CardSpecialEffect.ChargeNearest },
 		});
 
 		amuletCards = Cards.Where(c => c.Name.StartsWith("Amulet of ")).ToList();
@@ -209,6 +234,8 @@ public class Catalog {
 				Card("Draw 3"),
 				Card("Focus"),
 				Card("Focus"),
+				Card("Blink"),
+				Card("Blink"),
 			}
 		};
 	}
@@ -311,77 +338,12 @@ public class Catalog {
 				Card("Attack +1"),
 				Card("Defense +1"),
 				Card("Defense +1"),
-				Card("Diseased"),
-				Card("Diseased"),
+				Card("Skeleton"),
+				Card("Skeleton"),
 				Card("Disease touched"),
 				Card("Disease touched"),
 				Card("Disease touch"),
 				Card("Disease touch"),
-			}
-		};
-	}
-
-	public Pack SkeletonPack() {
-		return new Pack() {
-			Name = "Skeleton",
-			Cards = new List<Card>() {
-				Card("Skeleton"),
-				Card("Skeleton"),
-				Card("Attack +2"),
-				Card("Attack +2"),
-				Card("Defense +2"),
-				Card("Defense +2"),
-				Card("Bash +1"),
-				Card("Bash +1"),
-				Card("Idle"),
-				Card("Idle"),
-			}
-		};
-	}
-
-	public Pack VampirePack() {
-		return new Pack() {
-			Name = "Vampire",
-			Cards = new List<Card>() {
-				Card("Skeleton"),
-				Card("Skeleton"),
-				Card("Blood suck"),
-				Card("Blood suck"),
-				Card("Evade"),
-				Card("Evade"),
-				Card("Idle"),
-				Card("Idle"),
-			}
-		};
-	}
-
-	public Pack GhostPack() {
-		return new Pack() {
-			Name = "Ghost",
-			Cards = new List<Card>() {
-				Card("Attack +1"),
-				Card("Attack +1"),
-				Card("Miss"),
-				Card("Miss"),
-				Card("Idle"),
-				Card("Idle"),
-			}
-		};
-	}
-
-	public Pack ZombiePack() {
-		return new Pack() {
-			Name = "Zombie",
-			Cards = new List<Card>() {
-				Card("Skeleton"),
-				Card("Skeleton"),
-				Card("Regenerate"),
-				Card("Regenerate"),
-				Card("Revive"),
-				Card("Rot"),
-				Card("Rot"),
-				Card("Idle"),
-				Card("Idle"),
 			}
 		};
 	}
@@ -390,10 +352,10 @@ public class Catalog {
 		return new Pack() {
 			Name = "Flora",
 			Cards = new List<Card>() {
-				Card("Plant attack"),
-				Card("Plant attack"),
-				Card("Plant armor"),
-				Card("Plant armor"),
+				Card("Plant attack +1"),
+				Card("Plant attack +1"),
+				Card("Plant armor +1"),
+				Card("Plant armor +1"),
 				Card("Regenerate"),
 				Card("Regenerate"),
 				Card("Mass heal"),
@@ -404,52 +366,16 @@ public class Catalog {
 		};
 	}
 
-	public Pack TreePack() {
+	public Pack RarePack() {
 		return new Pack() {
-			Name = "Tree",
+			Name = "Rare",
 			Cards = new List<Card>() {
-				Card("Defensive branches"),
-				Card("Defensive branches"),
-				Card("Attack branches"),
-				Card("Attack branches"),
-				Card("Holding branches"),
-				Card("Holding branches"),
-				Card("Attack +3"),
-				Card("Attack +3"),
-				Card("Defense +2"),
-				Card("Defense +2"),
-			}
-		};
-	}
-
-	public Pack FungusPack() {
-		return new Pack() {
-			Name = "Fungus",
-			Cards = new List<Card>() {
-				Card("Ready attack"),
-				Card("Ready attack"),
-				Card("Ready defense"),
-				Card("Ready defense"),
-				Card("Fungal revival"),
-				Card("Fungal revival"),
-				Card("Fungal feeding"),
-				Card("Fungal feeding"),
-				Card("Fungal regrowth"),
-				Card("Fungal regrowth"),
-			}
-		};
-	}
-
-	public Pack MossPack() {
-		return new Pack() {
-			Name = "Moss",
-			Cards = new List<Card>() {
-				Card("Draw 3"),
-				Card("Draw 3"),
-				Card("Attack +2"),
-				Card("Attack +2"),
-				Card("Defense +2"),
-				Card("Defense +2"),
+				Card("Skeleton"),
+				Card("Skeleton"),
+				Card("Attack +4"),
+				Card("Attack +4"),
+				Card("Defense +4"),
+				Card("Defense +4"),
 				Card("Attack +3"),
 				Card("Attack +3"),
 				Card("Defense +3"),
@@ -458,19 +384,30 @@ public class Catalog {
 		};
 	}
 
-	public List<Card> Packs(Point start, params Pack[] packs) {
+	public Creature Init(Creature creature) {
 		var deck = new List<Card>();
-		foreach (var pack in packs)
+		deck.AddRange(creature.DrawPile);
+		creature.DrawPile.Clear();
+
+		foreach (var pack in creature.Packs)
 			deck.AddRange(pack.Cards);
 
-		deck.ForEach(c => c.WorldPointOrigin = new Vector3(start.X, start.Y, 0));
-		return Util.Shuffle(deck);
+		deck.ForEach(c => c.WorldPointOrigin = new Vector3(creature.Position.X, creature.Position.Y, 0));
+		creature.DrawPile.AddRange(Util.Shuffle(deck));
+
+		return creature;
 	}
 
 	public Creature Merchant(int x, int y) {
-		var pack = Util.Shuffle(new List<Pack>() { BasicPack(), AdventurerPack(), AttackPack(), DefensePack(), PriestPack(), WizardPack() })[0];
-		return new Creature() {
+		var pack = Util.Shuffle(new List<Pack>() { 
+			BasicPack(), AdventurerPack(),
+			AttackPack(), DefensePack(), PriestPack(), RoguePack(), WizardPack(),
+			RarePack(),
+		})[0];
+
+		return Init(new Creature() {
 			Name = "Merchant",
+			Packs = new [] { DefensePack(), AttackPack() },
 			Position = new Point(x, y),
 			Ai = new MerchantAi() {
 				Name = pack.Name + " pack merchant",
@@ -478,20 +415,20 @@ public class Catalog {
 			},
 			TeamName = "Merchant",
 			SpriteName = "DawnLike/Characters/Player0:merchant",
-			AttackValue = 3,
+			AttackValue = 5,
 			MaximumAttackCards = 8,
-			DefenseValue = 3,
+			DefenseValue = 5,
 			MaximumDefenseCards = 8,
-			MaximumHealth = 10,
-			CurrentHealth = 10,
+			MaximumHealth = 20,
+			CurrentHealth = 20,
 			MaximumHandCards = 12,
-			DrawStack = Packs(new Point(x,y), AttackPack(), DefensePack(), RoguePack(), MerchantPack()),
-		};
+		});
 	}
 
 	public Creature Player(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Hero",
+			Packs = new [] { AttackPack(), AdventurerPack() },
 			Position = new Point(x, y),
 			Ai = new PlayerAi(),
 			TeamName = "Player",
@@ -503,211 +440,223 @@ public class Catalog {
 			MaximumHealth = 10,
 			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), AttackPack(), AdventurerPack()),
-		};
+		});
 	}
 
 	public Creature Skeleton(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Skeleton",
+			Packs = new [] { UndeadPack(), AttackPack() },
+			DrawPile = new List<Card>() { Card("Bones"), Card("Bones") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
 			SpriteName = "DawnLike/Characters/Undead0:skeleton",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 8,
 			CurrentHealth = 8,
-			MaximumHandCards = 5,
-			DrawStack = Packs(new Point(x,y), UndeadPack(), SkeletonPack()),
-		};
+			MaximumHandCards = 6,
+		});
 	}
 
 	public Creature Zombie(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Zombie",
+			Packs = new [] { UndeadPack(), DefensePack() },
+			DrawPile = new List<Card>() { Card("Zombie rot"), Card("Zombie rot") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
 			SpriteName = "DawnLike/Characters/Undead0:zombie",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 8,
 			CurrentHealth = 8,
-			MaximumHandCards = 5,
-			DrawStack = Packs(new Point(x,y), UndeadPack(), ZombiePack()),
-		};
+			MaximumHandCards = 6,
+		});
 	}
 
 	public Creature Vampire(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Vampire",
+			Packs = new [] { UndeadPack(), WizardPack() },
+			DrawPile = new List<Card>() { Card("Vampire bite +1"), Card("Vampire bite +1") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
 			SpriteName = "DawnLike/Characters/Undead0:vampire",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 8,
 			CurrentHealth = 8,
-			MaximumHandCards = 5,
-			DrawStack = Packs(new Point(x,y), UndeadPack(), VampirePack()),
-		};
+			MaximumHandCards = 6,
+		});
 	}
 
 	public Creature Ghost(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Ghost",
+			Packs = new [] { UndeadPack(), RoguePack() },
+			DrawPile = new List<Card>() { Card("Ghost form +1"), Card("Ghost form +1") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Undead",
 			SpriteName = "DawnLike/Characters/Undead0:ghost",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 8,
 			CurrentHealth = 8,
-			MaximumHandCards = 5,
-			DrawStack = Packs(new Point(x,y), UndeadPack(), GhostPack()),
-		};
+			MaximumHandCards = 6,
+		});
 	}
 
 	public Creature TreePerson(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Tree",
+			Packs = new [] { FloraPack(), BasicPack() },
+			DrawPile = new List<Card>() { Card("Branches"), Card("Branches") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
 			SpriteName = "DawnLike/Characters/Plant0:tree",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 6,
-			MaximumHealth = 12,
-			CurrentHealth = 12,
+			AttackValue = 1,
+			MaximumAttackCards = 3,
+			DefenseValue = 1,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), FloraPack(), TreePack()),
-		};
+		});
 	}
 
 	public Creature LeafPerson(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Leaf",
+			Packs = new [] { FloraPack(), BasicPack() },
+			DrawPile = new List<Card>() { Card("Bloom"), Card("Bloom") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
 			SpriteName = "DawnLike/Characters/Elemental0:plant elemental",
-			AttackValue = 4,
-			MaximumAttackCards = 6,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
-			MaximumHealth = 12,
-			CurrentHealth = 12,
+			AttackValue = 1,
+			MaximumAttackCards = 3,
+			DefenseValue = 1,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
 			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), FloraPack(), FloraPack()),
-		};
+		});
 	}
 
 	public Creature ShroomPerson(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Shroom",
+			Packs = new [] { FloraPack(), BasicPack() },
+			DrawPile = new List<Card>() { Card("Spores"), Card("Spores") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
 			SpriteName = "DawnLike/Characters/Plant0:shroom",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
-			MaximumHealth = 12,
-			CurrentHealth = 12,
-			MaximumHandCards = 8,
-			DrawStack = Packs(new Point(x,y), FloraPack(), FungusPack()),
-		};
+			AttackValue = 1,
+			MaximumAttackCards = 3,
+			DefenseValue = 1,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
+			MaximumHandCards = 6,
+		});
 	}
 
 	public Creature MossMan(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Moss man",
+			Packs = new [] { FloraPack(), BasicPack() },
+			DrawPile = new List<Card>() { Card("Charge"), Card("Charge") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Flora",
 			SpriteName = "DawnLike/Characters/Plant0:moss man",
-			AttackValue = 3,
-			MaximumAttackCards = 5,
-			DefenseValue = 3,
-			MaximumDefenseCards = 5,
-			MaximumHealth = 12,
-			CurrentHealth = 12,
-			MaximumHandCards = 7,
-			DrawStack = Packs(new Point(x,y), FloraPack(), MossPack()),
-		};
+			AttackValue = 1,
+			MaximumAttackCards = 3,
+			DefenseValue = 1,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
+			MaximumHandCards = 6,
+		});
 	}
 
 	public Creature RogueLizard(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Rogue lizard",
+			Packs = new [] { BasicPack(), RoguePack() },
+			DrawPile = new List<Card>() { Card("Thief's getaway"), Card("Thief's getaway") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
 			SpriteName = "DawnLike/Characters/Player0:lizard",
-			AttackValue = 3,
-			MaximumAttackCards = 4,
-			DefenseValue = 3,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 10,
 			CurrentHealth = 10,
-			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), BasicPack(), RoguePack()),
-		};
+			MaximumHandCards = 4,
+		});
 	}
 
 	public Creature AttackLizard(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Spear lizard",
+			Packs = new [] { BasicPack(), AttackPack() },
+			DrawPile = new List<Card>() { Card("Spear +3"), Card("Spear +3") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
 			SpriteName = "DawnLike/Characters/Player0:spear lizard",
-			AttackValue = 3,
-			MaximumAttackCards = 4,
-			DefenseValue = 3,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 10,
 			CurrentHealth = 10,
-			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), BasicPack(), AttackPack()),
-		};
+			MaximumHandCards = 4,
+		});
 	}
 
 	public Creature DefenseLizard(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Shield lizard",
+			Packs = new [] { BasicPack(), DefensePack() },
+			DrawPile = new List<Card>() { Card("Shield +3"), Card("Shield +3") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
 			SpriteName = "DawnLike/Characters/Player0:shield lizard",
-			AttackValue = 3,
-			MaximumAttackCards = 4,
-			DefenseValue = 3,
-			MaximumDefenseCards = 4,
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 10,
 			CurrentHealth = 10,
-			MaximumHandCards = 6,
-			DrawStack = Packs(new Point(x,y), BasicPack(), DefensePack()),
-		};
+			MaximumHandCards = 4,
+		});
 	}
 
 	public Creature PriestLizard(int x, int y) {
-		return new Creature() {
+		return Init(new Creature() {
 			Name = "Priest lizard",
+			Packs = new [] { BasicPack(), PriestPack() },
+			DrawPile = new List<Card>() { Card("Vestments"), Card("Vestments") },
 			Position = new Point(x, y),
 			Ai = new ComputerAi(),
 			TeamName = "Lizards",
@@ -716,11 +665,10 @@ public class Catalog {
 			MaximumAttackCards = 3,
 			DefenseValue = 2,
 			MaximumDefenseCards = 3,
-			MaximumHealth = 8,
-			CurrentHealth = 8,
-			MaximumHandCards = 5,
-			DrawStack = Packs(new Point(x,y), BasicPack(), PriestPack()),
-		};
+			MaximumHealth = 10,
+			CurrentHealth = 10,
+			MaximumHandCards = 4,
+		});
 	}
 
 	public Creature Enemy(int x, int y) {

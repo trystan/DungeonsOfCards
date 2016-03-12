@@ -26,26 +26,32 @@ public class ComputerAi : AI {
 	public void TakeTurn(Game game, Creature creature) {
 		var cardsToPlay = new Dictionary<Card, int>();
 
-		foreach (var c in creature.HandStack) {
+		var nearestEnemy = game.Creatures
+			.Where(c => c.Exists && c.TeamName != creature.TeamName && c.TeamName != "Merchant")
+			.OrderBy(c => c.Position.DistanceTo(creature.Position))
+			.FirstOrDefault();
+		var distanceToNearestEnemy = nearestEnemy == null ? 999 : creature.Position.DistanceTo(nearestEnemy.Position);
+
+		foreach (var c in creature.HandPile) {
 			switch (c.OnUse) {
 			case CardSpecialEffect.None:
 				break;
 			case CardSpecialEffect.Draw3: {
-					var chance = creature.MaximumHandCards - creature.HandStack.Count
-						+ creature.MaximumAttackCards - creature.AttackStack.Count
-						+ creature.MaximumDefenseCards - creature.DefenseStack.Count;
+					var chance = creature.MaximumHandCards - creature.HandPile.Count
+						+ creature.MaximumAttackCards - creature.AttackPile.Count
+						+ creature.MaximumDefenseCards - creature.DefensePile.Count;
 					if (chance > 0)
 						cardsToPlay.Add(c, chance);
 					break;
 				}
 			case CardSpecialEffect.Draw5Attack: {
-					var chance = (creature.MaximumAttackCards - creature.AttackStack.Count) * 2;
+					var chance = (creature.MaximumAttackCards - creature.AttackPile.Count) * 2;
 					if (chance > 0)
 						cardsToPlay.Add(c, chance);
 					break;
 				}
 			case CardSpecialEffect.Draw5Defense: {
-					var chance = (creature.MaximumDefenseCards - creature.DefenseStack.Count) * 2;
+					var chance = (creature.MaximumDefenseCards - creature.DefensePile.Count) * 2;
 					if (chance > 0)
 						cardsToPlay.Add(c, chance);
 					break;
@@ -78,7 +84,7 @@ public class ComputerAi : AI {
 				else
 					strength = 1;
 
-				var fear = Mathf.RoundToInt(5 * (1f - (1f * creature.CurrentHealth / creature.MaximumHealth)));
+				var fear = Mathf.RoundToInt(6 * (1f - (1f * creature.CurrentHealth / creature.MaximumHealth))) - 3;
 
 				if (x == 0 && y == 0) {
 					strength -= GetDanger(game, creature, new Point(0,0)) + fear;
@@ -86,16 +92,24 @@ public class ComputerAi : AI {
 						cardsToPlay.Add(new Card() { Name = cardName }, strength);
 				}
 
-
 				var other = game.GetCreature(neighbor);
 				if (other != null) {
 					if (other.TeamName != creature.TeamName && other.TeamName != "Merchant") {
-						strength = GetAttackability(creature, other) - fear;
+						strength = GetAttackability(creature, other);
 						if (strength > 0)
 							cardsToPlay.Add(new Card() { Name = cardName }, strength);
 					}
 				} else if (!game.GetTile(neighbor.X, neighbor.Y).BlocksMovement) {
 					strength -= GetDanger(game, creature, neighbor);
+
+					if (nearestEnemy != null) {
+						var dist = neighbor.DistanceTo(nearestEnemy.Position);
+						if (dist < distanceToNearestEnemy)
+							strength -= fear;
+						else if (dist > distanceToNearestEnemy)
+							strength += fear;
+					}
+
 					if (strength > 0)
 						cardsToPlay.Add(new Card() { Name = cardName }, strength);
 				}
@@ -125,9 +139,8 @@ public class ComputerAi : AI {
 
 	int GetDanger(Game game, Creature creature, Point point) {
 		var total = 0;
-		foreach (var p in new Point[] { new Point( -1, 1), new Point(-1, 0), new Point(-1,-1),
-				new Point(  0, 1), new Point( 0, 0), new Point( 0,-1),
-				new Point(  1, 1), new Point( 1, 0), new Point( 1,-1),
+		foreach (var p in new Point[] { new Point(-1, 0), new Point(  0, 1), 
+				new Point( 0, 0), new Point( 0,-1), new Point( 1, 0),
 				new Point( -2, 0), new Point( 2, 0), new Point( 0,-2), new Point( 0, 2),
 				new Point( -3, 0), new Point( 3, 0), new Point( 0,-3), new Point( 0, 3)})
 			total += GetImmediateDanger(game, creature, p);
@@ -143,7 +156,7 @@ public class ComputerAi : AI {
 		if (self.TeamName == other.TeamName || other.TeamName == "Merchant")
 			return 0;
 		else {
-			return (((other.AttackValue + other.MaximumAttackCards / 2) - (self.DefenseValue + self.DefenseStack.Count)) * 2
+			return (((other.AttackValue + other.MaximumAttackCards / 2) - (self.DefenseValue + self.DefensePile.Count + 2)) * 2
 				- GetAttackability(self, other)) * 2;
 		}
 	}
@@ -152,6 +165,6 @@ public class ComputerAi : AI {
 		if (self.TeamName == other.TeamName || other.TeamName == "Merchant")
 			return 0;
 		else
-			return ((self.AttackValue + self.AttackStack.Count) - (other.DefenseValue + other.MaximumDefenseCards / 2)) * 2;
+			return ((self.AttackValue + self.AttackPile.Count + 2) - (other.DefenseValue + other.MaximumDefenseCards / 2)) * 2;
 	}
 }

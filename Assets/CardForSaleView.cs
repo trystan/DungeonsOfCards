@@ -7,7 +7,6 @@ public class CardForSaleView : MonoBehaviour {
 	public Text CardTitle;
 	public Text CardCost;
 
-	Game Game;
 	Card Card;
 	Creature Seller;
 	Creature Buyer;
@@ -19,7 +18,6 @@ public class CardForSaleView : MonoBehaviour {
 
 	public void Show(Game game, Card card, Creature seller, Creature buyer, MerchantPanelController panel) {
 		gameObject.SetActive(true);
-		Game = game;
 		Card = card;
 		Buyer = buyer;
 		Seller = seller;
@@ -30,19 +28,19 @@ public class CardForSaleView : MonoBehaviour {
 	}
 
 	public void Buy() {
-		var goldCardCount = Buyer.DrawStack.Count(c => c.Name == "Gold")
-			+ Buyer.HandStack.Count(c => c.Name == "Gold")
-			+ Buyer.AttackStack.Count(c => c.Name == "Gold")
-			+ Buyer.DefenseStack.Count(c => c.Name == "Gold")
-			+ Buyer.DiscardStack.Count(c => c.Name == "Gold");
+		var goldCardCount = Buyer.DrawPile.Count(c => c.Name == "Gold")
+			+ Buyer.HandPile.Count(c => c.Name == "Gold")
+			+ Buyer.AttackPile.Count(c => c.Name == "Gold")
+			+ Buyer.DefensePile.Count(c => c.Name == "Gold")
+			+ Buyer.DiscardPile.Count(c => c.Name == "Gold");
 
 		if (goldCardCount >= Card.GoldCost) {
 			(Seller.Ai as MerchantAi).CardsForSale.Remove(Card);
-			Buyer.DiscardStack.Add(Card);
+			Buyer.DiscardPile.Add(Card);
 			Buyer.ShuffleEverythingIntoDrawStack();
-			var goldCardsSpent = Buyer.DrawStack.Where(c => c.Name == "Gold").Take(Card.GoldCost).ToList();
+			var goldCardsSpent = Buyer.DrawPile.Where(c => c.Name == "Gold").Take(Card.GoldCost).ToList();
 			goldCardsSpent.ForEach(c => {
-				Buyer.DrawStack.Remove(c);
+				Buyer.DrawPile.Remove(c);
 				c.Exists = false;
 			});
 			Buyer.ShuffleEverythingIntoDrawStack();

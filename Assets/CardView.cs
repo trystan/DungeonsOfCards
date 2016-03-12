@@ -74,24 +74,24 @@ public class CardView : MonoBehaviour {
 	}
 
 	void Reposition() {
-		if (Player.DrawStack.Contains(Card)) {
-			lastPile = Player.DrawStack;
+		if (Player.DrawPile.Contains(Card)) {
+			lastPile = Player.DrawPile;
 			targetTransform = DrawPile;
 			FaceDown();
-		} else if (Player.HandStack.Contains(Card)) {
-			lastPile = Player.HandStack;
+		} else if (Player.HandPile.Contains(Card)) {
+			lastPile = Player.HandPile;
 			targetTransform = HandPile;
 			FaceUp();
-		} else if (Player.AttackStack.Contains(Card)) {
-			lastPile = Player.AttackStack;
+		} else if (Player.AttackPile.Contains(Card)) {
+			lastPile = Player.AttackPile;
 			targetTransform = AttackPile;
 			FaceUp();
-		} else if (Player.DefenseStack.Contains(Card)) {
-			lastPile = Player.DefenseStack;
+		} else if (Player.DefensePile.Contains(Card)) {
+			lastPile = Player.DefensePile;
 			targetTransform = DefensePile;
 			FaceUp();
-		} else if (Player.DiscardStack.Contains(Card)) {
-			lastPile = Player.DiscardStack;
+		} else if (Player.DiscardPile.Contains(Card)) {
+			lastPile = Player.DiscardPile;
 			targetTransform = DiscardPile;
 			FaceUp();
 		} else {
@@ -157,7 +157,7 @@ public class CardView : MonoBehaviour {
 	}
 
 	public void Clicked() {
-		if (Player.DrawStack.Contains(Card)) {
+		if (Player.DrawPile.Contains(Card)) {
 			Player.MoveBy(Game,0,0);
 			Game.TakeTurn();
 		} else if (isBeingExamined) {
@@ -213,7 +213,7 @@ public class CardView : MonoBehaviour {
 		else
 			flavorLabel.text = "";
 
-		UseButton.SetActive(Card.OnUse != CardSpecialEffect.None && Player.HandStack.Contains(Card));
+		UseButton.SetActive(Card.OnUse != CardSpecialEffect.None && Player.HandPile.Contains(Card));
 	}
 
 	void EndExamining() {
@@ -237,6 +237,8 @@ public class CardView : MonoBehaviour {
 			text = "Add a " + Card.ExtraCard().Name + " to opponent's draw pile."; break;
 		case CardSpecialEffect.AddCardToSelf: 
 			text = "Add a " + Card.ExtraCard().Name + " to your draw pile."; break;
+		case CardSpecialEffect.Blink:
+			text = "Teleport to a nearby open space. Probably safe."; break;
 		case CardSpecialEffect.DamageClosest: 
 			text = "Damage the closest creature within 5 spaces."; break;
 		case CardSpecialEffect.Discard1FromEachPile: 
@@ -267,8 +269,23 @@ public class CardView : MonoBehaviour {
 			text = "If you die, come back as a skeleton."; break;
 		case CardSpecialEffect.TurnUndead:
 			text = "Damage all undead within 5 spaces."; break;
-		case CardSpecialEffect.Vampire1:
-			text = "Recover 1 health."; break;
+
+		case CardSpecialEffect.ChargeNearest:
+			text = "Charges next to the nearest enemy up to 5 spaces away in the 4 cardinal directions and does 4 damage."; break;
+
+		case CardSpecialEffect.IncreaseAllSizes:
+			text = "Increase base attack pile size, defense pile size, and hand size."; break;
+
+		case CardSpecialEffect.IncreaseAttackValue3:
+			text = "Increase base attack value by 3."; break;
+		case CardSpecialEffect.IncreaseDefenseValue3:
+			text = "Increase base defense value by 3."; break;
+		case CardSpecialEffect.IncreaseAllStats:
+			text = "Increase base attack, defense, and health."; break;
+		case CardSpecialEffect.GhostForm:
+			text = "Evade then draw 2 cards."; break;
+		case CardSpecialEffect.VampireBite:
+			text = "Recover up to 3 health and blink away."; break;
 		}
 		
 		descriptionLabel.text += "<b>" + when + ":</b> " + text + "\n";

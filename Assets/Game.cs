@@ -51,6 +51,10 @@ public class Game {
 		return Items.FirstOrDefault(i => i.Exists && i.Position == p);
 	}
 
+	public Tile GetTile(Point p) {
+		return GetTile(p.X, p.Y);
+	}
+
 	public Tile GetTile(int x, int y) {
 		if (x >= 0 && y >= 0 && x < Width && y < Height)
 			return tiles[x,y];

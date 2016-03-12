@@ -23,11 +23,13 @@ public class Creature {
 	public int StairsUpCounter;
 	public int StairsDownCounter;
 
-	public List<Card> DrawStack = new List<Card>();
-	public List<Card> AttackStack = new List<Card>();
-	public List<Card> DefenseStack = new List<Card>();
-	public List<Card> HandStack = new List<Card>();
-	public List<Card> DiscardStack = new List<Card>();
+	public Pack[] Packs;
+
+	public List<Card> DrawPile = new List<Card>();
+	public List<Card> AttackPile = new List<Card>();
+	public List<Card> DefensePile = new List<Card>();
+	public List<Card> HandPile = new List<Card>();
+	public List<Card> DiscardPile = new List<Card>();
 
 	public void MoveBy(Game game, int mx, int my) {
 		var next = Position + new Point(mx, my);
@@ -64,7 +66,7 @@ public class Creature {
 					Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(item.Card.Name, item.Position, Vector3.zero)));
 					if (this == game.Player)
 						Globals.MessageBus.Send(new Messages.CardAdded(item.Card));
-					DrawStack.Add(item.Card);
+					DrawPile.Add(item.Card);
 				} else if (item.Pack != null) {
 					Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(item.Pack.Name, item.Position, Vector3.zero)));
 					var allCards = Util.Shuffle(item.Pack.Cards);
@@ -75,7 +77,7 @@ public class Creature {
 							Callback = (g) => {
 								if (this == game.Player)
 									Globals.MessageBus.Send(new Messages.CardAdded(allCards[index]));
-								this.DrawStack.Add(allCards[index]);
+								this.DrawPile.Add(allCards[index]);
 							}
 						});
 					}
@@ -88,40 +90,40 @@ public class Creature {
 	}
 
 	public void UseCard(Game game, Card card) {
-		HandStack.Remove(card);
+		HandPile.Remove(card);
 		card.DoAction(game, this, null, card.OnUse);
 		Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(card.Name, Position, new Vector3(0,4,0))));
-		DiscardStack.Add(card);
+		DiscardPile.Add(card);
 	}
 
 	public void ShuffleEverythingIntoDrawStack() {
-		DiscardStack.AddRange(AttackStack);
-		AttackStack.Clear();
-		DiscardStack.AddRange(DefenseStack);
-		DefenseStack.Clear();
-		DiscardStack.AddRange(HandStack);
-		HandStack.Clear();
-		DiscardStack.AddRange(DrawStack);
-		DrawStack.Clear();
-		DrawStack.AddRange(Util.Shuffle(DiscardStack));
-		DiscardStack.Clear();
+		DiscardPile.AddRange(AttackPile);
+		AttackPile.Clear();
+		DiscardPile.AddRange(DefensePile);
+		DefensePile.Clear();
+		DiscardPile.AddRange(HandPile);
+		HandPile.Clear();
+		DiscardPile.AddRange(DrawPile);
+		DrawPile.Clear();
+		DrawPile.AddRange(Util.Shuffle(DiscardPile));
+		DiscardPile.Clear();
 	}
 
 	void ReshuffleIntoDrawStack() {
-		if (!DiscardStack.Any()) {
+		if (!DiscardPile.Any()) {
 			ShuffleEverythingIntoDrawStack();
 		} else {
-			DrawStack.AddRange(Util.Shuffle(DiscardStack));
-			DiscardStack.Clear();
+			DrawPile.AddRange(Util.Shuffle(DiscardPile));
+			DiscardPile.Clear();
 		}
 	}
 
 	public Card GetTopDrawCard() {
-		if (!DrawStack.Any())
+		if (!DrawPile.Any())
 			ReshuffleIntoDrawStack();
 		
-		var pulledCard = DrawStack.Last();
-		DrawStack.Remove(pulledCard);
+		var pulledCard = DrawPile.Last();
+		DrawPile.Remove(pulledCard);
 		return pulledCard;
 	}
 
@@ -133,47 +135,47 @@ public class Creature {
 		pulledCard.DoAction(game, this, null, pulledCard.OnDraw);
 
 		if (pulledCard.CardType == CardType.Attack) {
-			AttackStack.Add(pulledCard);
-			while (AttackStack.Count > MaximumAttackCards) {
-				var toDiscard = AttackStack[0];
-				AttackStack.RemoveAt(0);
-				DiscardStack.Add(toDiscard);
+			AttackPile.Add(pulledCard);
+			while (AttackPile.Count > MaximumAttackCards) {
+				var toDiscard = AttackPile[0];
+				AttackPile.RemoveAt(0);
+				DiscardPile.Add(toDiscard);
 			}
 		} else if (pulledCard.CardType == CardType.Defense) {
-			DefenseStack.Add(pulledCard);
-			while (DefenseStack.Count > MaximumDefenseCards) {
-				var toDiscard = DefenseStack[0];
-				DefenseStack.RemoveAt(0);
-				DiscardStack.Add(toDiscard);
+			DefensePile.Add(pulledCard);
+			while (DefensePile.Count > MaximumDefenseCards) {
+				var toDiscard = DefensePile[0];
+				DefensePile.RemoveAt(0);
+				DiscardPile.Add(toDiscard);
 			}
 		} else {
-			HandStack.Add(pulledCard);
+			HandPile.Add(pulledCard);
 			pulledCard.DoAction(game, this, null, pulledCard.OnInHand);
-			while (HandStack.Count > MaximumHandCards) {
-				var toDiscard = HandStack[0];
-				HandStack.RemoveAt(0);
+			while (HandPile.Count > MaximumHandCards) {
+				var toDiscard = HandPile[0];
+				HandPile.RemoveAt(0);
 				toDiscard.UndoAction(game, this, toDiscard.OnInHand);
-				DiscardStack.Add(toDiscard);
+				DiscardPile.Add(toDiscard);
 			}
 		}
 	}
 
 	void EndTurn(Game game) {
-		while (AttackStack.Count > MaximumAttackCards) {
-			var toDiscard = AttackStack[0];
-			AttackStack.RemoveAt(0);
-			DiscardStack.Add(toDiscard);
+		while (AttackPile.Count > MaximumAttackCards) {
+			var toDiscard = AttackPile[0];
+			AttackPile.RemoveAt(0);
+			DiscardPile.Add(toDiscard);
 		}
-		while (DefenseStack.Count > MaximumDefenseCards) {
-			var toDiscard = DefenseStack[0];
-			DefenseStack.RemoveAt(0);
-			DiscardStack.Add(toDiscard);
+		while (DefensePile.Count > MaximumDefenseCards) {
+			var toDiscard = DefensePile[0];
+			DefensePile.RemoveAt(0);
+			DiscardPile.Add(toDiscard);
 		}
-		while (HandStack.Count > MaximumHandCards) {
-			var toDiscard = HandStack[0];
-			HandStack.RemoveAt(0);
+		while (HandPile.Count > MaximumHandCards) {
+			var toDiscard = HandPile[0];
+			HandPile.RemoveAt(0);
 			toDiscard.UndoAction(game, this, toDiscard.OnInHand);
-			DiscardStack.Add(toDiscard);
+			DiscardPile.Add(toDiscard);
 		}
 	}
 
@@ -202,11 +204,11 @@ public class Creature {
 
 	public List<Card> AllCards() {
 		var all = new List<Card>();
-		all.AddRange(DrawStack);
-		all.AddRange(AttackStack);
-		all.AddRange(DefenseStack);
-		all.AddRange(HandStack);
-		all.AddRange(DiscardStack);
+		all.AddRange(DrawPile);
+		all.AddRange(AttackPile);
+		all.AddRange(DefensePile);
+		all.AddRange(HandPile);
+		all.AddRange(DiscardPile);
 		return all;
 	}
 }

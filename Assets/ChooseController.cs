@@ -13,20 +13,20 @@ public class ChooseController : MonoBehaviour {
 
 	void Start() {
 		var catalog = new Catalog();
-		AddChoice(catalog.RogueLizard(0,0), catalog.BasicPack(), catalog.RoguePack());
-		AddChoice(catalog.AttackLizard(0,0), catalog.BasicPack(), catalog.AttackPack());
-		AddChoice(catalog.DefenseLizard(0,0), catalog.BasicPack(), catalog.DefensePack());
-		AddChoice(catalog.PriestLizard(0,0), catalog.BasicPack(), catalog.PriestPack());
+		AddChoice(catalog.RogueLizard(0,0));
+		AddChoice(catalog.AttackLizard(0,0));
+		AddChoice(catalog.DefenseLizard(0,0));
+		AddChoice(catalog.PriestLizard(0,0));
 
-		AddChoice(catalog.Skeleton(0,0), catalog.UndeadPack(), catalog.SkeletonPack());
-		AddChoice(catalog.Zombie(0,0), catalog.UndeadPack(), catalog.ZombiePack());
-		AddChoice(catalog.Vampire(0,0), catalog.UndeadPack(), catalog.VampirePack());
-		AddChoice(catalog.Ghost(0,0), catalog.UndeadPack(), catalog.GhostPack());
+		AddChoice(catalog.Skeleton(0,0));
+		AddChoice(catalog.Zombie(0,0));
+		AddChoice(catalog.Vampire(0,0));
+		AddChoice(catalog.Ghost(0,0));
 
-		AddChoice(catalog.TreePerson(0,0), catalog.FloraPack(), catalog.TreePack());
-		AddChoice(catalog.LeafPerson(0,0), catalog.FloraPack(), catalog.FloraPack());
-		AddChoice(catalog.ShroomPerson(0,0), catalog.FloraPack(), catalog.FungusPack());
-		AddChoice(catalog.MossMan(0,0), catalog.FloraPack(), catalog.MossPack());
+		AddChoice(catalog.TreePerson(0,0));
+		AddChoice(catalog.LeafPerson(0,0));
+		AddChoice(catalog.ShroomPerson(0,0));
+		AddChoice(catalog.MossMan(0,0));
 
 		index = UnityEngine.Random.Range(0, Creatures.Count);
 		Show();
@@ -41,10 +41,10 @@ public class ChooseController : MonoBehaviour {
 			SelectCurrentCreature();
 	}
 
-	void AddChoice(Creature creature, Pack pack1, Pack pack2) {
+	void AddChoice(Creature creature) {
 		Creatures.Add(creature);
-		Pack1s.Add(pack1);
-		Pack2s.Add(pack2);
+		Pack1s.Add(creature.Packs[0]);
+		Pack2s.Add(creature.Packs[1]);
 	}
 
 	public void Previous() {

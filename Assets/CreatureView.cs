@@ -17,7 +17,14 @@ public class CreatureView : MonoBehaviour {
 
 	public bool IsMoving;
 
+	bool isPlayer;
+
 	void Update() {
+		if (!isPlayer && Creature.Ai is PlayerAi) {
+			isPlayer = true;
+			Camera.main.GetComponent<CameraController>().Follow(gameObject);
+		}
+
 		if (Creature.Exists) {
 			if (Creature.CurrentHealth == Creature.MaximumHealth) {
 				HealthBackground.gameObject.SetActive(false);

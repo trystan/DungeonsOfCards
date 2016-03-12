@@ -55,7 +55,6 @@
      <Compile Include="Assets\Combat.cs" />
      <Compile Include="Assets\Creature.cs" />
      <Compile Include="Assets\CreatureSelectPanelController.cs" />
-     <Compile Include="Assets\CreatureSummaryController.cs" />
      <Compile Include="Assets\CreatureView.cs" />
      <Compile Include="Assets\DelayedEffect.cs" />
      <Compile Include="Assets\DoorView.cs" />
