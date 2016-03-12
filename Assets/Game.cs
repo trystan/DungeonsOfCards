@@ -11,6 +11,7 @@ public class Game {
 	public Creature Player;
 
 	public int CurrentLevel = 1;
+	public int TurnNumber = 1;
 
 	public bool FloorsUpdated;
 	public bool WallsUpdated;
@@ -65,6 +66,8 @@ public class Game {
 	}
 
 	public void TakeTurn() {
+		TurnNumber++;
+
 		foreach (var c in Creatures.ToList()) {
 			if (c.Exists)
 				c.TakeTurn(this);

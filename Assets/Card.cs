@@ -16,6 +16,8 @@ public enum CardSpecialEffect {
 public class Card {
 	public bool Exists = true;
 	public string Name;
+	public string Description;
+	public string FlavorText;
 	public int GoldCost = 2;
 	public CardType CardType;
 	public Vector3 WorldPointOrigin;
