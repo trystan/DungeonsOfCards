@@ -25,7 +25,7 @@ public class LevelBuilder {
 		doorPercentage = UnityEngine.Random.value;
 		roomAttempts = UnityEngine.Random.Range(20, 40);
 		extraConnectionAttempts = UnityEngine.Random.Range(20, 40);
-		enemyCount = UnityEngine.Random.Range(8, 14) + game.CurrentLevel;
+		enemyCount = UnityEngine.Random.Range(8, 14) + game.CurrentLevel * 5;
 		commonLootCount = UnityEngine.Random.Range(8, 14) + game.CurrentLevel;
 		rareLootCount = UnityEngine.Random.Range(0, 2);
 

@@ -185,13 +185,28 @@ public class Creature {
 		new Combat(game, this, other).Resolve();
 	}
 
-	public void TakeDamage(int amount) {
+	public void TakeDamage(Game game, int amount) {
 		CurrentHealth -= amount;
 		if (CurrentHealth <= 0)
-			Die();
+			Die(game);
 	}
 
-	public void Die() {
+	public void Die(Game game) {
 		Exists = false;
+		foreach (var amulet in AllCards().Where(c => c.Name.StartsWith("Amulet of "))) {
+			var item = game.Catalog.CardItem(Position.X, Position.Y, amulet);
+			game.Items.Add(item);
+			Globals.MessageBus.Send(new Messages.ItemAdded(item));
+		}
+	}
+
+	public List<Card> AllCards() {
+		var all = new List<Card>();
+		all.AddRange(DrawStack);
+		all.AddRange(AttackStack);
+		all.AddRange(DefenseStack);
+		all.AddRange(HandStack);
+		all.AddRange(DiscardStack);
+		return all;
 	}
 }

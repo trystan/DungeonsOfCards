@@ -72,7 +72,7 @@ public class Combat {
 		if (defenderStrongVs.Contains(Attacker.TeamName))
 			defenderDefense *= 2;
 		
-		Defender.TakeDamage(Mathf.Max(1, attackerAttack - defenderDefense));
+		Defender.TakeDamage(Game, Mathf.Max(1, attackerAttack - defenderDefense));
 
 		if (!Defender.Exists)
 			Defender.DefenseStack.ForEach(c => c.DoAction(Game, Defender, Attacker, c.OnDie));

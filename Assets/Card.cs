@@ -47,7 +47,7 @@ public class Card {
 				var damage = 2;
 				if (closest.TeamName == StrongVs)
 					damage *= 2;
-				closest.TakeDamage(damage);
+				closest.TakeDamage(game, damage);
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, closest.Position, new Vector3(0,14,0))));
 			}
 			break;
@@ -65,7 +65,7 @@ public class Card {
 			foreach (var c in game.Creatures.Where(c => c.Exists 
 								&& c.TeamName == "Undead"
 								&& c.Position.DistanceTo(user.Position) < 5)) {
-				c.TakeDamage(3);
+				c.TakeDamage(game, 5);
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Turn undead", c.Position, new Vector3(0,14,0))));
 			}
 			break;
@@ -85,7 +85,7 @@ public class Card {
 			}
 			break;
 		case CardSpecialEffect.Vampire1: 
-			other.TakeDamage(1);
+			other.TakeDamage(game, 1);
 			if (user.CurrentHealth < user.MaximumHealth)
 				user.CurrentHealth++;
 			break;
@@ -143,7 +143,7 @@ public class Card {
 				user.CurrentHealth++;
 			break;
 		case CardSpecialEffect.Lose1Health:
-			user.TakeDamage(1);
+			user.TakeDamage(game, 1);
 			break;
 		case CardSpecialEffect.Discard1FromEachPile:
 			if (user.HandStack.Any()) {
