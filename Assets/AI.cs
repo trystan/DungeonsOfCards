@@ -135,14 +135,8 @@ public class ComputerAi : AI {
 	}
 
 	int GetImmediateDanger(Game game, Creature creature, Point point) {
-		var n = game.GetCreature(point + new Point( 0, 1));
-		var s = game.GetCreature(point + new Point( 0,-1));
-		var w = game.GetCreature(point + new Point(-1, 0));
-		var e = game.GetCreature(point + new Point( 1, 0));
-		return (n == null ? 0 : GetDanger(creature, n))
-			+ (s == null ? 0 : GetDanger(creature, s))
-			+ (w == null ? 0 : GetDanger(creature, w))
-			+ (e == null ? 0 : GetDanger(creature, e));
+		var h = game.GetCreature(point);
+		return (h == null ? 0 : GetDanger(creature, h));
 	}
 
 	int GetDanger(Creature self, Creature other) {

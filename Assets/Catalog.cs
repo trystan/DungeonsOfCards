@@ -11,73 +11,99 @@ public class Pack {
 public class Catalog {
 	private List<Card> amuletCards = new List<Card>();
 
-	public List<Card> Cards = new List<Card>() {
-		new Card() { Name = "Gold", GoldCost = 1, CardType = CardType.Normal,
-			Description = "Gold cards don't do anything themselves, but can be traded with merchants for other cards.",
-			FlavorText = "Why else would anyone go adventuring?", },
-
-		new Card() { Name = "Quick attack", GoldCost = 4, CardType = CardType.Attack, OnUse = CardSpecialEffect.Draw3,
-			FlavorText = "Victory goes to those who are quick to recover after an attack.", },
-		new Card() { Name = "Ready attack", GoldCost = 4, CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Attack, },
-		new Card() { Name = "Quick defense", GoldCost = 4, CardType = CardType.Defense, OnUse = CardSpecialEffect.Draw3,
-			FlavorText = "Victory goes to those who are quick to recover after an attack.", },
-		new Card() { Name = "Ready defense", GoldCost = 4, CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Defense, },
-		new Card() { Name = "Idle", GoldCost = 0, CardType = CardType.Normal },
-
-		new Card() { Name = "Attack +1", GoldCost = 3, CardType = CardType.Attack, CombatBonus = 1,
-			Description = "Increase attack by 1.", },
-		new Card() { Name = "Attack +2", GoldCost = 4, CardType = CardType.Attack, CombatBonus = 2,
-			Description = "Increase attack by 2.", },
-		new Card() { Name = "Attack +3", GoldCost = 5, CardType = CardType.Attack, CombatBonus = 3,
-			Description = "Increase attack by 3.", },
-		new Card() { Name = "Attack +4", GoldCost = 6, CardType = CardType.Attack, CombatBonus = 4,
-			Description = "Increase attack by 4.", },
-		new Card() { Name = "Attack focus", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAttackSize, },
-
-		new Card() { Name = "Defense +1", GoldCost = 3, CardType = CardType.Defense, CombatBonus = 1,
-			Description = "Increase defense by 1.", },
-		new Card() { Name = "Defense +2", GoldCost = 4, CardType = CardType.Defense, CombatBonus = 2,
-			Description = "Increase defense by 2.", },
-		new Card() { Name = "Defense +3", GoldCost = 5, CardType = CardType.Defense, CombatBonus = 3,
-			Description = "Increase defense by 3.", },
-		new Card() { Name = "Defense +4", GoldCost = 6, CardType = CardType.Defense, CombatBonus = 4,
-			Description = "Increase defense by 4.", },
-		new Card() { Name = "Defense focus", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseDefenseSize, },
-
-		new Card() { Name = "Regenerate", GoldCost = 3, CardType = CardType.Normal, OnDraw = CardSpecialEffect.Heal1Health },
-		new Card() { Name = "Draw 3", GoldCost = 3, CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw3 },
-
-		new Card() { Name = "Freeze closest", GoldCost = 4, CardType = CardType.Normal, StrongVs = "Lizards", OnUse = CardSpecialEffect.DamageClosest },
-		new Card() { Name = "Burn closest", GoldCost = 4, CardType = CardType.Normal, StrongVs = "Plants", OnUse = CardSpecialEffect.DamageClosest },
-		new Card() { Name = "Focus", GoldCost = 3, CardType = CardType.Attack, OnInHand = CardSpecialEffect.IncreaseHandSize },
-		new Card() { Name = "Miss", CardType = CardType.Defense, DoesBlockOtherCard = true },
-		new Card() { Name = "Evade", CardType = CardType.Defense, DoesStopCombat = true, OnUse = CardSpecialEffect.Evade },
-		new Card() { Name = "Stab +1", GoldCost = 4, CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
-
-		new Card() { Name = "Turn undead", CardType = CardType.Normal, OnUse = CardSpecialEffect.TurnUndead },
-		new Card() { Name = "Holy attack +1", GoldCost = 4, CardType = CardType.Attack, CombatBonus = 1, StrongVs = "Undead" },
-		new Card() { Name = "Holy defense +1", GoldCost = 4, CardType = CardType.Defense, CombatBonus = 1, StrongVs = "Undead" },
-		new Card() { Name = "Mass heal", GoldCost = 3, CardType = CardType.Normal, OnUse = CardSpecialEffect.HealTeam },
-		new Card() { Name = "Pray", CardType = CardType.Normal, OnUse = CardSpecialEffect.Pray },
-
-		new Card() { Name = "Amulet of attack -2", CardType = CardType.Attack, CombatBonus = -2,
-			Description = "One of three amulets you came here for. Decreases attack by 2.",
-			FlavorText = "I saw its glow and was transformed. I lost all interest in attacking." },
-		new Card() { Name = "Amulet of defense -2", CardType = CardType.Defense, CombatBonus = -2,
-			Description = "One of three amulets you came here for. Decreases defense by 2.",
-			FlavorText = "I saw its glow and was transformed. I lost all interest in living." },
-		new Card() { Name = "Amulet of hands -1", CardType = CardType.Normal, OnInHand = CardSpecialEffect.Discard1FromEachPile,
-			Description = "One of three amulets you came here for. Forces you to discard.",
-			FlavorText = "I saw its glow and was transformed. I lost all interest in things." },
-
-		new Card() { Name = "Diseased", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Discard1FromEachPile,
-			FlavorText = "You weren't fighting undead, were you?" },
-
-		new Card() { Name = "Leafs", CardType = CardType.Normal,
-			FlavorText = "Stupid plant people dumping useless leafs everywhere." }
-	};
+	public List<Card> Cards = new List<Card>();
 
 	public Catalog() {
+		Cards.AddRange(new List<Card>() {
+			new Card() { Name = "Gold", GoldCost = 1, CardType = CardType.Normal,
+				Description = "Gold cards don't do anything themselves, but can be traded with merchants for other cards.",
+				FlavorText = "Why else would anyone go adventuring?", },
+
+			new Card() { Name = "Quick attack", GoldCost = 4, CardType = CardType.Attack, OnUse = CardSpecialEffect.Draw3,
+				FlavorText = "Victory goes to those who are quick to recover after an attack.", },
+			new Card() { Name = "Ready attack", GoldCost = 4, CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Attack, },
+			new Card() { Name = "Quick defense", GoldCost = 4, CardType = CardType.Defense, OnUse = CardSpecialEffect.Draw3,
+				FlavorText = "Victory goes to those who are quick to recover after an attack.", },
+			new Card() { Name = "Ready defense", GoldCost = 4, CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw5Defense, },
+			new Card() { Name = "Idle", GoldCost = 0, CardType = CardType.Normal },
+
+			new Card() { Name = "Attack +1", GoldCost = 3, CardType = CardType.Attack, CombatBonus = 1,
+				Description = "Increase attack by 1.", },
+			new Card() { Name = "Attack +2", GoldCost = 4, CardType = CardType.Attack, CombatBonus = 2,
+				Description = "Increase attack by 2.", },
+			new Card() { Name = "Attack +3", GoldCost = 5, CardType = CardType.Attack, CombatBonus = 3,
+				Description = "Increase attack by 3.", },
+			new Card() { Name = "Attack +4", GoldCost = 6, CardType = CardType.Attack, CombatBonus = 4,
+				Description = "Increase attack by 4.", },
+			new Card() { Name = "Attack focus", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAttackSize, },
+
+			new Card() { Name = "Defense +1", GoldCost = 3, CardType = CardType.Defense, CombatBonus = 1,
+				Description = "Increase defense by 1.", },
+			new Card() { Name = "Defense +2", GoldCost = 4, CardType = CardType.Defense, CombatBonus = 2,
+				Description = "Increase defense by 2.", },
+			new Card() { Name = "Defense +3", GoldCost = 5, CardType = CardType.Defense, CombatBonus = 3,
+				Description = "Increase defense by 3.", },
+			new Card() { Name = "Defense +4", GoldCost = 6, CardType = CardType.Defense, CombatBonus = 4,
+				Description = "Increase defense by 4.", },
+			new Card() { Name = "Defense focus", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseDefenseSize, },
+
+			new Card() { Name = "Regenerate", GoldCost = 3, CardType = CardType.Normal, OnDraw = CardSpecialEffect.Heal1Health },
+			new Card() { Name = "Draw 3", GoldCost = 3, CardType = CardType.Normal, OnUse = CardSpecialEffect.Draw3 },
+
+			new Card() { Name = "Freeze closest", GoldCost = 4, CardType = CardType.Normal, StrongVs = "Lizards", OnUse = CardSpecialEffect.DamageClosest },
+			new Card() { Name = "Burn closest", GoldCost = 4, CardType = CardType.Normal, StrongVs = "Plants", OnUse = CardSpecialEffect.DamageClosest },
+			new Card() { Name = "Focus", GoldCost = 3, CardType = CardType.Attack, OnInHand = CardSpecialEffect.IncreaseHandSize },
+			new Card() { Name = "Miss", CardType = CardType.Defense, DoesBlockOtherCard = true },
+			new Card() { Name = "Evade", CardType = CardType.Defense, DoesStopCombat = true, OnUse = CardSpecialEffect.Evade },
+			new Card() { Name = "Stab +1", GoldCost = 4, CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
+			new Card() { Name = "Bash +1", CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
+
+			new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
+			new Card() { Name = "Blood suck", CardType = CardType.Attack, OnUse = CardSpecialEffect.Vampire1 },
+
+			new Card() { Name = "Revive", CardType = CardType.Defense, OnDie = CardSpecialEffect.Heal1Health },
+			new Card() { Name = "Rot", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Lose1Health },
+
+			new Card() { Name = "Turn undead", CardType = CardType.Normal, OnUse = CardSpecialEffect.TurnUndead },
+			new Card() { Name = "Holy attack +1", GoldCost = 4, CardType = CardType.Attack, CombatBonus = 1, StrongVs = "Undead" },
+			new Card() { Name = "Holy defense +1", GoldCost = 4, CardType = CardType.Defense, CombatBonus = 1, StrongVs = "Undead" },
+			new Card() { Name = "Mass heal", GoldCost = 3, CardType = CardType.Normal, OnUse = CardSpecialEffect.HealTeam },
+			new Card() { Name = "Pray", CardType = CardType.Normal, OnUse = CardSpecialEffect.Pray },
+
+			new Card() { Name = "Amulet of attack -2", CardType = CardType.Attack, CombatBonus = -2,
+				Description = "One of three amulets you came here for. Decreases attack by 2.",
+				FlavorText = "I saw its glow and was transformed. I lost all interest in attacking." },
+			new Card() { Name = "Amulet of defense -2", CardType = CardType.Defense, CombatBonus = -2,
+				Description = "One of three amulets you came here for. Decreases defense by 2.",
+				FlavorText = "I saw its glow and was transformed. I lost all interest in living." },
+			new Card() { Name = "Amulet of hands -1", CardType = CardType.Normal, OnInHand = CardSpecialEffect.Discard1FromEachPile,
+				Description = "One of three amulets you came here for. Forces you to discard.",
+				FlavorText = "I saw its glow and was transformed. I lost all interest in things." },
+
+			new Card() { Name = "Disease touched", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
+				ExtraCard = () => Card("Diseased") },
+			new Card() { Name = "Disease touch", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
+				ExtraCard = () => Card("Diseased") },
+			new Card() { Name = "Diseased", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Discard1FromEachPile,
+				FlavorText = "You weren't fighting undead, were you?" },
+
+			new Card() { Name = "Fungal revival", CardType = CardType.Normal, OnDie = CardSpecialEffect.Heal1Health },
+			new Card() { Name = "Fungal feeding", CardType = CardType.Attack, OnUse = CardSpecialEffect.Heal1Health },
+			new Card() { Name = "Fungal regrowth", CardType = CardType.Defense, OnUse = CardSpecialEffect.Heal1Health },
+
+			new Card() { Name = "Leafs", CardType = CardType.Normal,
+				FlavorText = "Stupid plant people dumping useless leafs everywhere." },
+
+			new Card() { Name = "Plant attack", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
+				ExtraCard = () => Card("Leafs") },
+			new Card() { Name = "Plant armor", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
+				ExtraCard = () => Card("Leafs") },
+
+			new Card() { Name = "Defensive branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseDefenseSize },
+			new Card() { Name = "Attack branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAttackSize },
+			new Card() { Name = "Holding branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseHandSize },
+		});
+
 		amuletCards = Cards.Where(c => c.Name.StartsWith("Amulet of ")).ToList();
 	}
 
@@ -286,14 +312,11 @@ public class Catalog {
 				Card("Defense +1"),
 				Card("Defense +1"),
 				Card("Diseased"),
-				new Card() { Name = "Disease touched", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Diseased") },
-				new Card() { Name = "Disease touched", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Diseased") },
-				new Card() { Name = "Disease touch", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Diseased") },
-				new Card() { Name = "Disease touch", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Diseased") },
+				Card("Diseased"),
+				Card("Disease touched"),
+				Card("Disease touched"),
+				Card("Disease touch"),
+				Card("Disease touch"),
 			}
 		};
 	}
@@ -302,14 +325,14 @@ public class Catalog {
 		return new Pack() {
 			Name = "Skeleton",
 			Cards = new List<Card>() {
-				new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
-				new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
+				Card("Skeleton"),
+				Card("Skeleton"),
 				Card("Attack +2"),
 				Card("Attack +2"),
 				Card("Defense +2"),
 				Card("Defense +2"),
-				new Card() { Name = "Bash +1", CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
-				new Card() { Name = "Bash +1", CardType = CardType.Attack, DoesStopCombat = true, CombatBonus = 1 },
+				Card("Bash +1"),
+				Card("Bash +1"),
 				Card("Idle"),
 				Card("Idle"),
 			}
@@ -320,10 +343,10 @@ public class Catalog {
 		return new Pack() {
 			Name = "Vampire",
 			Cards = new List<Card>() {
-				new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
-				new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
-				new Card() { Name = "Blood suck", CardType = CardType.Attack, OnUse = CardSpecialEffect.Vampire1 },
-				new Card() { Name = "Blood suck", CardType = CardType.Attack, OnUse = CardSpecialEffect.Vampire1 },
+				Card("Skeleton"),
+				Card("Skeleton"),
+				Card("Blood suck"),
+				Card("Blood suck"),
 				Card("Evade"),
 				Card("Evade"),
 				Card("Idle"),
@@ -350,14 +373,13 @@ public class Catalog {
 		return new Pack() {
 			Name = "Zombie",
 			Cards = new List<Card>() {
-				new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
-				new Card() { Name = "Skeleton", CardType = CardType.Defense, OnDie = CardSpecialEffect.SpawnSkeleton },
+				Card("Skeleton"),
+				Card("Skeleton"),
 				Card("Regenerate"),
 				Card("Regenerate"),
-				new Card() { Name = "Revive", CardType = CardType.Defense, OnDie = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Revive", CardType = CardType.Defense, OnDie = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Rot", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Lose1Health },
-				new Card() { Name = "Rot", CardType = CardType.Normal, OnDraw = CardSpecialEffect.Lose1Health },
+				Card("Revive"),
+				Card("Rot"),
+				Card("Rot"),
 				Card("Idle"),
 				Card("Idle"),
 			}
@@ -368,14 +390,10 @@ public class Catalog {
 		return new Pack() {
 			Name = "Flora",
 			Cards = new List<Card>() {
-				new Card() { Name = "Plant attack", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Leafs") },
-				new Card() { Name = "Plant attack", CardType = CardType.Attack, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Leafs") },
-				new Card() { Name = "Plant armor", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Leafs") },
-				new Card() { Name = "Plant armor", CardType = CardType.Defense, OnUse = CardSpecialEffect.AddCardToOther, 
-					ExtraCard = () => Card("Leafs") },
+				Card("Plant attack"),
+				Card("Plant attack"),
+				Card("Plant armor"),
+				Card("Plant armor"),
 				Card("Regenerate"),
 				Card("Regenerate"),
 				Card("Mass heal"),
@@ -390,12 +408,12 @@ public class Catalog {
 		return new Pack() {
 			Name = "Tree",
 			Cards = new List<Card>() {
-				new Card() { Name = "Defensive branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseDefenseSize },
-				new Card() { Name = "Defensive branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseDefenseSize },
-				new Card() { Name = "Attack branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAttackSize },
-				new Card() { Name = "Attack branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseAttackSize },
-				new Card() { Name = "Holding branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseHandSize },
-				new Card() { Name = "Holding branches", CardType = CardType.Normal, OnInHand = CardSpecialEffect.IncreaseHandSize },
+				Card("Defensive branches"),
+				Card("Defensive branches"),
+				Card("Attack branches"),
+				Card("Attack branches"),
+				Card("Holding branches"),
+				Card("Holding branches"),
 				Card("Attack +3"),
 				Card("Attack +3"),
 				Card("Defense +2"),
@@ -412,12 +430,12 @@ public class Catalog {
 				Card("Ready attack"),
 				Card("Ready defense"),
 				Card("Ready defense"),
-				new Card() { Name = "Fungal revival", CardType = CardType.Normal, OnDie = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Fungal revival", CardType = CardType.Normal, OnDie = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Fungal feeding", CardType = CardType.Attack, OnUse = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Fungal feeding", CardType = CardType.Attack, OnUse = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Fungal regrowth", CardType = CardType.Defense, OnUse = CardSpecialEffect.Heal1Health },
-				new Card() { Name = "Fungal regrowth", CardType = CardType.Defense, OnUse = CardSpecialEffect.Heal1Health },
+				Card("Fungal revival"),
+				Card("Fungal revival"),
+				Card("Fungal feeding"),
+				Card("Fungal feeding"),
+				Card("Fungal regrowth"),
+				Card("Fungal regrowth"),
 			}
 		};
 	}

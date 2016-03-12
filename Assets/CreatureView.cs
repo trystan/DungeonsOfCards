@@ -39,7 +39,7 @@ public class CreatureView : MonoBehaviour {
 			} else if (transform.position.x != Creature.Position.X || transform.position.y != Creature.Position.Y) {
 				IsMoving = true;
 				targetPosition = new Vector3(Creature.Position.X, Creature.Position.Y, 0);
-				speed = Vector3.Distance(transform.position, targetPosition) * 5f;
+				speed = Vector3.Distance(transform.position, targetPosition) * 4f;
 			}
 
 			NameLabel.transform.position = Camera.main.WorldToScreenPoint(transform.position) - new Vector3(0,8,0);

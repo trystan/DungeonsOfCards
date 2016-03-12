@@ -199,6 +199,15 @@ public class CardView : MonoBehaviour {
 		AddLine("While in hand", Card.OnInHand);
 		AddLine("On use", Card.OnUse);
 
+		if (Card.DoesBlockOtherCard)
+			descriptionLabel.text += "\n<b>Blocks opponents attack card.</b>";
+
+		if (Card.DoesStopCombat)
+			descriptionLabel.text += "\n<b>Ends combat.</b>";
+		
+		if (Card.StrongVs != null)
+			descriptionLabel.text += "\n<b>Doubles total damage vs " + Card.StrongVs + ".</b>";
+
 		if (Card.FlavorText != null)
 			flavorLabel.text = "<i>" + Card.FlavorText + "</i>";
 		else
