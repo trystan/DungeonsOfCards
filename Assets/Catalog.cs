@@ -9,6 +9,8 @@ public class Pack {
 }
 
 public class Catalog {
+	private List<Card> amuletCards = new List<Card>();
+
 	public List<Card> Cards = new List<Card>() {
 		new Card() { Name = "Gold", GoldCost = 1, CardType = CardType.Normal },
 
@@ -45,7 +47,19 @@ public class Catalog {
 		new Card() { Name = "Holy defense +1", GoldCost = 4, CardType = CardType.Defense, CombatBonus = 1, StrongVs = "Undead" },
 		new Card() { Name = "Mass heal", GoldCost = 3, CardType = CardType.Normal, OnUse = CardSpecialEffect.HealTeam },
 		new Card() { Name = "Pray", CardType = CardType.Normal, OnUse = CardSpecialEffect.Pray },
+
+		new Card() { Name = "Amulet of attack -2", CardType = CardType.Attack, CombatBonus = -2 },
+		new Card() { Name = "Amulet of defense -2", CardType = CardType.Defense, CombatBonus = -2 },
+		new Card() { Name = "Amulet of hands -1", CardType = CardType.Normal, OnInHand = CardSpecialEffect.Discard1FromEachPile },
 	};
+
+	public Catalog() {
+		amuletCards = Cards.Where(c => c.Name.StartsWith("Amulet of ")).ToList();
+	}
+
+	public Card AmuletCard(int number) {
+		return amuletCards[number];
+	}
 
 	public Card Card(string name) {
 		var prototype = Cards.SingleOrDefault(c => c.Name == name);

@@ -78,7 +78,8 @@ public class GameController : MonoBehaviour {
 			game.Creatures.Add(game.Player);
 		}
 
-		new LevelBuilder().Build(game, true);
+		new LevelBuilder().Build(game, false);
+		Globals.nextPlayer = game.Player;
 
 		FloorTileMesh.ShowLevel(new FloorView(game));
 		DoorTileMesh.ShowLevel(new DoorView(game));

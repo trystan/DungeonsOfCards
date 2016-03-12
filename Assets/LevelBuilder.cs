@@ -236,7 +236,29 @@ public class LevelBuilder {
 		}
 	}
 
+	void AddAmulet(Game game, int number) {
+		var amulet = game.Catalog.AmuletCard(number);
+
+		while (true) {
+			var x = UnityEngine.Random.Range(0, game.Width);
+			var y = UnityEngine.Random.Range(0, game.Height);
+
+			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown)
+				continue;
+			
+			game.Items.Add(game.Catalog.CardItem(x, y, amulet));
+			break;
+		}
+	}
+
 	void AddRareLoot(Game game) {
+		if (game.CurrentLevel == 5)
+			AddAmulet(game, 0);
+		else if (game.CurrentLevel == 7)
+			AddAmulet(game, 1);
+		else if (game.CurrentLevel == 9)
+			AddAmulet(game, 2);
+
 		for (var i = 0; i < rareLootCount; i++) {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
