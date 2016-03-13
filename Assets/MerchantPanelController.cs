@@ -49,11 +49,7 @@ public class MerchantPanelController : MonoBehaviour {
 	public void Refresh() {
 		Title.text = Merchant.Name;
 
-		var goldCardCount = Buyer.DrawPile.Count(c => c.Name == "Gold")
-			+ Buyer.HandPile.Count(c => c.Name == "Gold")
-			+ Buyer.AttackPile.Count(c => c.Name == "Gold")
-			+ Buyer.DefensePile.Count(c => c.Name == "Gold")
-			+ Buyer.DiscardPile.Count(c => c.Name == "Gold");
+		var goldCardCount = Buyer.GetCardCount("Gold");
 
 		if (goldCardCount == 1)
 			Exposition.text = "You have " + goldCardCount + " gold card.";

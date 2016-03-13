@@ -99,7 +99,80 @@ public class Card {
 			Debug.Log("DestoryChosenCard " + user.TeamName);
 			break;
 		case CardSpecialEffect.Pray:
-			Debug.Log("Pray " + user.TeamName);
+			var actions = new Dictionary<string, int>();
+			actions.Add("heal", (user.MaximumHealth - user.CurrentHealth) * 2);
+			actions.Add("destroy leafs", user.GetCardCount("Leafs"));
+			actions.Add("destroy disease", user.GetCardCount("Disease"));
+			actions.Add("destroy poison", user.GetCardCount("Poison"));
+			actions.Add("destroy cursed", user.GetCardCount("Cursed") * 4);
+			if (3 - user.GetCardCount("Gold") > 0)
+				actions.Add("gift gold", 3 - user.GetCardCount("Gold"));
+			
+			actions.Add("gift priest card", 2);
+
+			var action = Util.WeightedChoice(actions);
+			switch (action) {
+			case "heal": 
+				user.CurrentHealth = Mathf.Min(user.CurrentHealth + 4, user.MaximumHealth);
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, heal", user.Position, new Vector3(0,14,0))));
+				break;
+			case "destory leafs":
+				user.ShuffleEverythingIntoDrawStack();
+				foreach (var card in user.DrawPile.Where(c => c.Name == "Leafs").Take(3).ToArray()) {
+					user.DrawPile.Remove(card);
+					card.Exists = false;
+				}
+				user.ShuffleEverythingIntoDrawStack();
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy leafs", user.Position, new Vector3(0,14,0))));
+				break;
+			case "destory disease":
+				user.ShuffleEverythingIntoDrawStack();
+				foreach (var card in user.DrawPile.Where(c => c.Name == "Disease").Take(3).ToArray()) {
+					user.DrawPile.Remove(card);
+					card.Exists = false;
+				}
+				user.ShuffleEverythingIntoDrawStack();
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy disease", user.Position, new Vector3(0,14,0))));
+				break;
+			case "destory poison":
+				user.ShuffleEverythingIntoDrawStack();
+				foreach (var card in user.DrawPile.Where(c => c.Name == "Poison").Take(3).ToArray()) {
+					user.DrawPile.Remove(card);
+					card.Exists = false;
+				}
+				user.ShuffleEverythingIntoDrawStack();
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy poison", user.Position, new Vector3(0,14,0))));
+				break;
+			case "destory cursed":
+				user.ShuffleEverythingIntoDrawStack();
+				foreach (var card in user.DrawPile.Where(c => c.Name == "Cursed").Take(3).ToArray()) {
+					user.DrawPile.Remove(card);
+					card.Exists = false;
+				}
+				user.ShuffleEverythingIntoDrawStack();
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy curses", user.Position, new Vector3(0,14,0))));
+				break;
+			case "gift gold":
+				foreach (var gold in new Card[] { game.Catalog.Card("Gold"), game.Catalog.Card("Gold"), game.Catalog.Card("Gold") }) {
+					gold.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
+					user.DrawPile.Add(gold);
+					if (user == game.Player)
+						Globals.MessageBus.Send(new Messages.CardAdded(gold));
+				}
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, receive gold", user.Position, new Vector3(0,14,0))));
+				break;
+			case "gift priest card":
+				var priestCard = Util.Shuffle(game.Catalog.PriestPack().Cards)[0];
+				priestCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
+				user.DrawPile.Add(priestCard);
+				if (user == game.Player)
+					Globals.MessageBus.Send(new Messages.CardAdded(priestCard));
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, receive " + priestCard.Name.ToLower(), user.Position, new Vector3(0,14,0))));
+				break;
+			default:
+				Debug.Log("Unknown answer to your prayers: " + action);
+				break;
+			}
 			break;
 		case CardSpecialEffect.DamageClosest:
 			var closest = game.Creatures

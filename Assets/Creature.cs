@@ -31,6 +31,14 @@ public class Creature {
 	public List<Card> HandPile = new List<Card>();
 	public List<Card> DiscardPile = new List<Card>();
 
+	public int GetCardCount(string name) {
+		return DrawPile.Count(c => c.Name == name)
+			+ HandPile.Count(c => c.Name == name)
+			+ AttackPile.Count(c => c.Name == name)
+			+ DefensePile.Count(c => c.Name == name)
+			+ DiscardPile.Count(c => c.Name == name);
+	}
+
 	public void MoveBy(Game game, int mx, int my) {
 		var next = Position + new Point(mx, my);
 

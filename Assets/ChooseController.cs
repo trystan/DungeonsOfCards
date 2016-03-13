@@ -28,6 +28,11 @@ public class ChooseController : MonoBehaviour {
 		AddChoice(catalog.ShroomPerson(0,0));
 		AddChoice(catalog.MossMan(0,0));
 
+		AddChoice(catalog.Witch(0,0));
+		AddChoice(catalog.Assassin(0,0));
+		AddChoice(catalog.Monk(0,0));
+		AddChoice(catalog.Palladin(0,0));
+
 		index = UnityEngine.Random.Range(0, Creatures.Count);
 		Show();
 	}

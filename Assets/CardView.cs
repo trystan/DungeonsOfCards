@@ -262,7 +262,11 @@ public class CardView : MonoBehaviour {
 		case CardSpecialEffect.Blink:
 			text = "Teleport to a nearby open space. Probably safe."; break;
 		case CardSpecialEffect.DamageClosest: 
-			text = "Damage the closest creature within 5 spaces."; break;
+			if (Card.ExtraCard == null)
+				text = "Damage the closest creature within 5 spaces.";
+			else
+				text = "Damage the closest creature within 5 spaces and add a " + Card.ExtraCard().Name + " to opponent's draw pile";
+			break;
 		case CardSpecialEffect.Discard1FromEachPile: 
 			text = "Discard 1 card from your attack pile, defense pile, and hand."; break;
 		case CardSpecialEffect.Draw3:
