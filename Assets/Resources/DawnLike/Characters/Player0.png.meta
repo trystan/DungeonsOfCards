@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 5577e4e48f7bc4f438ef4ad0b8cf967b
-timeCreated: 1457411994
+timeCreated: 1457834470
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -21,11 +21,11 @@ TextureImporter:
     21300028: Player0_14
     21300030: Player0_15
     21300032: Player0_16
-    21300034: Player0_17
+    21300034: palladin
     21300036: Player0_18
     21300038: Player0_19
     21300040: Player0_20
-    21300042: Player0_21
+    21300042: assassin
     21300044: Player0_22
     21300046: Player0_23
     21300048: Player0_24
@@ -38,7 +38,7 @@ TextureImporter:
     21300062: Player0_31
     21300064: Player0_32
     21300066: Player0_33
-    21300068: Player0_34
+    21300068: witch
     21300070: Player0_35
     21300072: Player0_36
     21300074: Player0_37
@@ -47,7 +47,7 @@ TextureImporter:
     21300080: Player0_40
     21300082: Player0_41
     21300084: Player0_42
-    21300086: Player0_43
+    21300086: monk
     21300088: Player0_44
     21300090: Player0_45
     21300092: Player0_46
@@ -314,7 +314,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Player0_17
+    - name: palladin
       rect:
         serializedVersion: 2
         x: 16
@@ -358,7 +358,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Player0_21
+    - name: assassin
       rect:
         serializedVersion: 2
         x: 80
@@ -501,7 +501,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Player0_34
+    - name: witch
       rect:
         serializedVersion: 2
         x: 32
@@ -600,7 +600,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Player0_43
+    - name: monk
       rect:
         serializedVersion: 2
         x: 0

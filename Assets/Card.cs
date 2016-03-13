@@ -12,7 +12,7 @@ public enum CardSpecialEffect {
 	Draw5Attack, Draw5Defense, IncreaseDefenseSize, IncreaseAttackSize, IncreaseHandSize,
 	SpawnSkeleton, AddCardToOther, AddCardToSelf, Pray, HealTeam, TurnUndead, DamageClosest,
 	VampireBite, GhostForm, IncreaseAllStats,
-	IncreaseAllSizes, ChargeNearest,
+	IncreaseAllSizes, ChargeNearest, ReduceAllSizes, DestoryChosenCard,
 	IncreaseAttackValue3, IncreaseDefenseValue3,
 }
 
@@ -95,6 +95,9 @@ public class Card {
 		case CardSpecialEffect.Blink:
 			DoBlinkAction(game, user);
 			break;
+		case CardSpecialEffect.DestoryChosenCard:
+			Debug.Log("DestoryChosenCard " + user.TeamName);
+			break;
 		case CardSpecialEffect.Pray:
 			Debug.Log("Pray " + user.TeamName);
 			break;
@@ -109,6 +112,14 @@ public class Card {
 					damage *= 2;
 				closest.TakeDamage(game, damage);
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, closest.Position, new Vector3(0,14,0))));
+
+				if (ExtraCard != null) {
+					var addCard = ExtraCard();
+					addCard.WorldPointOrigin = new Vector3(user.Position.X, user.Position.Y, 0);
+					closest.DrawPile.Add(addCard);
+					if (closest == game.Player)
+						Globals.MessageBus.Send(new Messages.CardAdded(addCard));
+				}
 			}
 			break;
 		case CardSpecialEffect.HealTeam:
@@ -241,10 +252,15 @@ public class Card {
 		case CardSpecialEffect.IncreaseDefenseValue3:
 			user.DefenseValue += 3;
 			break;
+		case CardSpecialEffect.ReduceAllSizes:
+			user.MaximumAttackCards -= 2;
+			user.MaximumDefenseCards -= 2;
+			user.MaximumHandCards -= 2;
+			break;
 		case CardSpecialEffect.IncreaseAllSizes:
 			user.MaximumAttackCards += 2;
 			user.MaximumDefenseCards += 2;
-			user.MaximumDefenseCards += 4;
+			user.MaximumHandCards += 2;
 			break;
 		case CardSpecialEffect.IncreaseAllStats:
 			user.AttackValue++;
@@ -336,10 +352,15 @@ public class Card {
 
 	public void UndoAction(Game game, Creature user, CardSpecialEffect effect) {
 		switch (effect) {
+		case CardSpecialEffect.ReduceAllSizes:
+			user.MaximumAttackCards += 2;
+			user.MaximumDefenseCards += 2;
+			user.MaximumHandCards += 2;
+			break;
 		case CardSpecialEffect.IncreaseAllSizes:
 			user.MaximumAttackCards -= 2;
 			user.MaximumDefenseCards -= 2;
-			user.MaximumDefenseCards -= 4;
+			user.MaximumHandCards -= 2;
 			break;
 		case CardSpecialEffect.IncreaseAllStats:
 			user.AttackValue--;
@@ -357,10 +378,10 @@ public class Card {
 			user.MaximumDefenseCards -= 2;
 			break;
 		case CardSpecialEffect.IncreaseAttackValue3:
-			user.AttackValue += 3;
+			user.AttackValue -= 3;
 			break;
 		case CardSpecialEffect.IncreaseDefenseValue3:
-			user.DefenseValue += 3;
+			user.DefenseValue -= 3;
 			break;
 		}
 	}

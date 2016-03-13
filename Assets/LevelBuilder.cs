@@ -167,7 +167,8 @@ public class LevelBuilder {
 
 	void AddPlayer(Game game) {
 		var p = stairsUpPosition - new Point(0,1);
-		var player = game.Catalog.Player(p.X, p.Y);
+		var player = game.Catalog.Enemy(p.X, p.Y);
+		player.Ai = new PlayerAi();
 		game.Player = player;
 		game.Creatures.Add(player);
 	}

@@ -175,6 +175,28 @@ public class Catalog {
 				OnUse = CardSpecialEffect.AddCardToSelf, ExtraCard = () => Card("Regenerate") },
 			new Card() { Name = "Charge", CardType = CardType.Normal, OnUse = CardSpecialEffect.ChargeNearest,
 				SpriteName = "DawnLike/Characters/Plant0:moss man", },
+
+			new Card() { Name = "Aura +2", GoldCost = 4, CardType = CardType.Attack, 
+				StrongVs = "Undead", CombatBonus = 2,
+				OnDraw = CardSpecialEffect.HealTeam,
+				OnUse = CardSpecialEffect.AddCardToOther, ExtraCard = () => Card("Idle"),
+				SpriteName = "DawnLike/Objects/Effect0:quick", },
+			new Card() { Name = "Poisoned", GoldCost = 0, CardType = CardType.Normal, 
+				OnDraw = CardSpecialEffect.Lose1Health, },
+			new Card() { Name = "Dart +2", GoldCost = 4, CardType = CardType.Normal, 
+				OnUse = CardSpecialEffect.DamageClosest, ExtraCard = () => Card("Poisoned"),
+				SpriteName = "DawnLike/Items/Ammo:dart", },
+			new Card() { Name = "Purge", GoldCost = 5, CardType = CardType.Normal, 
+				OnUse = CardSpecialEffect.DestoryChosenCard,
+				SpriteName = "DawnLike/Items/Ammo:dart", },
+			new Card() { Name = "Poisoned", GoldCost = 0, CardType = CardType.Normal, 
+				OnDraw = CardSpecialEffect.Lose1Health, },
+			new Card() { Name = "Curse", GoldCost = 4, CardType = CardType.Normal, 
+				OnUse = CardSpecialEffect.DamageClosest, ExtraCard = () => Card("Cursed"),
+				SpriteName = "DawnLike/Objects/Effect0:quick", },
+			new Card() { Name = "Cursed", GoldCost = 0, CardType = CardType.Normal, 
+				OnInHand = CardSpecialEffect.ReduceAllSizes, 
+				SpriteName = "DawnLike/Objects/Effect0:quick" },
 		});
 
 		amuletCards = Cards.Where(c => c.Name.StartsWith("Amulet of ")).ToList();
@@ -432,6 +454,24 @@ public class Catalog {
 		};
 	}
 
+	public Pack EquipmentPack() {
+		return new Pack() {
+			Name = "Equipment",
+			Cards = new List<Card>() {
+				Card("Spear +3"),
+				Card("Spear +3"),
+				Card("Shield +3"),
+				Card("Shield +3"),
+				Card("Vestments"),
+				Card("Vestments"),
+				Card("Thief's getaway"),
+				Card("Thief's getaway"),
+				Card("Dart +2"),
+				Card("Dart +2"),
+			}
+		};
+	}
+
 	public Creature Init(Creature creature) {
 		var deck = new List<Card>();
 		deck.AddRange(creature.DrawPile);
@@ -465,7 +505,7 @@ public class Catalog {
 		};
 
 		var pack = Util.Shuffle(new List<Pack>() { 
-			BasicPack(), AdventurerPack(),
+			BasicPack(), AdventurerPack(), EquipmentPack(), 
 			AttackPack(), DefensePack(), PriestPack(), RoguePack(), WizardPack(),
 			RarePack(), cost2Pack, cost3Pack, cost4Pack, cost5Pack,
 		})[0];
@@ -490,21 +530,79 @@ public class Catalog {
 		});
 	}
 
-	public Creature Player(int x, int y) {
+	public Creature Witch(int x, int y) {
 		return Init(new Creature() {
-			Name = "Hero",
-			Packs = new [] { AttackPack(), AdventurerPack() },
+			Name = "Witch",
+			Packs = new [] { PriestPack(), WizardPack() },
+			DrawPile = new List<Card>() { Card("Curse"), Card("Curse") },
 			Position = new Point(x, y),
-			Ai = new PlayerAi(),
-			TeamName = "Player",
-			SpriteName = "DawnLike/Characters/Player0:Player0_1",
-			AttackValue = 4,
-			MaximumAttackCards = 4,
-			DefenseValue = 4,
-			MaximumDefenseCards = 4,
+			Ai = new ComputerAi(),
+			TeamName = "Human",
+			SpriteName = "DawnLike/Characters/Player0:witch",
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
 			MaximumHealth = 10,
 			CurrentHealth = 10,
-			MaximumHandCards = 6,
+			MaximumHandCards = 5,
+		});
+	}
+
+	public Creature Monk(int x, int y) {
+		return Init(new Creature() {
+			Name = "Monk",
+			Packs = new [] { RoguePack(), PriestPack() },
+			DrawPile = new List<Card>() { Card("Purge"), Card("Purge") },
+			Position = new Point(x, y),
+			Ai = new ComputerAi(),
+			TeamName = "Human",
+			SpriteName = "DawnLike/Characters/Player0:monk",
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
+			MaximumHandCards = 5,
+		});
+	}
+
+	public Creature Assassin(int x, int y) {
+		return Init(new Creature() {
+			Name = "Assassin",
+			Packs = new [] { AttackPack(), RoguePack() },
+			DrawPile = new List<Card>() { Card("Dart +2"), Card("Dart +2") },
+			Position = new Point(x, y),
+			Ai = new ComputerAi(),
+			TeamName = "Human",
+			SpriteName = "DawnLike/Characters/Player0:assassin",
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
+			MaximumHandCards = 5,
+		});
+	}
+
+	public Creature Palladin(int x, int y) {
+		return Init(new Creature() {
+			Name = "Palladin",
+			Packs = new [] { DefensePack(), PriestPack() },
+			DrawPile = new List<Card>() { Card("Aura +2"), Card("Aura +2") },
+			Position = new Point(x, y),
+			Ai = new ComputerAi(),
+			TeamName = "Human",
+			SpriteName = "DawnLike/Characters/Player0:palladin",
+			AttackValue = 2,
+			MaximumAttackCards = 3,
+			DefenseValue = 2,
+			MaximumDefenseCards = 3,
+			MaximumHealth = 10,
+			CurrentHealth = 10,
+			MaximumHandCards = 5,
 		});
 	}
 
@@ -741,6 +839,7 @@ public class Catalog {
 			Skeleton, Vampire, Ghost, Zombie,
 			RogueLizard, AttackLizard, DefenseLizard, PriestLizard,
 			TreePerson, LeafPerson, ShroomPerson, MossMan,
+			Witch, Monk, Palladin, Assassin,
 		})[0](x, y);
 	}
 }
