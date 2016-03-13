@@ -19,6 +19,7 @@ public enum CardSpecialEffect {
 public class Card {
 	public bool Exists = true;
 	public string Name;
+	public string SpriteName;
 	public string Description;
 	public string FlavorText;
 	public int GoldCost = 2;

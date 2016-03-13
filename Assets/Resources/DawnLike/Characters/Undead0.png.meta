@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 458a0e0fe97fc4722a32a9d91930c27d
-timeCreated: 1457318879
+timeCreated: 1457832332
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -9,7 +9,7 @@ TextureImporter:
     21300004: Undead0_2
     21300006: Undead0_3
     21300008: Undead0_4
-    21300010: zombie
+    21300010: disease
     21300012: Undead0_6
     21300014: Undead0_7
     21300016: Undead0_8
@@ -21,21 +21,21 @@ TextureImporter:
     21300028: Undead0_14
     21300030: Undead0_15
     21300032: skeleton
-    21300034: Undead0_17
+    21300034: skeleton2
     21300036: Undead0_18
-    21300038: Undead0_19
+    21300038: dark skeleton
     21300040: Undead0_20
     21300042: Undead0_21
     21300044: Undead0_22
     21300046: Undead0_23
     21300048: vampire
     21300050: Undead0_25
-    21300052: Undead0_26
+    21300052: vampire bite
     21300054: Undead0_27
     21300056: Undead0_28
     21300058: Undead0_29
     21300060: Undead0_30
-    21300062: Undead0_31
+    21300062: ghost form
     21300064: Undead0_32
     21300066: Undead0_33
     21300068: Undead0_34
@@ -45,7 +45,7 @@ TextureImporter:
     21300076: Undead0_38
     21300078: Undead0_39
     21300080: Undead0_40
-    21300082: Undead0_41
+    21300082: zombie
     21300084: Undead0_42
     21300086: Undead0_43
     21300088: Undead0_44
@@ -150,7 +150,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: zombie
+    - name: disease
       rect:
         serializedVersion: 2
         x: 80
@@ -282,7 +282,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Undead0_17
+    - name: skeleton2
       rect:
         serializedVersion: 2
         x: 16
@@ -304,7 +304,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Undead0_19
+    - name: dark skeleton
       rect:
         serializedVersion: 2
         x: 48
@@ -381,7 +381,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Undead0_26
+    - name: vampire bite
       rect:
         serializedVersion: 2
         x: 32
@@ -436,7 +436,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Undead0_31
+    - name: ghost form
       rect:
         serializedVersion: 2
         x: 48
@@ -546,7 +546,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Undead0_41
+    - name: zombie
       rect:
         serializedVersion: 2
         x: 0

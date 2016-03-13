@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 
 public static class Util {
-	public static List<T> Shuffle<T>(List<T> things) {
+	public static List<T> Shuffle<T>(IEnumerable<T> things) {
 		var newList = new List<T>();
 		var list = things.Select(x => x).ToList();
 		while (list.Any()) {

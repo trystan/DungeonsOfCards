@@ -6,6 +6,7 @@ using System.Linq;
 public class CardForSaleView : MonoBehaviour {
 	public Text CardTitle;
 	public Text CardCost;
+	public Image Image;
 
 	Card Card;
 	Creature Seller;
@@ -25,6 +26,15 @@ public class CardForSaleView : MonoBehaviour {
 
 		CardTitle.text = card.Name;
 		CardCost.text = card.GoldCost + " gold";
+
+		if (card.SpriteName == null) {
+			Image.gameObject.SetActive(false);
+		} else {
+			Image.gameObject.SetActive(true);
+			var parts = card.SpriteName.Split(':');
+			var sprites = Resources.LoadAll<Sprite>(parts[0]);
+			Image.sprite = sprites.Single(s => s.name == parts[1]);
+		}
 	}
 
 	public void Buy() {

@@ -92,6 +92,7 @@ public class Creature {
 	public void UseCard(Game game, Card card) {
 		HandPile.Remove(card);
 		card.DoAction(game, this, null, card.OnUse);
+		card.UndoAction(game, this, card.OnInHand);
 		Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(card.Name, Position, new Vector3(0,4,0))));
 		DiscardPile.Add(card);
 	}

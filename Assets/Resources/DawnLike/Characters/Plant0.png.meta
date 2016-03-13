@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 6cdb20f5ed03c4dac940f15027a6177c
-timeCreated: 1457322224
+timeCreated: 1457832403
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -20,7 +20,7 @@ TextureImporter:
     21300026: Plant0_13
     21300028: Plant0_14
     21300030: Plant0_15
-    21300032: Plant0_16
+    21300032: leafs
     21300034: Plant0_17
     21300036: Plant0_18
     21300038: Plant0_19
@@ -28,11 +28,11 @@ TextureImporter:
     21300042: Plant0_21
     21300044: Plant0_22
     21300046: Plant0_23
-    21300048: Plant0_24
+    21300048: spores
     21300050: Plant0_25
     21300052: Plant0_26
     21300054: Plant0_27
-    21300056: Plant0_28
+    21300056: bloom
     21300058: moss man
     21300060: Plant0_30
     21300062: shroom
@@ -258,7 +258,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Plant0_16
+    - name: leafs
       rect:
         serializedVersion: 2
         x: 0
@@ -346,7 +346,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Plant0_24
+    - name: spores
       rect:
         serializedVersion: 2
         x: 32
@@ -390,7 +390,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: Plant0_28
+    - name: bloom
       rect:
         serializedVersion: 2
         x: 0

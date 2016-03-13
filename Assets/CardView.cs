@@ -22,6 +22,7 @@ public class CardView : MonoBehaviour {
 	public Text descriptionLabel;
 	public Text flavorLabel;
 	public Image cardImage;
+	public Image image;
 
 	bool isBeingExamined;
 	int lastKnownTurnNumber;
@@ -136,6 +137,17 @@ public class CardView : MonoBehaviour {
 		descriptionLabel.text = "";
 		flavorLabel.text = "";
 		transform.position = Camera.main.WorldToScreenPoint(card.WorldPointOrigin);
+
+		if (card.SpriteName == null) {
+			image.gameObject.SetActive(false);
+		} else {
+			image.gameObject.SetActive(true);
+			var parts = card.SpriteName.Split(':');
+			var sprites = Resources.LoadAll<Sprite>(parts[0]);
+			Debug.Log(card.SpriteName);
+			image.sprite = sprites.Single(s => s.name == parts[1]);
+		}
+
 		FaceDown();
 		UseButton.SetActive(false);
 	}
@@ -149,11 +161,13 @@ public class CardView : MonoBehaviour {
 	void FaceUp() {
 		title.gameObject.SetActive(true);
 		cardImage.color = Color.white;
+		image.enabled = true;
 	}
 
 	void FaceDown() {
 		title.gameObject.SetActive(false);
 		cardImage.color = Color.gray;
+		image.enabled = false;
 	}
 
 	public void Clicked() {
@@ -181,6 +195,10 @@ public class CardView : MonoBehaviour {
 		lastKnownTurnNumber = Game.TurnNumber;
 
 		(transform as RectTransform).sizeDelta = new Vector2(240, 300);
+		(image.transform as RectTransform).localPosition = new Vector2(0, 64);
+		(image.transform as RectTransform).sizeDelta = new Vector2(128, 128);
+		image.color = new Color(1,1,1,0.25f);
+
 		descriptionLabel.text = "";
 
 		if (Card.CardType == CardType.Attack)
@@ -222,6 +240,10 @@ public class CardView : MonoBehaviour {
 		Reposition();
 
 		(transform as RectTransform).sizeDelta = new Vector2(80, 100);
+		(image.transform as RectTransform).localPosition = new Vector2(0, -10);
+		(image.transform as RectTransform).sizeDelta = new Vector2(64, 64);
+		image.color = new Color(1,1,1,1);
+
 		typeLabel.text = "";
 		descriptionLabel.text = "";
 		flavorLabel.text = "";
