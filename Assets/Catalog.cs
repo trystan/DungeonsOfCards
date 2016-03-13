@@ -195,6 +195,11 @@ public class Catalog {
 			new Card() { Name = "Cursed", GoldCost = -99, CardType = CardType.Normal, 
 				OnInHand = CardSpecialEffect.ReduceAllSizes, 
 				SpriteName = "DawnLike/Objects/Effect0:quick" },
+
+			new Card() { Name = "Statue", GoldCost = 0, CardType = CardType.Normal,
+				SpriteName = "DawnLike/Characters/Reptile0:platino",
+				Description = "A statue of a Platino. It is worshiped by developers with no art skills.",
+				FlavorText = "With this fine piece of art, anything is possible." }
 		});
 
 		amuletCards = Cards.Where(c => c.Name.StartsWith("Amulet of ")).ToList();
@@ -471,6 +476,9 @@ public class Catalog {
 			AttackPack(), DefensePack(), PriestPack(), RoguePack(), WizardPack(),
 			cost2Pack, cost3Pack, cost4Pack, cost5Pack,
 		})[0];
+
+		if (x % 3 == 0 && y % 3 == 0 && UnityEngine.Random.value < 0.1f)
+			pack.Cards.Add(Card("Statue"));
 
 		return Init(new Creature() {
 			Name = "Merchant",
