@@ -31,9 +31,7 @@ public class CardForSaleView : MonoBehaviour {
 			Image.gameObject.SetActive(false);
 		} else {
 			Image.gameObject.SetActive(true);
-			var parts = card.SpriteName.Split(':');
-			var sprites = Resources.LoadAll<Sprite>(parts[0]);
-			Image.sprite = sprites.Single(s => s.name == parts[1]);
+			Image.sprite = Util.LoadSprite(card.SpriteName);
 		}
 	}
 

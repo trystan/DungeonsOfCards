@@ -12,6 +12,7 @@ public class Game {
 
 	public int CurrentLevel = 1;
 	public int TurnNumber = 1;
+	public int TurnsOnThisFloor = 0;
 
 	public Dictionary<Point,string> Hints = new Dictionary<Point, string>();
 
@@ -35,6 +36,7 @@ public class Game {
 	}
 
 	void Clear() {
+		TurnsOnThisFloor = 0;
 		Creatures.Where(c => c != Player).ToList().ForEach(c => c.Exists = false);
 		Items.ForEach(i => i.Exists = false);
 		Effects.Clear();
@@ -74,6 +76,7 @@ public class Game {
 
 	public void TakeTurn() {
 		TurnNumber++;
+		TurnsOnThisFloor++;
 
 		foreach (var c in Creatures.ToList()) {
 			if (c.Exists)
@@ -81,6 +84,28 @@ public class Game {
 		}
 
 		Creatures.RemoveAll(c => !c.Exists);
+
+		if (UnityEngine.Random.Range(0, 200) < TurnsOnThisFloor) {
+			var x = -1;
+			var y = -1;
+
+			while (GetTile(x,y).BlocksMovement 
+				|| GetTile(x,y) == Tile.StairsDown
+				|| GetTile(x,y) == Tile.StairsUp
+				|| GetCreature(new Point(x,y)) != null 
+				|| GetItem(new Point (x,y)) != null) {
+				x = UnityEngine.Random.Range(0, Width);
+				y = UnityEngine.Random.Range(0, Height);
+			}
+
+			var enemy = Catalog.Enemy(x,y);
+			if (enemy.TeamName == Player.TeamName)
+				enemy = Catalog.Enemy(x,y);
+			
+			Creatures.Add(enemy);
+			Globals.MessageBus.Send(new Messages.CreatureAdded(enemy));
+			Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("* poof *", enemy.Position, Vector3.zero)));
+		}
 	}
 
 	public void ExitLevelDownStairs(Creature creature) {

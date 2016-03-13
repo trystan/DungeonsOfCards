@@ -4,6 +4,16 @@ using System;
 using System.Linq;
 
 public static class Util {
+	private static Dictionary<string,Sprite[]> AllSprites = new Dictionary<string,Sprite[]>();
+
+	public static Sprite LoadSprite(string name) {
+		var parts = name.Split(':');
+		if (!AllSprites.ContainsKey(parts[0]))
+			AllSprites[parts[0]] = Resources.LoadAll<Sprite>(parts[0]);
+		
+		return AllSprites[parts[0]].Single(s => s.name == parts[1]);
+	}
+
 	public static List<T> Shuffle<T>(IEnumerable<T> things) {
 		var newList = new List<T>();
 		var list = things.Select(x => x).ToList();

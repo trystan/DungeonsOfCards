@@ -22,9 +22,7 @@ public class CreatureSelectPanelController : MonoBehaviour {
 			+ "\nDefense:\t\t" + creature.DefenseValue + " + " + creature.MaximumDefenseCards + " cards"
 			+ "\nHand:\t\t\t" + creature.MaximumHandCards + " cards";
 		
-		var parts = creature.SpriteName.Split(':');
-		var sprites = Resources.LoadAll<Sprite>(parts[0]);
-		Image.sprite = sprites.Single(s => s.name == parts[1]);
+		Image.sprite = Util.LoadSprite(creature.SpriteName);
 
 		var standardCards = new List<string>();
 		standardCards.AddRange(pack1.Cards.Select(c => c.Name));

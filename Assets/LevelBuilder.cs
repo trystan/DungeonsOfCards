@@ -96,6 +96,8 @@ public class LevelBuilder {
 
 		var pos = Util.Shuffle(positions).Take(3).ToList();
 		var hints = Util.Shuffle(new List<string>() { 
+			"This game was made in 7 days. Sorry for the rough edges.",
+			"The longer you stay in a level the more likely a new enemy will appear.", 
 			"Holy cards are strong vs undead.", 
 			"Fire cards are strong vs plants.",
 			"Freezing cards are strong vs lizards.",
@@ -110,7 +112,7 @@ public class LevelBuilder {
 			"There are a few cards you can only get from merchants.",
 			"There are amulets on levles 5, 7, and 9.",
 			"If your attacks do little, then you may need more attack cards.",
-			"If your defense does little, then you may need more defense cards.",
+			"If your defense does little, then you may need more defenses cards.",
 			"Undead won't hurt other undea, lizards wont hurt other lizards, etc.",
 			"You can use [w,a,s,d] or [h,j,k,l] or numpad or arrow keys to move.",
 			"You can use [z,x,c,v,b,n,m] to select cards in your hand.",
@@ -230,6 +232,7 @@ public class LevelBuilder {
 
 			while (game.GetTile(x,y).BlocksMovement 
 					|| game.GetTile(x,y) == Tile.StairsDown
+					|| game.GetTile(x,y) == Tile.StairsUp
 					|| game.GetCreature(new Point(x,y)) != null 
 					|| game.GetItem(new Point (x,y)) != null) {
 				x = UnityEngine.Random.Range(0, game.Width);
@@ -258,6 +261,7 @@ public class LevelBuilder {
 				|| game.GetTile(x+1,y+0).IsWall 
 				|| game.GetTile(x+1,y-1).IsWall 
 				|| game.GetTile(x,y) == Tile.StairsDown
+				|| game.GetTile(x,y) == Tile.StairsUp
 				|| game.GetCreature(new Point(x,y)) != null 
 				|| game.GetItem(new Point (x,y)) != null) {
 			x = UnityEngine.Random.Range(0, game.Width);

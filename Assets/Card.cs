@@ -63,11 +63,9 @@ public class Card {
 		if (goodCandidates.Any()) {
 			var target = Util.Shuffle(goodCandidates)[0];
 			user.Position = target;
-			Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Blink!", target, new Vector3(0,14,0))));
 		} else if (okCandidates.Any()) {
 			var target = Util.Shuffle(okCandidates)[0];
 			user.Position = target;
-			Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Blink!", target, new Vector3(0,14,0))));
 		}
 	}
 
@@ -124,7 +122,7 @@ public class Card {
 				user.CurrentHealth = Mathf.Min(user.CurrentHealth + 4, user.MaximumHealth);
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, heal", user.Position, new Vector3(0,14,0))));
 				break;
-			case "destory leafs":
+			case "destroy leafs":
 				user.ShuffleEverythingIntoDrawStack();
 				foreach (var card in user.DrawPile.Where(c => c.Name == "Leafs").Take(3).ToArray()) {
 					user.DrawPile.Remove(card);
@@ -133,7 +131,7 @@ public class Card {
 				user.ShuffleEverythingIntoDrawStack();
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy leafs", user.Position, new Vector3(0,14,0))));
 				break;
-			case "destory disease":
+			case "destroy disease":
 				user.ShuffleEverythingIntoDrawStack();
 				foreach (var card in user.DrawPile.Where(c => c.Name == "Disease").Take(3).ToArray()) {
 					user.DrawPile.Remove(card);
@@ -142,7 +140,7 @@ public class Card {
 				user.ShuffleEverythingIntoDrawStack();
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy disease", user.Position, new Vector3(0,14,0))));
 				break;
-			case "destory poison":
+			case "destroy poison":
 				user.ShuffleEverythingIntoDrawStack();
 				foreach (var card in user.DrawPile.Where(c => c.Name == "Poison").Take(3).ToArray()) {
 					user.DrawPile.Remove(card);
@@ -151,7 +149,7 @@ public class Card {
 				user.ShuffleEverythingIntoDrawStack();
 				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Pray, destroy poison", user.Position, new Vector3(0,14,0))));
 				break;
-			case "destory cursed":
+			case "destroy cursed":
 				user.ShuffleEverythingIntoDrawStack();
 				foreach (var card in user.DrawPile.Where(c => c.Name == "Cursed").Take(3).ToArray()) {
 					user.DrawPile.Remove(card);

@@ -61,9 +61,7 @@ public class CreatureView : MonoBehaviour {
 		NameLabel.text = creature.TeamName;
 		NameLabel.enabled = creature.TeamName == "Merchant";
 
-		var parts = creature.SpriteName.Split(':');
-		var sprites = Resources.LoadAll<Sprite>(parts[0]);
-		CreatureSprite.sprite = sprites.Single(s => s.name == parts[1]);
+		CreatureSprite.sprite = Util.LoadSprite(creature.SpriteName);
 
 		transform.position = new Vector3(creature.Position.X, creature.Position.Y, 0);
 	}

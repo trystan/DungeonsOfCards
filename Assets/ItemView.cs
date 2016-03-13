@@ -30,9 +30,7 @@ public class ItemView : MonoBehaviour {
 		NameLabel.gameObject.SetActive(false);
 		NameLabel.text = item.Card != null ? item.Card.Name : item.Pack.Name;
 
-		var parts = item.SpriteName.Split(':');
-		var sprites = Resources.LoadAll<Sprite>(parts[0]);
-		ItemSprite.sprite = sprites.Single(s => s.name == parts[1]);
+		ItemSprite.sprite = Util.LoadSprite(item.SpriteName);
 
 		transform.position = new Vector3(item.Position.X, item.Position.Y, 0);
 	}

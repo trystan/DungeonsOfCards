@@ -54,9 +54,7 @@ public class ScoreController : MonoBehaviour {
 		TotalScoreLabel.text 	= "Total score\t\t\t\t\t\t= " + totalScore;
 
 		if (player.TeamName == "Undead") {
-			var parts = player.SpriteName.Split(':');
-			var sprites = Resources.LoadAll<Sprite>(parts[0]);
-			PlayerImage.sprite = sprites.Single(s => s.name == parts[1]);
+			PlayerImage.sprite = Util.LoadSprite(player.SpriteName);
 		}
 	}
 

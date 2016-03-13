@@ -16,6 +16,7 @@ public class CardView : MonoBehaviour {
 	Game Game;
 	Card Card;
 	Creature Player;
+	int previousHandLimit;
 
 	public Text title;
 	public Text typeLabel;
@@ -103,9 +104,10 @@ public class CardView : MonoBehaviour {
 					BeginExamining();
 			}
 
-			if (lastPile.IndexOf(Card) == lastIndex)
+			if (lastPile.IndexOf(Card) == lastIndex && previousHandLimit == Player.MaximumHandCards)
 				return;
 
+			previousHandLimit = Player.MaximumHandCards;
 			Reposition();
 		}
 
@@ -180,10 +182,8 @@ public class CardView : MonoBehaviour {
 			image.gameObject.SetActive(false);
 		} else {
 			image.gameObject.SetActive(true);
-			var parts = card.SpriteName.Split(':');
-			var sprites = Resources.LoadAll<Sprite>(parts[0]);
-			Debug.Log(card.SpriteName);
-			image.sprite = sprites.Single(s => s.name == parts[1]);
+			image.sprite = Util.LoadSprite(card.SpriteName);
+			image.color = new Color(1,1,1,0.75f);
 		}
 
 		FaceDown();
@@ -281,7 +281,7 @@ public class CardView : MonoBehaviour {
 		(transform as RectTransform).sizeDelta = new Vector2(80, 100);
 		(image.transform as RectTransform).localPosition = new Vector2(0, -10);
 		(image.transform as RectTransform).sizeDelta = new Vector2(64, 64);
-		image.color = new Color(1,1,1,1);
+		image.color = new Color(1,1,1,0.75f);
 
 		typeLabel.text = "";
 		descriptionLabel.text = "";
@@ -295,16 +295,16 @@ public class CardView : MonoBehaviour {
 		var text = "";
 		switch (effect) {
 		case CardSpecialEffect.AddCardToOther: 
-			text = "Add a " + Card.ExtraCard().Name + " to opponent's draw pile."; break;
+			text = "Add one \"" + Card.ExtraCard().Name + "\" card to opponent's draw pile."; break;
 		case CardSpecialEffect.AddCardToSelf: 
-			text = "Add a " + Card.ExtraCard().Name + " to your draw pile."; break;
+			text = "Add one \"" + Card.ExtraCard().Name + "\" to your draw pile."; break;
 		case CardSpecialEffect.Blink:
 			text = "Teleport to a nearby open space. Probably safe."; break;
 		case CardSpecialEffect.DamageClosest: 
 			if (Card.ExtraCard == null)
 				text = "Damage the closest creature within 5 spaces.";
 			else
-				text = "Damage the closest creature within 5 spaces and add a " + Card.ExtraCard().Name + " to opponent's draw pile";
+				text = "Damage the closest creature within 5 spaces and add one \"" + Card.ExtraCard().Name + "\" to opponent's draw pile";
 			break;
 		case CardSpecialEffect.Discard1FromEachPile: 
 			text = "Discard 1 card from your attack pile, defense pile, and hand."; break;
