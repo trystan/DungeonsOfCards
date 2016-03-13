@@ -62,6 +62,23 @@ public class CardView : MonoBehaviour {
 		}
 
 		if (isBeingExamined) {
+			if (lastPile == Player.HandPile) {
+				if (lastIndex == 0 && Input.GetKeyDown(KeyCode.Z))
+					EndExamining();
+				if (lastIndex == 1 && Input.GetKeyDown(KeyCode.X))
+					EndExamining();
+				if (lastIndex == 2 && Input.GetKeyDown(KeyCode.C))
+					EndExamining();
+				if (lastIndex == 3 && Input.GetKeyDown(KeyCode.V))
+					EndExamining();
+				if (lastIndex == 4 && Input.GetKeyDown(KeyCode.B))
+					EndExamining();
+				if (lastIndex == 5 && Input.GetKeyDown(KeyCode.N))
+					EndExamining();
+				if (lastIndex == 6 && Input.GetKeyDown(KeyCode.M))
+					EndExamining();
+			}
+
 			if (lastKnownTurnNumber != Game.TurnNumber)
 				EndExamining();
 			else if (Input.GetKeyDown(KeyCode.Escape))
@@ -69,6 +86,23 @@ public class CardView : MonoBehaviour {
 			else if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
 				UseButtonClicked();
 		} else {
+			if (lastPile == Player.HandPile) {
+				if (lastIndex == 0 && Input.GetKeyDown(KeyCode.Z))
+					BeginExamining();
+				if (lastIndex == 1 && Input.GetKeyDown(KeyCode.X))
+					BeginExamining();
+				if (lastIndex == 2 && Input.GetKeyDown(KeyCode.C))
+					BeginExamining();
+				if (lastIndex == 3 && Input.GetKeyDown(KeyCode.V))
+					BeginExamining();
+				if (lastIndex == 4 && Input.GetKeyDown(KeyCode.B))
+					BeginExamining();
+				if (lastIndex == 5 && Input.GetKeyDown(KeyCode.N))
+					BeginExamining();
+				if (lastIndex == 6 && Input.GetKeyDown(KeyCode.M))
+					BeginExamining();
+			}
+
 			if (lastPile.IndexOf(Card) == lastIndex)
 				return;
 
@@ -181,16 +215,17 @@ public class CardView : MonoBehaviour {
 		} else if (isBeingExamined) {
 			EndExamining();
 		} else {
-			foreach (Transform c in CurrentlyInUsePile) {
-				var view = c.GetComponent<CardView>();
-				if (view != null)
-					view.EndExamining();
-			}
 			BeginExamining();
 		}
 	}
 
 	void BeginExamining() {
+		foreach (Transform c in CurrentlyInUsePile) {
+			var view = c.GetComponent<CardView>();
+			if (view != null)
+				view.EndExamining();
+		}
+
 		isBeingExamined = true;
 		targetPosition = CurrentlyInUsePile.transform.position;
 		transform.SetParent(CurrentlyInUsePile.transform);

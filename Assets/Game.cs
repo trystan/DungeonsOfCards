@@ -13,6 +13,8 @@ public class Game {
 	public int CurrentLevel = 1;
 	public int TurnNumber = 1;
 
+	public Dictionary<Point,string> Hints = new Dictionary<Point, string>();
+
 	public bool FloorsUpdated;
 	public bool WallsUpdated;
 	public bool ObjectsUpdated;
@@ -36,6 +38,7 @@ public class Game {
 		Creatures.Where(c => c != Player).ToList().ForEach(c => c.Exists = false);
 		Items.ForEach(i => i.Exists = false);
 		Effects.Clear();
+		Hints.Clear();
 		for (var x = 0; x < Width; x++) {
 			for (var y = 0; y < Height; y++) {
 				tiles[x,y] = Tile.Wall;

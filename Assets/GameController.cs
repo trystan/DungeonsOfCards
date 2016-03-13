@@ -12,7 +12,12 @@ public class GameController : MonoBehaviour {
 	public SpriteRenderer StairsUpImage;
 	public SpriteRenderer StairsDownImage;
 
+	public SpriteRenderer Hint1Image;
+	public SpriteRenderer Hint2Image;
+	public SpriteRenderer Hint3Image;
+
 	public MerchantPanelController merchantPanel;
+	public HintPanelController hintPanel;
 
 	Game game;
 	List<CreatureView> CreatureViews = new List<CreatureView>();
@@ -114,6 +119,9 @@ public class GameController : MonoBehaviour {
 	}
 
 	void PositionStairs() {
+		Hint1Image.transform.position = new Vector3(-99,-99,0);
+		Hint2Image.transform.position = new Vector3(-99,-99,0);
+		Hint3Image.transform.position = new Vector3(-99,-99,0);
 		StairsDownImage.transform.position = new Vector3(-99,-99,0);
 		StairsUpImage.transform.position = new Vector3(-99,-99,0);
 		for (var x = 0; x < game.Width; x++) {
@@ -126,6 +134,13 @@ public class GameController : MonoBehaviour {
 				}
 			}
 		}
+
+		if (game.Hints.Count > 0)
+			Hint1Image.transform.position = new Vector3(game.Hints.ElementAt(0).Key.X, game.Hints.ElementAt(0).Key.Y, 0);
+		if (game.Hints.Count > 1)
+			Hint2Image.transform.position = new Vector3(game.Hints.ElementAt(1).Key.X, game.Hints.ElementAt(1).Key.Y, 0);
+		if (game.Hints.Count > 2)
+			Hint3Image.transform.position = new Vector3(game.Hints.ElementAt(2).Key.X, game.Hints.ElementAt(2).Key.Y, 0);
 	}
 
 	void Update() {
@@ -162,6 +177,8 @@ public class GameController : MonoBehaviour {
 				if (mx != 0 || my != 0 || wait) {
 					game.Player.MoveBy(game, mx, my);
 					game.TakeTurn();
+					if (game.Hints.ContainsKey(game.Player.Position))
+						hintPanel.Show(game, game.Hints[game.Player.Position]);
 				}
 			}
 		} else {

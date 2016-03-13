@@ -63,6 +63,7 @@
      <Compile Include="Assets\GameController.cs" />
      <Compile Include="Assets\Globals.cs" />
      <Compile Include="Assets\GuiController.cs" />
+     <Compile Include="Assets\HintPanelController.cs" />
      <Compile Include="Assets\Instantiator.cs" />
      <Compile Include="Assets\Item.cs" />
      <Compile Include="Assets\ItemView.cs" />

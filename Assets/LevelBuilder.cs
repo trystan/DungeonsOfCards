@@ -58,9 +58,6 @@ public class LevelBuilder {
 
 		AddStairsDownAndStairsUpPosition(game);
 
-		AddCommonLoot(game);
-		AddRareLoot(game);
-
 		if (game.Player == null)
 			AddPlayer(game);
 		else 
@@ -68,6 +65,59 @@ public class LevelBuilder {
 		
 		AddAlly(game);
 		AddEnemies(game);
+		AddHints(game);
+		AddCommonLoot(game);
+		AddRareLoot(game);
+	}
+
+	void AddHints(Game game) {
+		var positions = new List<Point>();
+
+		for (var x = 0; x < game.Width; x++) {
+			for (var y = 0; y < game.Height; y++) {
+				if (game.GetTile(x,y).IsWall
+					|| game.GetTile(x,y) == Tile.StairsUp
+					|| game.GetTile(x,y) == Tile.StairsDown
+					|| game.GetTile(x-1,y+1).IsWall 
+					|| game.GetTile(x-1,y+0).IsWall 
+					|| game.GetTile(x-1,y-1).IsWall 
+					|| game.GetTile(x-0,y+1).IsWall 
+					|| game.GetTile(x-0,y-1).IsWall 
+					|| game.GetTile(x+1,y+1).IsWall 
+					|| game.GetTile(x+1,y+0).IsWall 
+					|| game.GetTile(x+1,y-1).IsWall 
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point (x,y)) != null)
+					continue;
+				
+				positions.Add(new Point(x,y));
+			}
+		}
+
+		var pos = Util.Shuffle(positions).Take(3).ToList();
+		var hints = Util.Shuffle(new List<string>() { 
+			"Holy cards are strong vs undead.", 
+			"Fire cards are strong vs plants.",
+			"Freezing cards are strong vs lizards.",
+			"Pray cards can do many things, depending on the whims of the gods.",
+			"The first amulet is on the fifth dungeon floor.",
+			"The second amulet is on the seventh dungeon floor.",
+			"The third amulet is on the ninth dungeon floor.",
+			"Other creatures can pick up and use cards they find on the floor.",
+			"The \"Skeleton\" card will make you come back as a skeleton if you die.",
+			"Gold is worth extra points at the end.",
+			"You can leave the dungeon anytime you want.",
+			"There are a few cards you can only get from merchants.",
+			"There are amulets on levles 5, 7, and 9.",
+			"If your attacks do little, then you may need more attack cards.",
+			"If your defense does little, then you may need more defense cards.",
+			"Undead won't hurt other undea, lizards wont hurt other lizards, etc.",
+			"You can use [w,a,s,d] or [h,j,k,l] or numpad or arrow keys to move.",
+			"You can use [z,x,c,v,b,n,m] to select cards in your hand.",
+		});
+
+		for (var i = 0; i < pos.Count; i++)
+			game.Hints.Add(pos[i], hints[i]);
 	}
 
 	void AddExtraDoors(Game game) {
@@ -222,7 +272,9 @@ public class LevelBuilder {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
-			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown)
+			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown || game.GetTile(x,y) == Tile.StairsUp
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point(x,y)) != null)
 				continue;
 
 			var card = Util.Shuffle(new List<Card>() {
@@ -244,7 +296,9 @@ public class LevelBuilder {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
-			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown)
+			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown || game.GetTile(x,y) == Tile.StairsUp
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point(x,y)) != null)
 				continue;
 			
 			game.Items.Add(game.Catalog.CardItem(x, y, amulet));
@@ -264,7 +318,9 @@ public class LevelBuilder {
 			var x = UnityEngine.Random.Range(0, game.Width);
 			var y = UnityEngine.Random.Range(0, game.Height);
 
-			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown)
+			if (game.GetTile(x,y).BlocksMovement || game.GetTile(x,y) == Tile.StairsDown || game.GetTile(x,y) == Tile.StairsUp
+					|| game.GetCreature(new Point(x,y)) != null 
+					|| game.GetItem(new Point(x,y)) != null)
 				continue;
 
 			var pack = Util.Shuffle(new List<Pack>() {
