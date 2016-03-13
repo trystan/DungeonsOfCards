@@ -64,6 +64,10 @@ public class CardView : MonoBehaviour {
 		if (isBeingExamined) {
 			if (lastKnownTurnNumber != Game.TurnNumber)
 				EndExamining();
+			else if (Input.GetKeyDown(KeyCode.Escape))
+				EndExamining();
+			else if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
+				UseButtonClicked();
 		} else {
 			if (lastPile.IndexOf(Card) == lastIndex)
 				return;
@@ -312,8 +316,14 @@ public class CardView : MonoBehaviour {
 			text = "Evade then draw 2 cards."; break;
 		case CardSpecialEffect.VampireBite:
 			text = "Recover up to 3 health and blink away."; break;
+		case CardSpecialEffect.DestroyBadCard:
+			text = "Destroy one random bad card from your deck."; break;
 		}
-		
-		descriptionLabel.text += "<b>" + when + ":</b> " + text + "\n";
+
+		if (text.Length == 0) {
+			Debug.Log("No text for " + effect);
+			descriptionLabel.text += "<b>" + when + ":</b> [DEBUG: " + effect + "]\n";
+		} else
+			descriptionLabel.text += "<b>" + when + ":</b> " + text + "\n";
 	}
 }

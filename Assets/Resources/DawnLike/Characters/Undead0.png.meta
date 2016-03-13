@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 458a0e0fe97fc4722a32a9d91930c27d
-timeCreated: 1457832332
+timeCreated: 1457837188
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -21,7 +21,7 @@ TextureImporter:
     21300028: Undead0_14
     21300030: Undead0_15
     21300032: skeleton
-    21300034: skeleton2
+    21300034: skeleton 2
     21300036: Undead0_18
     21300038: dark skeleton
     21300040: Undead0_20
@@ -282,7 +282,7 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
-    - name: skeleton2
+    - name: skeleton 2
       rect:
         serializedVersion: 2
         x: 16

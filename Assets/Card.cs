@@ -12,7 +12,7 @@ public enum CardSpecialEffect {
 	Draw5Attack, Draw5Defense, IncreaseDefenseSize, IncreaseAttackSize, IncreaseHandSize,
 	SpawnSkeleton, AddCardToOther, AddCardToSelf, Pray, HealTeam, TurnUndead, DamageClosest,
 	VampireBite, GhostForm, IncreaseAllStats,
-	IncreaseAllSizes, ChargeNearest, ReduceAllSizes, DestoryChosenCard,
+	IncreaseAllSizes, ChargeNearest, ReduceAllSizes, DestroyBadCard,
 	IncreaseAttackValue3, IncreaseDefenseValue3,
 }
 
@@ -95,8 +95,16 @@ public class Card {
 		case CardSpecialEffect.Blink:
 			DoBlinkAction(game, user);
 			break;
-		case CardSpecialEffect.DestoryChosenCard:
-			Debug.Log("DestoryChosenCard " + user.TeamName);
+		case CardSpecialEffect.DestroyBadCard:
+			user.ShuffleEverythingIntoDrawStack();
+			var bads = user.DrawPile.Where(c => c.Name == "Leafs" || c.Name == "Idle" || c.Name == "Disease" || c.Name == "Poison" || c.Name == "Cursed").ToList();
+			if (bads.Any()) {
+				var bad = Util.Shuffle(bads)[0];
+				bad.Exists = false;
+				user.DrawPile.Remove(bad);
+				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup("Purge " + bad.Name, user.Position, new Vector3(0,14,0))));
+			}
+			user.ShuffleEverythingIntoDrawStack();
 			break;
 		case CardSpecialEffect.Pray:
 			var actions = new Dictionary<string, int>();
@@ -404,7 +412,6 @@ public class Card {
 				} else {
 					user.Position = enemy.Position;
 				}
-				Globals.MessageBus.Send(new Messages.AddPopup(new TextPopup(Name, user.Position, Vector2.zero)));
 			}
 			break;
 

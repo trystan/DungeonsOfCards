@@ -187,7 +187,7 @@ public class Catalog {
 				OnUse = CardSpecialEffect.DamageClosest, ExtraCard = () => Card("Poisoned"),
 				SpriteName = "DawnLike/Items/Ammo:dart", },
 			new Card() { Name = "Purge", GoldCost = 5, CardType = CardType.Normal, 
-				OnUse = CardSpecialEffect.DestoryChosenCard,
+				OnUse = CardSpecialEffect.DestroyBadCard,
 				SpriteName = "DawnLike/Items/Ammo:dart", },
 			new Card() { Name = "Curse", GoldCost = 4, CardType = CardType.Normal, 
 				OnUse = CardSpecialEffect.DamageClosest, ExtraCard = () => Card("Cursed"),
