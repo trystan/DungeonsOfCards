@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour {
 
 	public MerchantPanelController merchantPanel;
 	public HintPanelController hintPanel;
+	public ExitPanelController exitPanel;
 
 	Game game;
 	List<CreatureView> CreatureViews = new List<CreatureView>();
@@ -146,6 +147,13 @@ public class GameController : MonoBehaviour {
 	void Update() {
 		if (!ready)
 			return;
+
+		if (Input.GetKeyDown(KeyCode.Escape)
+				&& Globals.currentCardBeingExamined == null
+				&& !merchantPanel.gameObject.activeInHierarchy
+				&& !hintPanel.gameObject.activeInHierarchy
+				&& !exitPanel.gameObject.activeInHierarchy)
+			exitPanel.Show();
 		
 		game.Effects.ForEach(e => e.Delay -= Time.deltaTime);
 		foreach (var e in game.Effects.Where(e => e.Delay < 0).ToList()) {
@@ -175,6 +183,10 @@ public class GameController : MonoBehaviour {
 				var wait = Input.GetKey(KeyCode.Period) || Input.GetKey(KeyCode.Keypad5);
 
 				if (mx != 0 || my != 0 || wait) {
+					merchantPanel.Hide();
+					hintPanel.Hide();
+					exitPanel.Hide();
+
 					game.Player.MoveBy(game, mx, my);
 					game.TakeTurn();
 					if (game.Hints.ContainsKey(game.Player.Position))

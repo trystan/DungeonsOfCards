@@ -84,7 +84,7 @@ public class CardView : MonoBehaviour {
 				EndExamining();
 			else if (Input.GetKeyDown(KeyCode.Escape))
 				EndExamining();
-			else if (Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return))
+			else if ((Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Return)) && Card.OnUse != CardSpecialEffect.None)
 				UseButtonClicked();
 		} else {
 			if (lastPile == Player.HandPile) {
@@ -191,6 +191,7 @@ public class CardView : MonoBehaviour {
 	}
 
 	public void UseButtonClicked() {
+		EndExamining();
 		Player.UseCard(Game, Card);
 		EndExamining();
 		Game.TakeTurn();
@@ -210,6 +211,7 @@ public class CardView : MonoBehaviour {
 
 	public void Clicked() {
 		if (Player.DrawPile.Contains(Card)) {
+			EndExamining();
 			Player.MoveBy(Game,0,0);
 			Game.TakeTurn();
 		} else if (isBeingExamined) {
@@ -226,6 +228,7 @@ public class CardView : MonoBehaviour {
 				view.EndExamining();
 		}
 
+		Globals.currentCardBeingExamined = this;
 		isBeingExamined = true;
 		targetPosition = CurrentlyInUsePile.transform.position;
 		transform.SetParent(CurrentlyInUsePile.transform);
@@ -274,6 +277,8 @@ public class CardView : MonoBehaviour {
 	}
 
 	void EndExamining() {
+		if (Globals.currentCardBeingExamined == this)
+			Globals.currentCardBeingExamined = null;
 		isBeingExamined = false;
 		UseButton.SetActive(false);
 		Reposition();
